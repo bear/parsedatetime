@@ -1,0 +1,24 @@
+parsedatetime uses a standard setup.py install method:
+
+    python setup.py install
+
+This will install parsedatetime into your Python's site-packages
+location and make it available for import'ing
+
+Python 2.6+ is required now for parsedatetime 1.+
+
+parsedatetime is a pure Python module so it does not require any
+compiler build step.
+
+parsedatetime does not depend on any external library/module but
+will use the following if available:
+
+    PyICU (which depends on ICU)
+
+Python 2.5 NOTE
+    parsedatetime's setup.py uses Setuptools ez_setup.py and as
+    such will attempt to contact the Python Package Index site
+    to see if a new version of Setuptools is required (or to
+    download if you don't have it installed.)
+
+

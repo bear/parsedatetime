@@ -1,0 +1,29 @@
+While the initial work on parsedatetime is based on my past work
+in dealing with validation of date/time text, the current code
+could not have happened without the help, aid and pokings of the
+following folks:
+
+Darshana Chhajed
+
+    As the first "real" user of the new Python code, Darshana pointed
+    out many of the initial flaws and bugs and then started fixing them!
+    Her aide was so helpful that I was happy to add her as co-author.
+
+Ted Leung
+
+    Early "sounding board" advice and continued support to make the
+    code as open and useful as it is.
+
+Heikki Toivenan
+
+    While Heikki hasn't aided directly he has been extremely helpful
+    in making sure my Python code is clean and simple - any current
+    ugliness is purely my own fault
+
+OSAF
+
+    The folks at OSAF (Open Source Applications Foundation) helped a lot
+    in shaping how the code works and in answering my "how do I do *this*"
+    questions - especially Jeffrey, Philippe, Grant, Andi, Alex and Katie.
+
+    

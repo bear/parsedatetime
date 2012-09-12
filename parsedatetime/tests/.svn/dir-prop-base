@@ -1,0 +1,9 @@
+K 10
+svn:ignore
+V 19
+*.pyc
+*.pyo
+*.log
+
+
+END

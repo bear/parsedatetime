@@ -1,0 +1,13 @@
+Mike Taylor         mailto://bear@code-bear.com
+                    http://code-bear.com
+Darshana Chhajed    mailto://darshana@osafoundation.org
+
+Bug Fixes
+
+    Issue 26        Michael Lim <lim.ck.michael@gmail.com>
+                    patch to all day of month to be before month
+
+Locale Patches:
+
+    de_DE           Bernd Zeimetz <bzed@debian.org>
+

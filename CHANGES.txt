@@ -1,0 +1,350 @@
+15 Mar 2011 - bear
+
+    Updated 1.0.0 code to work with 2.6+ (need to try 2.5) and also updated 
+    docs and other supporting code
+
+07 Sep 2009 - bear
+
+    Created branches/python25 from current trunk to save the current code
+
+    Converted trunk to Python 3 and also refactored how the module is structured
+    so that it no longer requires import parsedatetime.parsedatetime
+
+    Bumped version to 1.0.0 to reflect the major refactoring
+
+07 Jan 2009 - bear
+
+    0.8.7 release
+    Apply patch submitted by Michael Lim to fix the problem parsedatetime
+    was having handling dates when the month day preceeded the month
+    Issue 26 http://code.google.com/p/parsedatetime/issues/detail?id=26
+
+    Fixed TestErrors when in a local where the bad date actually returns
+    a date ;)
+
+    Checked in the TestGermanLocale unit test file missed from previous commit
+
+20 Apr 2008 - bear
+
+    Upating Copyright year info
+    Fixing defects from Google Project page
+
+    The comparison routine for the "failing" test was not accurate.
+    The test was being flagged as failing incorrectly
+    Issue 18 http://code.google.com/p/parsedatetime/issues/detail?id=18
+
+    Added patch from Bernd Zeimetz for the German localized constants!
+    http://svn.debian.org/viewsvn/*checkout*/python-modules/packages/parsedatetime/trunk/debian/patches/locale-de.dpatch
+    He identifies some issues with how unicode is handled and also some other
+    glitches - will have to work on them
+    Issue 20 http://code.google.com/p/parsedatetime/issues/detail?id=20
+
+    Tweaked run_tests.py to default to all tests if not given on the command line
+    Removed 'this' from the list of "specials" - it was causing some grief and from the
+    looks of the unit tests, not all that necessary
+
+    Worked on bug 19 - Bernd identified that for the German locale the dayofweek check
+    was being triggered for the dayoffset word "morgen" (the "mo" matched the day "morgen")
+    To solve this I added a small check to make sure if the whole word being checked was
+    not in the dayOffsets list, and if so not trigger.
+    Issue 19 http://code.google.com/p/parsedatetime/issues/detail?id=19
+
+
+28 Nov 2007 - bear
+
+    0.8.5.1 release - removed debug code
+
+    0.8.5 release
+    bumping version to 0.8.6 in trunk
+
+    Fixing two bugs found by Chandler QA
+
+    Time range of "today 3:30-5pm" was actually causing a traceback.
+    Added a new regex to cover this range type and a new test.
+
+    OSAF 11299 https://bugzilla.osafoundation.org/show_bug.cgi?id=11299
+
+    A really embarrassing for a date/time library - was actually *not*
+    considering leap years when returning days in a month!
+    Added tests for Feb 29th of various known leap years and also added
+    a check for the daysInMonth() routine which was created to replace
+    the naively simple DaysInMonthList.
+
+    OSAF 11203 https://bugzilla.osafoundation.org/show_bug.cgi?id=11203
+
+12 Jun 2007 - bear
+
+    0.8.4 release
+    bumping version to 0.8.5 in trunk
+
+
+22 Feb 2007 - bear
+
+    Fixed a bug reported via the code.google project page by Alexis where
+    parsedatetime was not parsing day suffixes properly.  For example, the
+    text "Aug 25th, 2008" would return the year as 2007 - the parser was
+    not 'seeing' 2008 as a part of the expression.
+
+    The fix was to enhance one of the "long date" regexes to handle that
+    situation but yet not break the current tests - always fun for sure!
+
+    Issue 16 http://code.google.com/p/parsedatetime/issues/detail?id=16
+
+
+21 Feb 2007 - bear
+
+    Fixed a bug Brian K. (one of the Chandler devs) found when parsing with
+    the locale set to fr_FR.  The phrase "same 3 folders" was causing a key
+    error inside the parser and it turns out that it's because short weekday
+    names in French have a trailing '.' so "sam." was being used in the
+    regular expression and the '.' was being treated as a regex symbol and
+    not as a period.
+
+    It turned out to be a simple fix - just needed to add some code to run
+    re.escape over the lists before adding them to the re_values dictionary.
+
+    Also added a TestFrenchLocale set of unit tests but made them only run
+    if PyICU is found until I can build an internal locale for fr_FR.
+    Issue #17 http://code.google.com/p/parsedatetime/issues/detail?id=17
+
+
+14 Feb 2007 - bear
+
+    0.8.3 release
+
+    Minor doc string changes and other typo fixes
+
+    Updated Copyright years
+
+    Added a fallbackLocales=[] parameter to parsedatetime_consts init routine
+    to control what locales are scanned if the default or given locale is not
+    found in PyICU.
+    Issue #9 http://code.google.com/p/parsedatetime/issues/detail?id=9
+
+    While working on the regex compile-on-demand issue below, I realized that
+    parsedatetime was storing the compiled regex's locally and that this would
+    cause prevent parsedatetime from switching locales easily.  I've always
+    wanted to make it so parsedatetime can be set to parse within a locale just
+    by changing a single reference - this is one step closer to that.
+
+    Made the regex compiles on-demand to help with performance
+    Requested by the Chandler folks
+    Issue #15 http://code.google.com/p/parsedatetime/issues/detail?id=15
+
+    To test the change I ran 100 times the following code:
+        for i in range(0, 100):
+            c = pdc.Constants()
+            p = pdt.Calendar(c)
+            p = None
+            c = None
+
+    and that was measured by hotshot:
+
+        24356 function calls (22630 primitive calls) in 0.188 CPU seconds
+
+    after the change:
+
+        5000 function calls in 0.140 CPU seconds
+
+    but that doesn't test the true time as it doesn't reference any regex's
+    so any time saved is deferred.  To test this I then ran before and after
+    tests where I parsed the major unit test bits:
+
+    before the change:
+
+        80290 function calls (75929 primitive calls) in 1.055 CPU seconds
+
+    after the change:
+
+        55803 function calls (52445 primitive calls) in 0.997 CPU seconds
+
+    This tells me while doing the lazy compile does save time, it's not a lot
+    over the normal usage.  I'll leave it in as it is saving time for the
+    simple use-cases.
+
+
+27 Dec 2006 - bear
+
+    Added some support files to try and increase our cheesecake index :)
+
+    Created an examples directory and added back the docs/* content so the
+    source distribution will contain the generated docs
+
+    Changed how setup.py works to allow for a doc command
+
+26 Dec 2006 - bear
+
+    0.8.1 release
+    Setting trunk to 0.8.2
+
+    Fixed the 'eom' part of testEndOfPhrases.  It was not adjusting the year
+    when checking for month rollover to the new year.
+
+    Changed API docs to reflect that it's a struct_time type (or a time tuple) that
+    we accept and return instead of a datetime value.  I believe this lead to Issue #14
+    being reported.  Also added some error handling to change a datetime value into a
+    struct_time value if passed to parse().
+
+3 Nov 2006 - darshana
+
+    Fixed issue#13 (Nov 4 5pm parses as just 5pm).
+    Also fixed "1-8pm" and other ranges which were not working if there were no spaces before and after the '-'.
+
+1 Nov 2006 - darshana
+  
+    Strings like "Thursday?" were not parsed. Changes made to the regex to
+    allow special characters to be parsed after weekday names and month names.
+
+24 Oct 2006 - bear
+
+    0.8.0 release
+    Setting trunk to 0.8.1
+
+    Merged in changes from Darshana's change_parse_to_return_enum branch
+
+    This is a big change in that instead of a simple True/False that is
+    returned to show if the date is valid or not, Parse() now returns
+    a "masked" value that represents what is valid:
+
+        date = 1
+        time = 2
+
+    so a value of zero means nothing was parseable/valid and a value of
+    3 means both were parsed/valid.
+
+20 Oct 2006 - darshana
+
+   Implemented the CalculateDOWDelta() method in parsedatetime.py
+   Added a new flag CurrentDOWParseStyle in parsedatetime_consts.py for the current DOW.
+
+19 Oct 2006 - bear
+
+    Changed birthday epoch to be a constant defined in parsedatetime_const
+    Lots of little cosmetic code changes
+    Removed the individual files in the docs/ folder
+    Added dist, build and parsedatetime-egg.info to svn:ignore
+
+17 Oct 2006 - darshana
+
+    Added birthday epoch constraint
+    Fixed date parsing. 3-digit year not allowed now.
+    Fixed the unit tests too to either have yy or yyyy.
+
+9 Oct 2006 - bear
+
+    0.7.4 release
+    Setting trunk to 0.7.5
+
+5 Oct 2006 - darshana
+
+    Fixed "ago" bug -- Issue #7 http://code.google.com/p/parsedatetime/issues/detail?id=7
+    
+    Fixed bug where default year for dates that are in the future get next year, not 
+    current year -- Issue #8 http://code.google.com/p/parsedatetime/issues/detail?id=8
+
+    Fixed strings like "1 week ago", "lunch tomorrow"
+    
+25 Sep 2006 - bear
+
+    0.7.3 release
+    Setting trunk to 0.7.4
+
+13 Sep 2006 - bear
+
+    Added Darshana as an author and updated the copyright text
+    Added "eom" and "eoy" tests
+
+11 Sep 2006 - bear
+
+    Fixed a subtle dictionary reference bug in buildSources() that was causing
+    any source related modifier to not honor the day, month or year.  It only
+    started being seen as I was working on adding "eod" support as a 'true'
+    modifier instead.
+
+    Found another subtle bug in evalModifier() if the modifier was followed
+    by the day of the week - the offset math was not consistent with the
+    other day-of-week offset calculations.
+
+    Worked on converting "eod" support from the special case modifier to work
+    as a true modifier.
+
+    The following is now supported:
+        eod tomorrow
+        tomorrow eod
+        monday eod
+        eod monday
+        meeting eod
+        eod meeting
+
+10 Sep 2006 - bear
+
+    Added a sub-range test in response to Issue #6 http://code.google.com/p/parsedatetime/issues/detail?id=6
+
+    Not that it works, just wanted to start the process.
+
+6 Sep 2006 - bear
+
+    Alan Green filed Issue #5 http://code.google.com/p/parsedatetime/issues/detail?id=5
+
+    In it he asked for support for Australian date formats "dd-mm-yyyy"
+
+    This is the first attempt at supporting the parsing of dates where the order of the
+    day, month and year can vary.  I adjusted the parseDate() code to be data driven
+    and added a dp_order list to the Constants() class that is either initialized to the
+    proper order by the pdtLocale classes or the order is determined by parsing the ICU
+    short date format to figure out what the date separator is and then to find out what
+    order it's in.
+
+    I also added a TestAustralianLocale.py as a starting point for tests.
+
+    Attaching a diff of this code to the Issue so he can test it.
+
+1 Sep 2006 - bear
+
+    0.7.2 release
+
+31 Aug 2006 - bear
+
+    Fixed two bugs found by Darshana today.
+
+    The first is one of those forehead-slapping bugs that you see as
+    being so obvious *after* the fact :)  The problem is with Inc()
+    for months - if you increment from a month with the day set to
+    a value that is past the end of the month for the new month you
+    get an error.  For example Aug 31 to Sept - Sept doesn't have 31
+    days so it's an invalid date.
+
+    The second is with the code that identifies modifiers when you have
+    multiple "chunks" of text.  Darshana describes the bug this way:
+
+      "if you have "flight from SFO at 4pm" i.e. if you have a
+       non-date/time string before a modifier, then the invalidflag
+       is set"
+
+    I provided the Inc() fix and Darshana the modifier fix.
+
+    I also added a new unit test for the Inc() bug and also a new test
+    file for the modifier bug: TestPhrases.py
+
+29 Aug 2006 - bear
+
+    Updated ez_setup.py to latest version v0.6c1 and removed
+    hard-coded version in setup.py for setuptools
+
+25 Aug 2006 - bear
+
+    Moved the error tests into a single TestErrors.py
+    Added two tests for days - it figures out what the
+    previous day and next day is from the weekday the
+    test is run on
+
+24 Aug 2006 - bear
+
+    Issue #2 http://code.google.com/p/parsedatetime/issues/detail?id=2
+
+    Turns out that ICU works with weekdays in Sun..Sat order
+    and that Python uses Mon..Sun order.  Fixed PyICU locale code to
+    build the internal weekday list to be Python Style.
+
+    Bumping version to 0.7.1 as this is causing Chandler bug 6567
+    http://bugzilla.osafoundation.org/show_bug.cgi?id=6567

@@ -1,0 +1,137 @@
+7EST 8EDT                        (\d)(edt|est|cdt)\s+
+4 digits                         (\d{4})
+2 or 4 digits                    (\d{4}|\d{2})
+2 digits                         (\d{2})
+1 or 2 digits                    (\d{1,2})
+hour part of absolute timezone   (?:[0-1][0-9]|2[0-3])
+minute part of absolute timezone (?:[0-5][0-9])
+absolute timezone +07 +07:00 -07 (GMT)
+    (?:\s*([+-](?:<hz><mz>|<hz>:<mz>|<hz>))(?:\s*\('(?:\[^)]+\))?)
+
+now, today
+yesterday, tomorrow
++# -#
+noon, midnight, morning, evening, lunch
+at, of, on, future, later, past, next, prev, previous, prior
+
+<qty> <unit> <modifier> <reference point>
+
+units:    hour, minute, second, day, week, month, year
+modifier: from, before, after, prior, prev, previous
+
+(?P<qty>\d+)\s+(?P<units>[hour|minute|second|day|week|month|year]+)
+(?P<modifier>[from|before|after|ago|prior]+)\s+
+
+5 minutes from now
+in 5 minutes
+5 minutes ago
+1 hour from noon
+last week
+second week from tomorrow
+3 hrs from next monday
+third monday in may
+
+date parsing idea
+
+    as text is typed start breaking it into chunks based on the characters:
+
+    given this input: 2 Feb 2004
+
+    first is '2'   - it's a number so flag as literal
+    next is space  - that's a separator so call previous chunk processing
+                   - that means the 2 is "tagged" as literal/value/2
+    next is F      - label flag or keyword and it's relation to the previous
+                     chunk of literal/value implies a unit qualifier
+                     so search for any that start with F - possible offering
+                     a completion prompt for 'Feb' or 'from'
+    next is e      - matches potential list for Feb so offer that as completion
+    next is b      - matches potential list for Feb so ....
+    next is space  - finish tagging 'Feb' chunk, mark it as literal/value of month
+                     also note that we have a pattern of literal/value/2 and 
+                     literal/value/month/Feb - so tag those two as a 'date' chunk
+                     possible offer completion of full date assuming current year
+    next is 2      - it's a number so flag as literal - prior chunk is tagged
+                     as date so check for year and offer completion
+                and so on
+            
+    with input of 2 am
+
+    2     - literal value
+    space - mark previous as literal/value/2
+    a     - mark as label/keyword - matches pattern for am/pm so offer that
+    m     - mark as label/keyword - matches for am/pm so offer completion 
+            and since prior chunk is literal/value/2 flag this chunk as 'time' chunk
+
+
+Possible blog postings:
+
+
+note: posted the first part in my blog so I deleted the text from here
+
+=== Thoughts on Chunking the human text into parseable bits
+
+After looking at the previously mentioned date and time parsing routines, it seemed to me that they all were very good at parsing specific problem domains. Now that seems obvious to most people as it did to me, but then I asked myself this question:
+
+  '''What would happen if you took some of the basic tenants of grammar parsing and used that as a pre-filter to the date/time parsing problem?'''
+
+The answer came to me as an exciting _aha_ moment. It seemed to show that you could segment the text into chunks that could be handled by specialized parsing code.  The chunks then could be parsed based on their relationships into a date/time result.
+
+Now I'm sure someone out in the intarnet will email me a reference to a paper or article that has that same thought and shows how to do it in haskell in under 20 lines, but since I don't have an academic background and all of my parsing training is self-taught, I'm excited to have figured it out for myself :)
+
+Now to see if it the theory holds up well when implemented.  
+
+First I worked out on paper the chunks required for the following three test items:
+
+  1. in 5 minutes
+  2. one week from monday
+  3. next thursday
+
+Now I know that three items hardly a statistical sample makes, but the three rather simple test items will break all of the open-source parsers I've found to date. If you know of any that will do the job, please send me the links - I would love to compare notes.
+
+The details of the steps to identify the different chunks is as follows:
+
+  1. Identify any "specials". Specials are words that have little-to-no semantic information but hinder the chunk parsing.  For example, the words I currently identify as special: "at", "of", "on", and "in".
+
+  2. Spot the reference chunk.  A reference chunk is the item that serves as the "point of reference" from which all offsets are based.  Most text items have an implied reference point of the current date/time but text items that have something like "from monday" or "from next tuesday" have explicit reference points.
+
+  3. Determine the offset direction.  All offsets are from the reference point in either a past or future direction.  This information is determined by spotting offset keywords, such as "at", "of", "on", "future", "later", "past", "next", "prev", "previous" and "prior".
+
+Once the above steps have given you the chunks, the next step is to go thru each chunk and parse it according to it's own unique requirements.
+
+=== Thoughts on parsing "twenty five" into the value 25
+
+Now most people, including myself, just started snickering and thinking to themselves: "oh heck, that's *easy*".  Yep - that one is.  Now try parsing this:
+
+  Twenty five thousand four hundred and eleven
+
+Not laughing any more are ya! (and if you are, please send me code! ;)
+
+First pass would be to remove any empty words ("and", "or") and then to start walking thru the text in reverse and storing the items into a stack. The trigger for when a phrase is pushed onto the stack is when you hit a units word.  For the sample the unit-word triggers are, in right to left order: "hundred" and "thousand"
+
+After empty word removal:
+
+  Twenty five thousand four hundred eleven
+
+After the first pass of looking for unit-words:
+
+  [eleven]
+  [four hundred]
+  [Twenty five thousand]
+
+Now that nicely breaks up the phrases and also includes units for converting the values.
+
+Another test:
+
+  Two hundred
+
+I'll skip the empty word step and show the unit-word result:
+
+  [Two hundred]
+
+That simple example also worked and as far as I can tell, as long as you "require" that phrases have to have the proper unit-words, it will always work.  Here is an example of text that doesn't follow the "always have unit-words" rule:
+
+  twenty five forty three
+
+Humans reading the above can understand and know that the value is 2543.  But I think that is a context-land-mine area for a computer parser. The method I outlined above would not handle this input at all simply because there are no unit words to give the parser hints at the value to give each word's numeric value.  It would simply convert them to numbers and then add them all up and spit out the value of 68 (25 + 5 + 40 + 3).
+
+        

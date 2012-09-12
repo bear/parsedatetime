@@ -1,0 +1,56 @@
+http://wiki.osafoundation.org/script/getIrcTranscript.cgi?channel=chandler&date=20070518&startTime=1249
+
+DarshanaC so how are we supposed to change pdt
+bear hehehe - I don't quite know just yet :)
+DarshanaC hmmm
+bear but I think I will have to add some helper functions
+bear that can take the locale info and scan the text being passed in
+bear to identify any date related locale clues
+DarshanaC hmmm
+DarshanaC can we pass the locale as an input to parse() alongwith the text
+bear one problem is that I think big chunks of text are being passed to pdt to let it find the dates
+DarshanaC that is locale info is present
+bear yea - pdt will need to change so that it caches any pdc objects that are created
+bear I think a new entry point will be useful
+bear give it a new block of text and have it scan for date/time possibilities
+bear and then return a list of them with the parsed results
+* DarshanaC nods
+bear that could be where the locale work can be handled - that way the core code doesn't have to change much
+DarshanaC true
+bear and it could just be a simple list of words that can be date/time along with position, then make a pass to gather them into groups based on distance to each other
+bear set the distance threshold to something like 4 or 5 words and it may give a nice natural distribution
+bear would need to test that to find a good threshold value
+DarshanaC this is going to be complicated
+bear yep - for sure
+DarshanaC :(
+bear it borders on NLP
+bear I think we could make do with a brute force item first
+bear get a list of patterns that fit 80%
+bear thinks like <month abbr> ## or year
+bear and then just add 2-3 words in front and behind
+bear do a quick check for overlaps and then make that the list
+DarshanaC we have to make sure that we dont mistake date/time ranges for 2 sperate date/times
+bear then the locale code can loop over the text for the system locale and english - if a hit is found go with it
+bear yea 
+bear but that can be part of the overlap check
+DarshanaC ok
+bear if the range trigger is found inbetween two groups then just group them
+DarshanaC hmm
+bear let me get some test code for this in the repository
+bear that way you don't have to spend a lot of time on it (unless you want to :)
+bear and then you can test it by trying to fit it into the bug fix
+DarshanaC I dont know how i am going to get time to work on this.. I am defending my MS on 05/24 and starting my new job on 05/29
+DarshanaC have to work on this on weekends :)
+bear no worries - I can do the up front part - that way you can integrate it
+DarshanaC ok
+bear yea - this doesn't have to be done next week
+bear just before preview ships :)
+DarshanaC when is that?
+bear and that won't be for a month
+DarshanaC ok
+DarshanaC will talk to you.. need to have lunch now
+DarshanaC later
+bear same here - later!
+DarshanaC bye
+* bear waves
+* bear copies convesation into a bug note

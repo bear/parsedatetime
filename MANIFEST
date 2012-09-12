@@ -1,0 +1,8 @@
+README.txt
+LICENSE.txt
+INSTALL.txt
+AUTHORS.txt
+THANKS.txt
+setup.py
+parsedatetime/__init__.py
+parsedatetime/pdt_locales.py
