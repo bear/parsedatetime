@@ -8,15 +8,18 @@ import parsedatetime as pdt
 
   # a special compare function is used to allow us to ignore the seconds as
   # the running of the test could cross a minute boundary
-def _compareResults(result, check, debug=False):
+def _compareResults(result, check, dateOnly=False, debug=False):
     target, t_flag = result
     value,  v_flag = check
 
     t_yr, t_mth, t_dy, t_hr, t_min, _, _, _, _ = target
     v_yr, v_mth, v_dy, v_hr, v_min, _, _, _, _ = value
 
-    return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
-            (t_hr == v_hr) and (t_min == v_min)) and (t_flag == v_flag)
+    if dateOnly:
+        return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy)) and (t_flag == v_flag)
+    else:
+        return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
+                (t_hr == v_hr) and (t_min == v_min)) and (t_flag == v_flag)
 
 class test(unittest.TestCase):
     def setUp(self):
@@ -111,3 +114,19 @@ class test(unittest.TestCase):
 
         self.assertTrue(_compareResults(self.cal.parse('eoy',         start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('meeting eoy', start), (target, 2)))
+
+    def testLastPhrases(self):
+        for day in (11, 12, 13, 14, 15, 16, 17):
+            start  = datetime.datetime(2012, 11, day, 9, 0, 0)
+
+            (yr, mth, dy, _, _, _, wd, yd, isdst) = start.timetuple()
+
+            n = 4 - wd
+            if n >= 0:
+                n -= 7
+
+            target = start + datetime.timedelta(days=n)
+
+            #print '*********', start, target, n, self.cal.parse('last friday', start.timetuple())
+
+            self.assertTrue(_compareResults(self.cal.parse('last friday', start.timetuple()), (target.timetuple(), 1), dateOnly=True))
