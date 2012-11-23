@@ -1217,6 +1217,9 @@ class Calendar:
         @return: tuple of: modified C{sourceTime} and the result flag
         """
 
+        # patch to address an issue with "Aug. 25" instead of "Aug 25" without breaking "mm.dd.yyyy"
+        datetimeString = re.sub(r'(\w)(\.)(\s)', r'\1\3', datetimeString)
+        
         if sourceTime:
             if isinstance(sourceTime, datetime.datetime):
                 log.debug('coercing datetime to timetuple')

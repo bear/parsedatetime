@@ -104,6 +104,7 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('Aug 25 2006',     start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('25 August 2006',  start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('25 Aug 2006',     start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('Aug. 25 2006',    start), (target, 1)))
 
         if self.mth > 8 or (self.mth == 8 and self.dy > 25):
             target = datetime.datetime(self.yr + 1, 8, 25,  self.hr, self.mn, self.sec).timetuple()
