@@ -100,8 +100,10 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('8/25/06',         start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('August 25, 2006', start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug 25, 2006',    start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('Aug. 25, 2006',   start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('August 25 2006',  start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug 25 2006',     start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('Aug. 25 2006',    start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('25 August 2006',  start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('25 Aug 2006',     start), (target, 1)))
 
@@ -115,6 +117,7 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('08/25',     start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('August 25', start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug 25',    start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('Aug. 25',   start), (target, 1)))
 
 
     def testLeapDays(self):
@@ -155,8 +158,10 @@ class test(unittest.TestCase):
 
         self.assertTrue(_compareResults(self.cal.parse('August 22nd, 2008', start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug 22nd, 2008',    start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('Aug. 22nd, 2008',   start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('August 22nd 2008',  start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug 22nd 2008',     start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('Aug. 22nd 2008',    start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('22nd August 2008',  start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('22nd Aug 2008',     start), (target, 1)))
 
@@ -173,15 +178,19 @@ class test(unittest.TestCase):
 
         self.assertTrue(_compareResults(self.cal.parse('August 23rd, 2008', start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug 23rd, 2008',    start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('Aug. 23rd, 2008',   start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('August 23rd 2008',  start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug 23rd 2008',     start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('Aug. 23rd 2008',    start), (target, 1)))
 
         target = datetime.datetime(2008, 8, 25,  self.hr, self.mn, self.sec).timetuple()
 
         self.assertTrue(_compareResults(self.cal.parse('August 25th, 2008', start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug 25th, 2008',    start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('Aug. 25th, 2008',   start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('August 25th 2008',  start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug 25th 2008',     start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('Aug. 25th 2008',    start), (target, 1)))
 
 
     def testSpecialTimes(self):
