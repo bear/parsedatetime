@@ -1217,6 +1217,8 @@ class Calendar:
         @return: tuple of: modified C{sourceTime} and the result flag
         """
 
+        datetimeString = re.sub(r'(\w)(\.)(\s)', r'\1\3', datetimeString)
+
         if sourceTime:
             if isinstance(sourceTime, datetime.datetime):
                 log.debug('coercing datetime to timetuple')
