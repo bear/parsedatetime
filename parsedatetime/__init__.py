@@ -934,14 +934,23 @@ class Calendar:
         # This is not required for strings not starting with digits since the
         # string is enough to calculate the sourceTime
         if chunk2 != '':
+
+            currDOWParseStyle = self.ptc.DOWParseStyle
             if offset < 0:
                 m = re.match(digit, chunk2.strip())
                 if m is not None:
                     qty    = int(m.group()) * -1
                     chunk2 = chunk2[m.end():]
                     chunk2 = '%d%s' % (qty, chunk2)
+                else:
+                    # enforce selection of the previous period
+                    # driven by DOWParseStyle and CurrentDOWParseStyle
+                    # FIXME: this is not threadsafe!
+                    self.ptc.DOWParseStyle = -1
 
             sourceTime, flag1 = self.parse(chunk2, sourceTime)
+            # restore DOWParseStyle setting
+            self.DOWParseStyle = currDOWParseStyle
             if flag1 == 0:
                 flag1 = True
             else:
@@ -1101,7 +1110,10 @@ class Calendar:
 
         # Given string is a weekday
         if self.weekdyFlag:
-            (yr, mth, dy, hr, mn, sec, wd, yd, isdst) = now
+            if sourceTime is None:
+                (yr, mth, dy, hr, mn, sec, wd, yd, isdst) = now
+            else:
+                (yr, mth, dy, hr, mn, sec, wd, yd, isdst) = sourceTime
 
             start = datetime.datetime(yr, mth, dy, hr, mn, sec)
             wkdy  = self.ptc.WeekdayOffsets[s]
