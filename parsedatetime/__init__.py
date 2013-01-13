@@ -25,14 +25,19 @@ import email.utils
 
 from . import pdt_locales
 
+# as a library, do *not* setup logging
+# see http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
+# Set default logging handler to avoid "No handler found" warnings.
+import logging
+try:  # Python 2.7+
+    from logging import NullHandler
+except ImportError:
+    class NullHandler(logging.Handler):
+        def emit(self, record):
+            pass
 
-log = logging.getLogger()
-echoHandler   = logging.StreamHandler()
-echoFormatter = logging.Formatter('%(levelname)-8s %(message)s')
-log.addHandler(echoHandler)
-# log.addHandler(logging.NullHandler())
-
-log.setLevel(logging.DEBUG)
+log = logging.getLogger(__name__)
+log.addHandler(NullHandler())
 
 pdtLocales = { 'icu':   pdt_locales.pdtLocale_icu,
                'en_US': pdt_locales.pdtLocale_en,
