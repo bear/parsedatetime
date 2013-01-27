@@ -1,4 +1,3 @@
-
 """
 parsedatetime
 
@@ -1566,6 +1565,7 @@ class Calendar:
             m = m % 12      # get remaining months
 
             if mi < 0:
+                y *= -1                 # otherwise negative mi will give future dates                                
                 mth = mth - m           # sub months from start month
                 if mth < 1:             # cross start-of-year?
                     y   -= 1            #   yes - decrement year
