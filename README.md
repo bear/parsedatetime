@@ -18,7 +18,7 @@ Using parsedatetime
 
 The simple example of how to use parsedatetime is:
 
-    import parsedatetime as pdt
+    import parsedatetime.parsedatetime as pdt
 
     cal = pdt.Calendar()
 
