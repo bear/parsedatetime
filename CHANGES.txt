@@ -1,4 +1,5 @@
 03 Mar 2013 - bear
+    bumped version to 1.1.1
 
     Ugh - debug log caused an error during formatting
     Issue 10 https://github.com/bear/parsedatetime/issues/10

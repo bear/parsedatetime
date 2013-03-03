@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-VERSION = '1.1.0'
+VERSION = '1.1.1'
 desc    = """Parse human-readable date/time text.
 Python 2.6+ is required for parsedatetime v1.+
 The simple example of how to use parsedatetime is:
