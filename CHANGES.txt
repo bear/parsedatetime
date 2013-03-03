@@ -1,3 +1,8 @@
+03 Mar 2013 - bear
+
+    Ugh - debug log caused an error during formatting
+    Issue 10 https://github.com/bear/parsedatetime/issues/10
+
 14 Nov 2012 - bear
 
     Added test for "last friday"

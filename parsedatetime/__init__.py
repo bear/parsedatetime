@@ -1011,7 +1011,7 @@ class Calendar:
         # Given string date is a RFC822 date
         if sourceTime is None:
             sourceTime = _parse_date_rfc822(s)
-            log.debug('attempt to parse as rfc822 - %s' % sourceTime)
+            log.debug('attempt to parse as rfc822 - %s' % str(sourceTime))
 
             if sourceTime is not None:
                 (yr, mth, dy, hr, mn, sec, wd, yd, isdst, _) = sourceTime
