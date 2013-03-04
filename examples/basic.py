@@ -20,12 +20,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import parsedatetime.parsedatetime as pdt
-import parsedatetime.parsedatetime_consts as pdc
+import parsedatetime as pdt
 
 # create an instance of Constants class so we can override some of the defaults
 
-c = pdc.Constants()
+c = pdt.Constants()
 
 c.BirthdayEpoch = 80    # BirthdayEpoch controls how parsedatetime
                         # handles two digit years.  If the parsed

@@ -206,7 +206,7 @@ class Calendar:
         Default constructor for the L{Calendar} class.
 
         @type  constants: object
-        @param constants: Instance of the class L{parsedatetime_consts.Constants}
+        @param constants: Instance of the class L{Constants}
 
         @rtype:  object
         @return: L{Calendar} instance
