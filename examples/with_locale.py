@@ -2,8 +2,8 @@
 Examples of how to use parsedatetime with locale information provided.
 
 Locale information can come from either PyICU (if available) or from
-the more basic internal locale classes that are included with
-parsedatetime_consts.py
+the more basic internal locale classes that are included in the
+`Constants` class.
 """
 
 __license__ = """
@@ -24,12 +24,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import parsedatetime.parsedatetime as pdt
-import parsedatetime.parsedatetime_consts as pdc
+import parsedatetime as pdt
 
 # create an instance of Constants class so we can specify the locale
 
-c = pdc.Constants("en")
+c = pdt.Constants("en")
 p = pdt.Calendar(c)
 
 # print out the values from Constants to show how the locale information
@@ -55,7 +54,7 @@ result = p.parse("March 24th")
 # create an instance of Constants class and force it to no use PyICU
 # and to use the internal Spanish locale class
 
-c = pdc.Constants(localeID="es", usePyICU=False)
+c = pdt.Constants(localeID="es", usePyICU=False)
 p = pdt.Calendar(c)
 
 result = p.parse("Marzo 24")
