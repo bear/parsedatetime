@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-VERSION = '1.1.1'
+VERSION = '1.1.2'
 desc    = """Parse human-readable date/time text.
 Python 2.6+ is required for parsedatetime v1.+
 The simple example of how to use parsedatetime is:
@@ -19,8 +19,8 @@ setup(name='parsedatetime',
         version=VERSION, 
         author='Mike Taylor',
         author_email='bear@code-bear.com',
-        url='http://code-bear.com/code/parsedatetime/',
-        download_url='http://code-bear.com/code/parsedatetime/parsedatetime-%s.tar.gz' % VERSION,
+        url='http://github.com/bear/parsedatetime/',
+        download_url='https://pypi.python.org/pypi/parsedatetime/',
         description='Parse human-readable date/time text.',
         license='http://www.apache.org/licenses/LICENSE-2.0',
         packages=['parsedatetime'],
