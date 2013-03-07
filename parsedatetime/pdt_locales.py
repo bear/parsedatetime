@@ -195,7 +195,7 @@ class pdtLocale_icu(pdtLocale_base):
             s = self.timeFormats['short']
 
             self.usesMeridian = 'a' in s
-            slef.uses24       = 'H' in s
+            self.uses24       = 'H' in s
 
               # '11:45 AM' or '11:45'
             s = o.format(datetime.datetime(2003, 10, 30, 11, 45))
