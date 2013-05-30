@@ -15,6 +15,8 @@ __contributors__ = [ 'Darshana Chhajed',
                      'Bernd Zeimetz (bzed@debian.org)',
                    ]
 
+from itertools import imap,chain
+
 import re
 import time
 import datetime
@@ -300,27 +302,29 @@ class Calendar:
 
         start  = datetime.datetime(yr, mth, dy, hr, mn, sec)
         target = start
+        realunit = next((key for key, values in self.ptc.units.items() if any(imap(units.__contains__, values))), None)
 
-        if units.startswith('y'):
+
+        if realunit == 'years':
             target        = self.inc(start, year=qty)
             self.dateFlag = 1
-        elif units.endswith('th') or units.endswith('ths'):
+        elif realunit == 'months':
             target        = self.inc(start, month=qty)
             self.dateFlag = 1
         else:
-            if units.startswith('d'):
+            if realunit == 'days':
                 target        = start + datetime.timedelta(days=qty)
                 self.dateFlag = 1
-            elif units.startswith('h'):
+            elif realunit == 'hours':
                 target        = start + datetime.timedelta(hours=qty)
                 self.timeFlag = 2
-            elif units.startswith('m'):
+            elif realunit == 'minutes':
                 target        = start + datetime.timedelta(minutes=qty)
                 self.timeFlag = 2
-            elif units.startswith('s'):
+            elif realunit == 'seconds':
                 target        = start + datetime.timedelta(seconds=qty)
                 self.timeFlag = 2
-            elif units.startswith('w'):
+            elif realunit == 'weeks':
                 target        = start + datetime.timedelta(weeks=qty)
                 self.dateFlag = 1
 
@@ -711,6 +715,7 @@ class Calendar:
         @rtype:  tuple
         @return: tuple of: remaining text and the modified sourceTime
         """
+
         offset = self.ptc.Modifiers[modifier]
 
         if sourceTime is not None:
@@ -918,6 +923,7 @@ class Calendar:
         @rtype:  tuple
         @return: tuple of: remaining text and the modified sourceTime
         """
+
         offset = self.ptc.Modifiers[modifier]
         digit  = r'\d+'
 
@@ -1072,7 +1078,7 @@ class Calendar:
 
             self.meridianFlag = False
 
-          # Given string is in the format HH:MM(:SS)
+        # Given string is in the format HH:MM(:SS)
         if self.timeStdFlag:
             if sourceTime is None:
                 (yr, mth, dy, hr, mn, sec, wd, yd, isdst) = now
@@ -1293,6 +1299,47 @@ class Calendar:
                         parseStr = s
 
             if parseStr == '':
+                # Quantity + Units
+                m = self.ptc.CRE_UNITS.search(s)
+                if m is not None:
+                    self.unitsFlag = True
+                    if (m.group('qty') != s):
+                        # capture remaining string
+                        parseStr = m.group('qty')
+                        chunk1   = s[:m.start('qty')].strip()
+                        chunk2   = s[m.end('qty'):].strip()
+
+                        if chunk1[-1:] == '-':
+                            parseStr = '-%s' % parseStr
+                            chunk1   = chunk1[:-1]
+
+                        s    = '%s %s' % (chunk1, chunk2)
+                        flag = True
+                    else:
+                        parseStr = s
+
+            if parseStr == '':
+                # Quantity + Units
+                m = self.ptc.CRE_QUNITS.search(s)
+                if m is not None:
+                    self.qunitsFlag = True
+
+                    if (m.group('qty') != s):
+                        # capture remaining string
+                        parseStr = m.group('qty')
+                        chunk1   = s[:m.start('qty')].strip()
+                        chunk2   = s[m.end('qty'):].strip()
+
+                        if chunk1[-1:] == '-':
+                            parseStr = '-%s' % parseStr
+                            chunk1   = chunk1[:-1]
+
+                        s    = '%s %s' % (chunk1, chunk2)
+                        flag = True
+                    else:
+                        parseStr = s 
+
+            if parseStr == '':
                 valid_date = False
                 for match in self.ptc.CRE_DATE3.finditer(s):
                     # to prevent "HH:MM(:SS) time strings" expressions from triggering
@@ -1348,47 +1395,6 @@ class Calendar:
                         flag     = True
                     else:
                         parseStr = s
-
-            if parseStr == '':
-                # Quantity + Units
-                m = self.ptc.CRE_UNITS.search(s)
-                if m is not None:
-                    self.unitsFlag = True
-                    if (m.group('qty') != s):
-                        # capture remaining string
-                        parseStr = m.group('qty')
-                        chunk1   = s[:m.start('qty')].strip()
-                        chunk2   = s[m.end('qty'):].strip()
-
-                        if chunk1[-1:] == '-':
-                            parseStr = '-%s' % parseStr
-                            chunk1   = chunk1[:-1]
-
-                        s    = '%s %s' % (chunk1, chunk2)
-                        flag = True
-                    else:
-                        parseStr = s
-
-            if parseStr == '':
-                # Quantity + Units
-                m = self.ptc.CRE_QUNITS.search(s)
-                if m is not None:
-                    self.qunitsFlag = True
-
-                    if (m.group('qty') != s):
-                        # capture remaining string
-                        parseStr = m.group('qty')
-                        chunk1   = s[:m.start('qty')].strip()
-                        chunk2   = s[m.end('qty'):].strip()
-
-                        if chunk1[-1:] == '-':
-                            parseStr = '-%s' % parseStr
-                            chunk1   = chunk1[:-1]
-
-                        s    = '%s %s' % (chunk1, chunk2)
-                        flag = True
-                    else:
-                        parseStr = s 
 
             if parseStr == '':
                 # Weekday
@@ -1483,6 +1489,7 @@ class Calendar:
                       (self.dayStrFlag, self.modifierFlag, self.modifier2Flag, self.unitsFlag, self.qunitsFlag))
 
             # evaluate the matched string
+
             if parseStr != '':
                 if self.modifierFlag == True:
                     t, totalTime = self._evalModifier(parseStr, chunk1, chunk2, totalTime)
@@ -1505,7 +1512,6 @@ class Calendar:
 
                 elif self.modifier2Flag == True:
                     totalTime, invalidFlag = self._evalModifier2(parseStr, chunk1, chunk2, totalTime)
-
                     if invalidFlag == True:
                         self.dateFlag = 0
                         self.timeFlag = 0
@@ -1519,7 +1525,6 @@ class Calendar:
             totalTime     = time.localtime()
             self.dateFlag = 0
             self.timeFlag = 0
-
         return (totalTime, self.dateFlag + self.timeFlag)
 
 
@@ -1728,7 +1733,7 @@ class Constants(object):
         # week +1                       F
 
         self.CurrentDOWParseStyle = False
-
+        
         if self.usePyICU:
             self.locale = pdtLocales['icu'](self.localeID)
 
@@ -2035,4 +2040,5 @@ class Constants(object):
                               values['hr'], values['mn'], values['sec'], wd, yd, isdst )
 
         return sources
+
 
