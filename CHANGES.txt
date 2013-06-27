@@ -1,3 +1,12 @@
+27 Jun 2013 - bear
+    bumped version to 1.2
+
+04 Mar 2013 - bear
+    bumped version to 1.1.2
+
+    deploy import fix from Antonio Messina
+    also noticed that the urls were pointing to my older site, corrected
+
 03 Mar 2013 - bear
     bumped version to 1.1.1
 

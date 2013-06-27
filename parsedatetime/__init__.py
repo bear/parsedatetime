@@ -9,13 +9,11 @@ Requires Python 2.6 or later
 __author__       = 'Mike Taylor (bear@code-bear.com)'
 __copyright__    = 'Copyright (c) 2004 Mike Taylor'
 __license__      = 'Apache v2.0'
-__version__      = '1.1.2'
+__version__      = '1.2'
 __contributors__ = [ 'Darshana Chhajed',
                      'Michael Lim (lim.ck.michael@gmail.com)',
                      'Bernd Zeimetz (bzed@debian.org)',
                    ]
-
-from itertools import imap,chain
 
 import re
 import time
@@ -24,12 +22,15 @@ import calendar
 import logging
 import email.utils
 
+from itertools import imap, chain
+
 from . import pdt_locales
 
 # as a library, do *not* setup logging
 # see http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
 # Set default logging handler to avoid "No handler found" warnings.
 import logging
+
 try:  # Python 2.7+
     from logging import NullHandler
 except ImportError:
