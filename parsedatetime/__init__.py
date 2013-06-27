@@ -301,10 +301,16 @@ class Calendar:
 
         (yr, mth, dy, hr, mn, sec, _, _, _) = source
 
-        start  = datetime.datetime(yr, mth, dy, hr, mn, sec)
-        target = start
-        realunit = next((key for key, values in self.ptc.units.items() if any(imap(units.__contains__, values))), None)
+        start    = datetime.datetime(yr, mth, dy, hr, mn, sec)
+        target   = start
+        #realunit = next((key for key, values in self.ptc.units.items() if any(imap(units.__contains__, values))), None)
+        realunit = units
+        for key, values in self.ptc.units.items():
+            if units in values:
+                realunit = key
+                break
 
+        log.debug('units %s --> realunit %s' % (units, realunit))
 
         if realunit == 'years':
             target        = self.inc(start, year=qty)
@@ -840,6 +846,7 @@ class Calendar:
         if not flag:
             m = self.ptc.CRE_WEEKDAY.match(unit)
             if m is not None:
+                log.debug('CRE_WEEKDAY matched')
                 wkdy          = m.group()
                 self.dateFlag = 1
 
@@ -867,6 +874,7 @@ class Calendar:
         if not flag:
             m = self.ptc.CRE_TIME.match(unit)
             if m is not None:
+                log.debug('CRE_TIME matched')
                 self.modifierFlag = False
                 (yr, mth, dy, hr, mn, sec, wd, yd, isdst), _ = self.parse(unit)
 
@@ -877,16 +885,23 @@ class Calendar:
             else:
                 self.modifierFlag = False
 
+                log.debug('check for modifications to source time')
+
                 # check if the remaining text is parsable and if so,
                 # use it as the base time for the modifier source time
                 t, flag2 = self.parse('%s %s' % (chunk1, unit), sourceTime)
+
+                log.debug('flag2 = %s t = %s' % (flag2, t))
 
                 if flag2 != 0:
                     sourceTime = t
 
                 sources = self.ptc.buildSources(sourceTime)
 
+                log.debug('looking for %s in %s' % (modifier, sources))
+
                 if modifier in sources:
+                    log.debug('modifier found in sources')
                     sourceTime    = sources[modifier]
                     flag          = True
                     self.timeFlag = 2
@@ -902,6 +917,8 @@ class Calendar:
             chunk2 = '%s %s' % (unit, chunk2)
 
         self.modifierFlag = False
+
+        log.debug('returning chunk = "%s" and sourceTime = %s' % (chunk2, sourceTime))
 
         #return '%s %s' % (chunk1, chunk2), sourceTime
         return '%s' % chunk2, sourceTime
@@ -929,6 +946,7 @@ class Calendar:
         digit  = r'\d+'
 
         self.modifier2Flag = False
+        log.debug("modifier2 [%s] chunk1 [%s] chunk2 [%s] sourceTime %s" % (modifier, chunk1, chunk2, sourceTime))
 
         # If the string after the negative modifier starts with digits,
         # then it is likely that the string is similar to ' before 3 days'
@@ -1212,6 +1230,26 @@ class Calendar:
 
         return sourceTime
 
+    def _UnitsTrapped(self, s, m, key):
+        # check if a day suffix got trapped by a unit match
+        # for example Dec 31st would match for 31s (aka 31 seconds)
+        # Dec 31st
+        #     ^ ^
+        #     | +-- m.start('units')
+        #     |     and also m2.start('suffix')
+        #     +---- m.start('qty')
+        #           and also m2.start('day')
+        m2 = self.ptc.CRE_DAY2.search(s)
+        if m2 is not None:
+            t = '%s%s' % (m2.group('day'), m.group(key))
+            if ((m.start(key)   == m2.start('suffix')) and
+                (m.start('qty') == m2.start('day')) and
+                (m.group('qty') == t)):
+                return True
+            else:
+                return False
+        else:
+            return False
 
     def parse(self, datetimeString, sourceTime=None):
         """
@@ -1303,42 +1341,50 @@ class Calendar:
                 # Quantity + Units
                 m = self.ptc.CRE_UNITS.search(s)
                 if m is not None:
-                    self.unitsFlag = True
-                    if (m.group('qty') != s):
-                        # capture remaining string
-                        parseStr = m.group('qty')
-                        chunk1   = s[:m.start('qty')].strip()
-                        chunk2   = s[m.end('qty'):].strip()
-
-                        if chunk1[-1:] == '-':
-                            parseStr = '-%s' % parseStr
-                            chunk1   = chunk1[:-1]
-
-                        s    = '%s %s' % (chunk1, chunk2)
-                        flag = True
+                    log.debug('CRE_UNITS matched')
+                    if self._UnitsTrapped(s, m, 'units'):
+                        log.debug('day suffix trapped by unit match')
                     else:
-                        parseStr = s
+                        self.unitsFlag = True
+                        if (m.group('qty') != s):
+                            # capture remaining string
+                            parseStr = m.group('qty')
+                            chunk1   = s[:m.start('qty')].strip()
+                            chunk2   = s[m.end('qty'):].strip()
+
+                            if chunk1[-1:] == '-':
+                                parseStr = '-%s' % parseStr
+                                chunk1   = chunk1[:-1]
+
+                            s    = '%s %s' % (chunk1, chunk2)
+                            flag = True
+                        else:
+                            parseStr = s
 
             if parseStr == '':
                 # Quantity + Units
                 m = self.ptc.CRE_QUNITS.search(s)
                 if m is not None:
-                    self.qunitsFlag = True
-
-                    if (m.group('qty') != s):
-                        # capture remaining string
-                        parseStr = m.group('qty')
-                        chunk1   = s[:m.start('qty')].strip()
-                        chunk2   = s[m.end('qty'):].strip()
-
-                        if chunk1[-1:] == '-':
-                            parseStr = '-%s' % parseStr
-                            chunk1   = chunk1[:-1]
-
-                        s    = '%s %s' % (chunk1, chunk2)
-                        flag = True
+                    log.debug('CRE_QUNITS matched')
+                    if self._UnitsTrapped(s, m, 'qunits'):
+                        log.debug('day suffix trapped by qunit match')
                     else:
-                        parseStr = s 
+                        self.qunitsFlag = True
+
+                        if (m.group('qty') != s):
+                            # capture remaining string
+                            parseStr = m.group('qty')
+                            chunk1   = s[:m.start('qty')].strip()
+                            chunk2   = s[m.end('qty'):].strip()
+
+                            if chunk1[-1:] == '-':
+                                parseStr = '-%s' % parseStr
+                                chunk1   = chunk1[:-1]
+
+                            s    = '%s %s' % (chunk1, chunk2)
+                            flag = True
+                        else:
+                            parseStr = s 
 
             if parseStr == '':
                 valid_date = False
@@ -1507,8 +1553,10 @@ class Calendar:
                             self.timeFlag = tempTimeFlag
                             self.dateFlag = tempDateFlag
 
+                            log.debug('return 1')
                             return (totalTime, self.dateFlag + self.timeFlag)
                         else:
+                            log.debug('return 2')
                             return (totalTime2, self.dateFlag + self.timeFlag)
 
                 elif self.modifier2Flag == True:
@@ -1526,6 +1574,7 @@ class Calendar:
             totalTime     = time.localtime()
             self.dateFlag = 0
             self.timeFlag = 0
+        log.debug('return')
         return (totalTime, self.dateFlag + self.timeFlag)
 
 
@@ -1889,7 +1938,7 @@ class Constants(object):
         self.RE_DAY       = r'''(\s?|^)
                                 (?P<day>(today|tomorrow|yesterday))
                                 (\s?|$|[^0-9a-zA-Z])''' % self.locale.re_values
-        self.RE_DAY2      = r'''(?P<day>\d\d?)|(?P<suffix>%(daysuffix)s)
+        self.RE_DAY2      = r'''(?P<day>\d\d?)(?P<suffix>%(daysuffix)s)?
                              ''' % self.locale.re_values
         # self.RE_TIME      = r'''(\s?|^)
         #                         (?P<time>(morning|breakfast|noon|lunch|evening|midnight|tonight|dinner|night|now))

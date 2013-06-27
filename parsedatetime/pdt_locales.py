@@ -80,13 +80,13 @@ class pdtLocale_base(object):
         self.dp_order = [ 'm', 'd', 'y' ]
 
           # this will be added to re_values later
-        self.units = { 'seconds': [ 'second', 'sec' ],
-                       'minutes': [ 'minute', 'min' ],
-                       'hours':   [ 'hour',   'hr'  ],
-                       'days':    [ 'day',    'dy'  ],
-                       'weeks':   [ 'week',   'wk'  ],
-                       'months':  [ 'month',  'mth' ],
-                       'years':   [ 'year',   'yr'  ],
+        self.units = { 'seconds': [ 'second', 'seconds', 'sec', 's' ],
+                       'minutes': [ 'minute', 'minutes', 'min', 'm' ],
+                       'hours':   [ 'hour',   'hours',   'hr',  'h' ],
+                       'days':    [ 'day',    'days',    'dy',  'd' ],
+                       'weeks':   [ 'week',   'weeks',   'wk',  'w' ],
+                       'months':  [ 'month',  'months',  'mth'      ],
+                       'years':   [ 'year',   'years',   'yr',  'y' ],
                      }
 
           # text constants to be used by later regular expressions
@@ -95,7 +95,7 @@ class pdtLocale_base(object):
                                'rangeseperator': '-',
                                'daysuffix':      'rd|st|nd|th',
                                'meridian':       'am|pm|a.m.|p.m.|a|p',
-                               'qunits':         'h|m|s|d|w|m|y',
+                               'qunits':         'h|m|s|d|w|y',
                                'now':            [ 'now' ],
                              }
 
@@ -367,12 +367,12 @@ class pdtLocale_de(pdtLocale_base):
         self.units['seconds'] = [ 'sekunden', 'sek',  's' ]
         self.units['minutes'] = [ 'minuten',  'min' , 'm' ]
         self.units['hours']   = [ 'stunden',  'std',  'h' ]
-        self.units['days']    = [ 'tage',     't' ]
-        self.units['weeks']   = [ 'wochen',   'w' ]
-        self.units['months']  = [ 'monate' ]  #the short version would be a capital M,
-                                              #as I understand it we can't distinguis
-                                              #between m for minutes and M for months.
-        self.units['years']   = [ 'jahre',    'j' ]
+        self.units['days']    = [ 'tag',  'tage',     't' ]
+        self.units['weeks']   = [ 'wochen',           'w' ]
+        self.units['months']  = [ 'monat', 'monate' ]  #the short version would be a capital M,
+                                                       #as I understand it we can't distinguis
+                                                       #between m for minutes and M for months.
+        self.units['years']   = [ 'jahr', 'jahre',    'j' ]
 
         self.re_values['specials']       = 'am|dem|der|im|in|den|zum'
         self.re_values['timeseperator']  = ':'
