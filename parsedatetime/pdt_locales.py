@@ -148,6 +148,8 @@ class pdtLocale_icu(pdtLocale_base):
         self.icu = None
 
         if pyicu is not None:
+            if localeID is None:
+              localeID = 'en_US'
             self.icu = pyicu.Locale(localeID)
 
         if self.icu is not None:
