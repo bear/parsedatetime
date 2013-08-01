@@ -19,7 +19,9 @@ def _compareResults(result, check):
     return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
             (t_hr == v_hr) and (t_min == v_min)) and (t_flag == v_flag)
 
+
 class test(unittest.TestCase):
+
     def setUp(self):
         self.cal = pdt.Calendar()
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
@@ -49,7 +51,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('1 hours', start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('1 hr',    start), (target, 2)))
 
-
     def testDays(self):
         s = datetime.datetime.now()
         t = s + datetime.timedelta(days=1)
@@ -62,7 +63,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('1days',  start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('1 dy',   start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('1 d',    start), (target, 1)))
-
 
     def testNegativeDays(self):
         s = datetime.datetime.now()
@@ -82,7 +82,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('- 1days',  start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('- 1 dy',   start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('- 1 d',    start), (target, 1)))
-
 
     def testWeeks(self):
         s = datetime.datetime.now()
@@ -108,7 +107,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('1 month',  start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('1 months', start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('1month',   start), (target, 1)))
-
 
     def testYears(self):
         s = datetime.datetime.now()

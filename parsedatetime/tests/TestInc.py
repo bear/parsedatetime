@@ -16,7 +16,9 @@ def _compareResults(target, value):
     return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
             (t_hr == v_hr) and (t_min == v_min)) #and (t_wd == v_wd) and (t_yd == v_yd))
 
+
 class test(unittest.TestCase):
+
     def setUp(self):
         self.cal = pdt.Calendar()
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
@@ -63,7 +65,6 @@ class test(unittest.TestCase):
 
             self.assertTrue(_compareResults(self.cal.inc(s, month=1).timetuple(), t.timetuple()))
 
-
     def testIncYears(self):
         s = datetime.datetime(2006, 1, 1, 12, 0, 0)
         t = datetime.datetime(2007, 1, 1, 12, 0, 0)
@@ -88,6 +89,7 @@ class test(unittest.TestCase):
         s = datetime.datetime(2008, 3, 1, 12, 0, 0)
         t = datetime.datetime(2007, 3, 1, 12, 0, 0)
         self.assertTrue(_compareResults(self.cal.inc(s, year=-1).timetuple(), t.timetuple()))
+
 
 if __name__ == "__main__":
     unittest.main()

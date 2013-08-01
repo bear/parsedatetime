@@ -21,10 +21,10 @@ def _compareResults(result, check):
 
 
 class test(unittest.TestCase):
+
     def setUp(self):
         self.cal = pdt.Calendar()
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
-
 
     def testDates(self):
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
