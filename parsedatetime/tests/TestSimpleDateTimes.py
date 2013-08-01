@@ -25,7 +25,6 @@ class test(unittest.TestCase):
         self.cal = pdt.Calendar()
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
 
-
     def testDays(self):
         s = datetime.datetime.now()
         t = s + datetime.timedelta(days=1)
@@ -54,7 +53,6 @@ class test(unittest.TestCase):
         day = self.cal.ptc.Weekdays[d]
 
         self.assertTrue(_compareResults(self.cal.parse(day, start), (target, 1)))
-
 
     def testTimes(self):
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
@@ -90,7 +88,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('1730',   start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('173000', start), (target, 2)))
 
-
     def testDates(self):
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
         target = datetime.datetime(2006, 8, 25,  self.hr, self.mn, self.sec).timetuple()
@@ -118,7 +115,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('August 25', start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug 25',    start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug. 25',   start), (target, 1)))
-
 
     def testLeapDays(self):
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
@@ -149,8 +145,6 @@ class test(unittest.TestCase):
             self.assertTrue(self.cal.ptc.daysInMonth(i, 2003), dNormal[i - 1])
             self.assertTrue(self.cal.ptc.daysInMonth(i, 2004), dLeap[i - 1])
             self.assertTrue(self.cal.ptc.daysInMonth(i, 2005), dNormal[i - 1])
-
-
 
     def testDaySuffixes(self):
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
@@ -191,7 +185,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('August 25th 2008',  start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug 25th 2008',     start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug. 25th 2008',    start), (target, 1)))
-
 
     def testSpecialTimes(self):
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
@@ -234,7 +227,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('0000',        start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('00:00',       start), (target, 2)))
 
-
     def testNoon(self):
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
         target = datetime.datetime(self.yr, self.mth, self.dy, 12, 0, 0).timetuple()
@@ -249,6 +241,21 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('1200',        start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('12:00',       start), (target, 2)))
 
+    # def testMonths(self):
+    #
+    #     start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
+    #
+    #     target = datetime.datetime(self.yr, self.mth, self.dy, 12, 0, 0).timetuple()
+    #
+    #     self.assertTrue(_compareResults(self.cal.parse('jun',        start), (target, 2)))
+    #     self.assertTrue(_compareResults(self.cal.parse('12:00:00 PM', start), (target, 2)))
+    #     self.assertTrue(_compareResults(self.cal.parse('12:00 PM',    start), (target, 2)))
+    #     self.assertTrue(_compareResults(self.cal.parse('12 PM',       start), (target, 2)))
+    #     self.assertTrue(_compareResults(self.cal.parse('12PM',        start), (target, 2)))
+    #     self.assertTrue(_compareResults(self.cal.parse('12pm',        start), (target, 2)))
+    #     self.assertTrue(_compareResults(self.cal.parse('12p',         start), (target, 2)))
+    #     self.assertTrue(_compareResults(self.cal.parse('1200',        start), (target, 2)))
+    #     self.assertTrue(_compareResults(self.cal.parse('12:00',       start), (target, 2)))
 
 if __name__ == "__main__":
     unittest.main()

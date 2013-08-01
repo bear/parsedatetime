@@ -21,7 +21,9 @@ def _compareResults(result, check, dateOnly=False, debug=False):
         return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
                 (t_hr == v_hr) and (t_min == v_min)) and (t_flag == v_flag)
 
+
 class test(unittest.TestCase):
+
     def setUp(self):
         self.cal = pdt.Calendar()
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
@@ -43,7 +45,6 @@ class test(unittest.TestCase):
 
         self.assertTrue(_compareResults(self.cal.parse('tomorrow eod', start), (target, 3)))
         self.assertTrue(_compareResults(self.cal.parse('eod tomorrow', start), (target, 3)))
-
 
     def testPhraseWithDays_DOWStyle_1_False(self):
         s = datetime.datetime.now()
@@ -80,7 +81,6 @@ class test(unittest.TestCase):
         day = self.cal.ptc.Weekdays[d]
 
         self.assertTrue(_compareResults(self.cal.parse('eod %s' % day, start), (target, 3)))
-
 
     def testEndOfPhrases(self):
         s = datetime.datetime.now()
