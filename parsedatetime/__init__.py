@@ -1882,15 +1882,15 @@ class Constants(object):
                                           ((,)?(\s)?(?P<year>\d\d(\d\d)?))?
                                          )
                                 )''' % self.locale.re_values
-        self.RE_MONTH     = r'''(\s?|^)
+        self.RE_MONTH     = r'''(\s|^)
                                 (?P<month>(
                                            (?P<mthname>(%(months)s|%(shortmonths)s))
                                            (\s?(?P<year>(\d\d\d\d)))?
                                           ))
-                                (\s?|$|[^0-9a-zA-Z])''' % self.locale.re_values
-        self.RE_WEEKDAY   = r'''(\s?|^)
+                                (\s|$|[^0-9a-zA-Z])''' % self.locale.re_values
+        self.RE_WEEKDAY   = r'''(\s|^)
                                 (?P<weekday>(%(days)s|%(shortdays)s))
-                                (\s?|$|[^0-9a-zA-Z])''' % self.locale.re_values
+                                (\s|$|[^0-9a-zA-Z])''' % self.locale.re_values
 
         self.RE_SPECIAL   = r'(?P<special>^[%(specials)s]+)\s+' % self.locale.re_values
         self.RE_UNITS     = r'''(?P<qty>(-?\d+\s*
@@ -1907,13 +1907,13 @@ class Constants(object):
         #                         (?P<modifier>
         #                          (from|before|after|ago|prior))
         #                         (\s?|$|[^0-9a-zA-Z])''' % self.locale.re_values
-        self.RE_MODIFIER  = r'''(\s?|^)
+        self.RE_MODIFIER  = r'''(\s|^)
                                 (?P<modifier>
                                  (%(modifiers-after)s))''' % self.locale.re_values
-        self.RE_MODIFIER2 = r'''(\s?|^)
+        self.RE_MODIFIER2 = r'''(\s|^)
                                 (?P<modifier>
                                  (%(modifiers-before)s))
-                                (\s?|$|[^0-9a-zA-Z])''' % self.locale.re_values
+                                (\s|$|[^0-9a-zA-Z])''' % self.locale.re_values
         self.RE_TIMEHMS   = r'''(\s?|^)
                                 (?P<hours>\d\d?)
                                 (?P<tsep>%(timeseperator)s|)
@@ -1935,9 +1935,9 @@ class Constants(object):
                                 (?P<date>(\d\d?[%s]\d\d?([%s]\d\d(\d\d)?)?))
                                 (\s?|$|[^0-9a-zA-Z])''' % (dateSeps, dateSeps)
         self.RE_DATE2     = r'[%s]' % dateSeps
-        self.RE_DAY       = r'''(\s?|^)
+        self.RE_DAY       = r'''(\s|^)
                                 (?P<day>(today|tomorrow|yesterday))
-                                (\s?|$|[^0-9a-zA-Z])''' % self.locale.re_values
+                                (\s|$|[^0-9a-zA-Z])''' % self.locale.re_values
         self.RE_DAY2      = r'''(?P<day>\d\d?)(?P<suffix>%(daysuffix)s)?
                              ''' % self.locale.re_values
         # self.RE_TIME      = r'''(\s?|^)
