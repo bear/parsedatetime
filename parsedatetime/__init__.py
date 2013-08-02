@@ -1685,7 +1685,7 @@ class Calendar:
             # Modifier like next\prev..
             m = self.ptc.CRE_MODIFIER.search(inputString[startpos:])
             if m is not None:
-                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('modifier'):
+                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('modifier') + startpos:
                     leftmost_match[0] = m.start('modifier') + startpos
                     leftmost_match[1] = m.end('modifier') + startpos
                     leftmost_match[2] = m.group('modifier')
@@ -1695,7 +1695,7 @@ class Calendar:
             # Modifier like from\after\prior..
             m = self.ptc.CRE_MODIFIER2.search(inputString[startpos:])
             if m is not None:
-                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('modifier'):
+                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('modifier') + startpos:
                     leftmost_match[0] = m.start('modifier') + startpos
                     leftmost_match[1] = m.end('modifier') + startpos
                     leftmost_match[2] = m.group('modifier')
@@ -1710,11 +1710,11 @@ class Calendar:
                     log.debug('day suffix trapped by unit match')
                 else:
 
-                    if leftmost_match[1] == 0 or leftmost_match[0] > m.start('qty'):
+                    if leftmost_match[1] == 0 or leftmost_match[0] > m.start('qty') + startpos:
                         leftmost_match[0] = m.start('qty') + startpos
                         leftmost_match[1] = m.end('qty') + startpos
                         leftmost_match[2] = m.group('qty')
-                        leftmost_match[3] = 0
+                        leftmost_match[3] = 3
                         leftmost_match[4] = 'units'
 
                         if m.start('qty') > 0 and inputString[m.start('qty') - 1] == '-':
@@ -1728,11 +1728,11 @@ class Calendar:
                 if self._UnitsTrapped(inputString[startpos:], m, 'qunits'):
                     log.debug('day suffix trapped by qunit match')
                 else:
-                    if leftmost_match[1] == 0 or leftmost_match[0] > m.start('qty'):
+                    if leftmost_match[1] == 0 or leftmost_match[0] > m.start('qty') + startpos:
                         leftmost_match[0] = m.start('qty') + startpos
                         leftmost_match[1] = m.end('qty') + startpos
                         leftmost_match[2] = m.group('qty')
-                        leftmost_match[3] = 0
+                        leftmost_match[3] = 3
                         leftmost_match[4] = 'qunits'
 
                         if m.start('qty') > 0 and inputString[m.start('qty') - 1] == '-':
@@ -1831,6 +1831,11 @@ class Calendar:
             if startpos == 0:
                 startpos = len(inputString)
             else:
+                if leftmost_match[3] > 0:
+                    m = self.ptc.CRE_NLP_PREFIX.search(inputString[:leftmost_match[0]] + ' ' + str(leftmost_match[3]))
+                    if m is not None:
+                        leftmost_match[0] = m.start('nlp_prefix')
+                        leftmost_match[2] = inputString[leftmost_match[0]:leftmost_match[1]]
                 matches.append(leftmost_match)
 
         # find matches in proximity with one another and return all the parsed values
@@ -1842,13 +1847,13 @@ class Calendar:
             modifier2 = matches[0][4] == 'modifier2'
             date = matches[0][3] == 1
             time = matches[0][3] == 2
-
+            units = matches[0][3] == 3
             for i in range(1, len(matches)):
 
                 # test proximity (are there characters between matches?)
                 endofprevious = matches[i - 1][1]
                 begofcurrent = matches[i][0]
-                if orig_inputstring[endofprevious:begofcurrent].strip() != '':
+                if orig_inputstring[endofprevious:begofcurrent].lower().strip() != '':
                     # this one isn't in proximity, but maybe
                     # we have enough to make a datetime
                     # todo: make sure the combination of formats (modifier, dateStd, etc) makes logical sense before parsing together
@@ -1863,6 +1868,7 @@ class Calendar:
                     modifier2 = matches[i][4] == 'modifier2'
                     date = matches[i][3] == 1
                     time = matches[i][3] == 2
+                    units = matches[i][3] == 3
                     continue
                 else:
                     if matches[i][4] == 'modifier':
@@ -1873,10 +1879,12 @@ class Calendar:
                         date = True
                     if matches[i][3] == 2:
                         time = True
+                    if matches[i][3] == 3:
+                        units = True
 
             # check last
             # we have enough to make a datetime
-            if date or time:
+            if date or time or units:
 
                 combined = orig_inputstring[matches[from_match_index][0]:matches[len(matches) - 1][1]]
                 parsed_datetime, flags = self.parse(combined, sourceTime)
@@ -2220,6 +2228,13 @@ class Constants(object):
                                  (?:(?P=tsep)
                                     (?P<seconds>\d\d?
                                      (?:[.,]\d+)?))?)?''' % self.locale.re_values
+        self.RE_NLP_PREFIX = r'''(?P<nlp_prefix>
+                                    (on)(\s)+1
+                                    |
+                                    (at|in)(\s)+2
+                                    |
+                                    (in)(\s)+3
+                                )'''
 
         if 'meridian' in self.locale.re_values:
             self.RE_TIMEHMS2 += r'\s?(?P<meridian>(%(meridian)s))' % self.locale.re_values
@@ -2322,6 +2337,7 @@ class Constants(object):
                             'CRE_DATERNG1':  self.DATERNG1,
                             'CRE_DATERNG2':  self.DATERNG2,
                             'CRE_DATERNG3':  self.DATERNG3,
+                            'CRE_NLP_PREFIX': self.RE_NLP_PREFIX,
                           }
         self.cre_keys = list(self.cre_source.keys())
 
