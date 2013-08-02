@@ -19,7 +19,9 @@ def _compareResults(result, check):
     return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
             (t_hr == v_hr) and (t_min == v_min)) and (t_flag == v_flag)
 
+
 class test(unittest.TestCase):
+
     def setUp(self):
         self.cal = pdt.Calendar()
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
@@ -41,7 +43,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('5 min',              start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5m',                 start), (target, 2)))
 
-
     def testMinutesBeforeNow(self):
         s = datetime.datetime.now()
         t = s + datetime.timedelta(minutes=-5)
@@ -52,7 +53,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('5 minutes before now', start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5 min before now',     start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5m before now',        start), (target, 2)))
-
 
     def testHoursFromNow(self):
         s = datetime.datetime.now()
@@ -71,7 +71,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('5 hr',             start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5h',               start), (target, 2)))
 
-
     def testHoursBeforeNow(self):
         s = datetime.datetime.now()
         t = s + datetime.timedelta(hours=-5)
@@ -82,7 +81,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('5 hours before now', start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5 hr before now',    start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5h before now',      start), (target, 2)))
-
 
     def testWeekFromNow(self):
         s = datetime.datetime.now()
@@ -97,7 +95,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('7 days from now', start), (target, 1)))
         #self.assertTrue(_compareResults(self.cal.parse('next week',       start), (target, 1)))
 
-
     def testWeekBeforeNow(self):
         s = datetime.datetime.now()
         t = s + datetime.timedelta(weeks=-1)
@@ -108,7 +105,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('1 week before now', start), (target, 0)))
         self.assertTrue(_compareResults(self.cal.parse('7 days before now', start), (target, 0)))
         #self.assertTrue(_compareResults(self.cal.parse('last week',         start), (target, 0)))
-
 
     def testSpecials(self):
         s = datetime.datetime.now()

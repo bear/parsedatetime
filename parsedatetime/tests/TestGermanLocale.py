@@ -19,13 +19,14 @@ def _compareResults(result, check):
     return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
             (t_hr == v_hr) and (t_min == v_min)) and (t_flag == v_flag)
 
+
 class test(unittest.TestCase):
+
     def setUp(self):
         self.ptc = pdt.Constants('de_DE', usePyICU=False)
         self.cal = pdt.Calendar(self.ptc)
 
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
-
 
     def testTimes(self):
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
@@ -50,7 +51,6 @@ class test(unittest.TestCase):
 
         self.assertTrue(_compareResults(self.cal.parse('1730',   start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('173000', start), (target, 2)))
-
 
     def testDates(self):
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()

@@ -19,6 +19,7 @@ def _compareResults(result, check):
     return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
             (t_hr == v_hr) and (t_min == v_min)) and (t_flag == v_flag)
 
+
 def _compareResultsErrorFlag(result, check):
     target, t_flag = result
     value,  v_flag = check
@@ -28,7 +29,9 @@ def _compareResultsErrorFlag(result, check):
 
     return (t_flag == v_flag)
 
+
 class test(unittest.TestCase):
+
     def setUp(self):
         self.cal = pdt.Calendar()
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()

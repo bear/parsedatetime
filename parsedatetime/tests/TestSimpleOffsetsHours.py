@@ -18,7 +18,9 @@ def _compareResults(result, check):
     return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
             (t_hr == v_hr) and (t_min == v_min)) and (t_flag == v_flag)
 
+
 class test(unittest.TestCase):
+
     def setUp(self):
         self.cal = pdt.Calendar()
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
@@ -39,7 +41,6 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('5 hours',          start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5 hr',             start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5h',               start), (target, 2)))
-
 
     def testHoursBeforeNow(self):
         s = datetime.datetime.now()

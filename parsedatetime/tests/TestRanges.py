@@ -23,7 +23,9 @@ def _compareResults(result, check):
             (t1_min == v1_min) and (t2_yr == v2_yr) and (t2_mth == v2_mth) and (t2_dy == v2_dy) and
             (t2_hr == v2_hr) and (t2_min == v2_min) and (t_flag == v_flag))
 
+
 class test(unittest.TestCase):
+
     def setUp(self):
         self.cal = pdt.Calendar()
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
@@ -51,7 +53,6 @@ class test(unittest.TestCase):
         targetEnd   = datetime.datetime(self.yr, self.mth, self.dy, 17, 0, 0).timetuple()
 
         self.assertTrue(_compareResults(self.cal.evalRanges("today 3:30-5PM", start), (targetStart, targetEnd, 2)))
-
 
     def testDates(self):
         start = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
