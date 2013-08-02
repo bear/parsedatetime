@@ -116,6 +116,10 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('Aug 25',    start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('Aug. 25',   start), (target, 1)))
 
+        # added test to ensure 4-digit year is recognized in the absence of day
+        target = datetime.datetime(2013, 8, 1,  self.hr, self.mn, self.sec).timetuple()
+        self.assertTrue(_compareResults(self.cal.parse('Aug. 2013',   start), (target, 1)))
+
     def testLeapDays(self):
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
         target = datetime.datetime(2000, 2, 29,  self.hr, self.mn, self.sec).timetuple()
