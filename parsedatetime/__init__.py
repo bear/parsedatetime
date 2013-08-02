@@ -1387,25 +1387,18 @@ class Calendar:
                             parseStr = s
 
             if parseStr == '':
-                # Standard date format - DMY
-                m = self.ptc.CRE_DATE_DMY.search(s)
-                if m is not None:
-                    self.dateStrFlag = True
-                    self.dateFlag    = 1
-                    if (m.group('date') != s):
-                        # capture remaining string
-                        parseStr = m.group('date')
-                        chunk1   = s[:m.start('date')]
-                        chunk2   = s[m.end('date'):]
-                        s        = '%s %s' % (chunk1, chunk2)
-                        flag     = True
-                    else:
-                        parseStr = s
+                valid_date = False
+                for match in self.ptc.CRE_DATE3.finditer(s):
+                    # to prevent "HH:MM(:SS) time strings" expressions from triggering
+                    # this regex, we checks if the month field exists in the searched
+                    # expression, if it doesn't exist, the date field is not valid
+                    if match.group('mthname'):
+                        m = self.ptc.CRE_DATE3.search(s, match.start())
+                        valid_date = True
+                        break
 
-            if parseStr == '':
-                # String date format - MDY
-                m = self.ptc.CRE_DATE_MDY.search(s)
-                if m is not None:
+                # String date format
+                if valid_date:
                     self.dateStrFlag = True
                     self.dateFlag    = 1
                     if (m.group('date') != s):
@@ -1739,19 +1732,18 @@ class Calendar:
                             leftmost_match[0] = leftmost_match[0] - 1
                             leftmost_match[2] = '-' + leftmost_match[2]
 
-            # Standard date format - DMY
-            m = self.ptc.CRE_DATE_DMY.search(inputString[startpos:])
-            if m is not None:
-                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('date') + startpos:
-                    leftmost_match[0] = m.start('date') + startpos
-                    leftmost_match[1] = m.end('date') + startpos
-                    leftmost_match[2] = m.group('date')
-                    leftmost_match[3] = 1
-                    leftmost_match[4] = 'dateStr'
+            valid_date = False
+            for match in self.ptc.CRE_DATE3.finditer(inputString[startpos:]):
+                # to prevent "HH:MM(:SS) time strings" expressions from triggering
+                # this regex, we checks if the month field exists in the searched
+                # expression, if it doesn't exist, the date field is not valid
+                if match.group('mthname'):
+                    m = self.ptc.CRE_DATE3.search(inputString[startpos:], match.start())
+                    valid_date = True
+                    break
 
-            # String date format - MDY
-            m = self.ptc.CRE_DATE_MDY.search(inputString[startpos:])
-            if m is not None:
+            # String date format
+            if valid_date:
                 if leftmost_match[1] == 0 or leftmost_match[0] > m.start('date') + startpos:
                     leftmost_match[0] = m.start('date') + startpos
                     leftmost_match[1] = m.end('date') + startpos
@@ -2138,52 +2130,39 @@ class Constants(object):
         #                                  ((?P<day>\d\d?)(\s?|%(daysuffix)s|$)+)?
         #                                  (,\s?(?P<year>\d\d(\d\d)?))?))
         #                        (\s?|$|[^0-9a-zA-Z])''' % ptc.locale.re_values
-        self.RE_DATE3     = r'''(?P<date>(
-                                          (((?P<mthname>(%(months)s|%(shortmonths)s))|
-                                          ((?P<day>\d\d?)(?P<suffix>%(daysuffix)s)?))(\s)?){1,2}
-                                          ((,)?(\s)?(?P<year>\d\d(\d\d)?))?
-                                         )
-                                )''' % self.locale.re_values
-        # match month then day and optional year
-        self.RE_DATE_MDY     = r'''(?P<date>
-                                    (
-                                        (\s|^)
-                                        (?P<mthname>(%(months)s|%(shortmonths)s))
-                                        (
-                                            (
-                                                (\s)?
-                                                (?P<day>\d\d?)
-                                                (?P<suffix>%(daysuffix)s)?
-                                            )
-                                            (
-                                                ,?\s?
-                                                (?P<year>\d\d(\d\d)?)
-                                            )?
-                                        |
-                                            (\s|$)
-                                        )
-                                    )
-                                )''' % self.locale.re_values
+        # self.RE_DATE3     = r'''(?P<date>(
+        #                                   (((?P<mthname>(%(months)s|%(shortmonths)s))|
+        #                                   ((?P<day>\d\d?)(?P<suffix>%(daysuffix)s)?))(\s)?){1,2}
+        #                                   ((,)?(\s)?(?P<year>\d\d(\d\d)?))?
+        #                                  )
+        #                         )''' % self.locale.re_values
 
-        # match day then month and optional year
-        self.RE_DATE_DMY     = r'''
-                                (?P<date>
-                                    (
-                                        (\s|^)
+        # still not completely sure of the behavior of the regex and
+        # whether it would be best to consume all possible irrelevant characters
+        # before the option groups (but within the {1,3} repetition group
+        # or inside of each option group, as it currently does
+        # however, right now, all tests are passing that were,
+        # including fixing the bug of matching a 4-digit year as ddyy
+        # when the day is absent from the string
+        self.RE_DATE3     = r'''(?P<date>
+                                (
                                         (
-                                            (?P<day>\d\d?)
+                                            (^|\s)
+                                            (?P<mthname>(%(months)s|%(shortmonths)s)(?![a-zA-Z_]))
+                                        ){1}
+                                        |
+                                        (
+                                            (^|\s)
+                                            (?P<day>([1-9]|[0-2][0-9]|3[0-1])(?!(\d|pm|am)))
                                             (?P<suffix>%(daysuffix)s)?
-                                        )
-                                        (
-                                            \s?
-                                            (?P<mthname>(%(months)s|%(shortmonths)s))
-                                        )
+                                        ){1}
+                                        |
                                         (
                                             ,?\s?
                                             (?P<year>\d\d(\d\d)?)
-                                        )?
-                                    )
-                                )''' % self.locale.re_values
+                                        ){1}
+                                ){1,3}
+                            )''' % self.locale.re_values
         # not being used in code, but kept in case others are manually utilizing this regex for their own purposes
         self.RE_MONTH     = r'''(\s|^)
                                 (?P<month>(
@@ -2317,8 +2296,6 @@ class Constants(object):
                             'CRE_DATE':      self.RE_DATE,
                             'CRE_DATE2':     self.RE_DATE2,
                             'CRE_DATE3':     self.RE_DATE3,
-                            'CRE_DATE_MDY':  self.RE_DATE_MDY,
-                            'CRE_DATE_DMY':  self.RE_DATE_DMY,
                             'CRE_DATE4':     self.RE_DATE4,
                             'CRE_MONTH':     self.RE_MONTH,
                             'CRE_WEEKDAY':   self.RE_WEEKDAY,
@@ -2403,5 +2380,3 @@ class Constants(object):
                               values['hr'], values['mn'], values['sec'], wd, yd, isdst )
 
         return sources
-
-
