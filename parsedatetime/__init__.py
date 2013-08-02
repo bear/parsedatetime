@@ -1387,25 +1387,18 @@ class Calendar:
                             parseStr = s
 
             if parseStr == '':
-                # Standard date format - DMY
-                m = self.ptc.CRE_DATE_DMY.search(s)
-                if m is not None:
-                    self.dateStrFlag = True
-                    self.dateFlag    = 1
-                    if (m.group('date') != s):
-                        # capture remaining string
-                        parseStr = m.group('date')
-                        chunk1   = s[:m.start('date')]
-                        chunk2   = s[m.end('date'):]
-                        s        = '%s %s' % (chunk1, chunk2)
-                        flag     = True
-                    else:
-                        parseStr = s
+                valid_date = False
+                for match in self.ptc.CRE_DATE3.finditer(s):
+                    # to prevent "HH:MM(:SS) time strings" expressions from triggering
+                    # this regex, we checks if the month field exists in the searched
+                    # expression, if it doesn't exist, the date field is not valid
+                    if match.group('mthname'):
+                        m = self.ptc.CRE_DATE3.search(s, match.start())
+                        valid_date = True
+                        break
 
-            if parseStr == '':
-                # String date format - MDY
-                m = self.ptc.CRE_DATE_MDY.search(s)
-                if m is not None:
+                # String date format
+                if valid_date:
                     self.dateStrFlag = True
                     self.dateFlag    = 1
                     if (m.group('date') != s):
@@ -1649,6 +1642,259 @@ class Calendar:
 
         return source + (d - source)
 
+    def nlp(self, inputString, sourceTime=None):
+        """Utilizes parse() after making judgements about what datetime information belongs together.
+
+        It makes logical groupings based on proximity and returns a parsed datetime for each matched grouping of
+        datetime text, along with location info within the given inputString.
+
+        @type  inputString: string
+        @param inputString: natural language text to evaluate
+        @type  sourceTime:  struct_time
+        @param sourceTime:  C{struct_time} value to use as the base
+
+        @rtype:  tuple or None
+        @return: tuple of tuples in the format (parsed_datetime as datetime.datetime, flags as int, start_pos as int,
+                 end_pos as int, matched_text as string) or None if there were no matches
+        """
+
+        orig_inputstring = inputString
+
+        # replace periods at the end of sentences w/ spaces
+        # opposed to removing them altogether in order to
+        # retain relative positions (identified by alpha, period, space).
+        # this is required for some of the regex patterns to match
+        inputString = re.sub(r'(\w)(\.)(\s)', r'\1 \3', inputString).lower()
+
+        startpos = 0  # the start position in the inputString during the loop
+
+        matches = []  # list of lists in format: [startpos, endpos, matchedstring, flags, type]
+
+        while startpos < len(inputString):
+
+            # empty match
+            leftmost_match = [0, 0, None, 0, None]
+
+            # Modifier like next\prev..
+            m = self.ptc.CRE_MODIFIER.search(inputString[startpos:])
+            if m is not None:
+                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('modifier') + startpos:
+                    leftmost_match[0] = m.start('modifier') + startpos
+                    leftmost_match[1] = m.end('modifier') + startpos
+                    leftmost_match[2] = m.group('modifier')
+                    leftmost_match[3] = 0
+                    leftmost_match[4] = 'modifier'
+
+            # Modifier like from\after\prior..
+            m = self.ptc.CRE_MODIFIER2.search(inputString[startpos:])
+            if m is not None:
+                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('modifier') + startpos:
+                    leftmost_match[0] = m.start('modifier') + startpos
+                    leftmost_match[1] = m.end('modifier') + startpos
+                    leftmost_match[2] = m.group('modifier')
+                    leftmost_match[3] = 0
+                    leftmost_match[4] = 'modifier2'
+
+            # Quantity + Units
+            m = self.ptc.CRE_UNITS.search(inputString[startpos:])
+            if m is not None:
+                log.debug('CRE_UNITS matched')
+                if self._UnitsTrapped(inputString[startpos:], m, 'units'):
+                    log.debug('day suffix trapped by unit match')
+                else:
+
+                    if leftmost_match[1] == 0 or leftmost_match[0] > m.start('qty') + startpos:
+                        leftmost_match[0] = m.start('qty') + startpos
+                        leftmost_match[1] = m.end('qty') + startpos
+                        leftmost_match[2] = m.group('qty')
+                        leftmost_match[3] = 3
+                        leftmost_match[4] = 'units'
+
+                        if m.start('qty') > 0 and inputString[m.start('qty') - 1] == '-':
+                            leftmost_match[0] = leftmost_match[0] - 1
+                            leftmost_match[2] = '-' + leftmost_match[2]
+
+            # Quantity + Units
+            m = self.ptc.CRE_QUNITS.search(inputString[startpos:])
+            if m is not None:
+                log.debug('CRE_QUNITS matched')
+                if self._UnitsTrapped(inputString[startpos:], m, 'qunits'):
+                    log.debug('day suffix trapped by qunit match')
+                else:
+                    if leftmost_match[1] == 0 or leftmost_match[0] > m.start('qty') + startpos:
+                        leftmost_match[0] = m.start('qty') + startpos
+                        leftmost_match[1] = m.end('qty') + startpos
+                        leftmost_match[2] = m.group('qty')
+                        leftmost_match[3] = 3
+                        leftmost_match[4] = 'qunits'
+
+                        if m.start('qty') > 0 and inputString[m.start('qty') - 1] == '-':
+                            leftmost_match[0] = leftmost_match[0] - 1
+                            leftmost_match[2] = '-' + leftmost_match[2]
+
+            valid_date = False
+            for match in self.ptc.CRE_DATE3.finditer(inputString[startpos:]):
+                # to prevent "HH:MM(:SS) time strings" expressions from triggering
+                # this regex, we checks if the month field exists in the searched
+                # expression, if it doesn't exist, the date field is not valid
+                if match.group('mthname'):
+                    m = self.ptc.CRE_DATE3.search(inputString[startpos:], match.start())
+                    valid_date = True
+                    break
+
+            # String date format
+            if valid_date:
+                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('date') + startpos:
+                    leftmost_match[0] = m.start('date') + startpos
+                    leftmost_match[1] = m.end('date') + startpos
+                    leftmost_match[2] = m.group('date')
+                    leftmost_match[3] = 1
+                    leftmost_match[4] = 'dateStr'
+
+            # Standard date format
+            m = self.ptc.CRE_DATE.search(inputString[startpos:])
+            if m is not None:
+                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('date') + startpos:
+                    leftmost_match[0] = m.start('date') + startpos
+                    leftmost_match[1] = m.end('date') + startpos
+                    leftmost_match[2] = m.group('date')
+                    leftmost_match[3] = 1
+                    leftmost_match[4] = 'dateStd'
+
+            # Natural language day strings
+            m = self.ptc.CRE_DAY.search(inputString[startpos:])
+            if m is not None:
+                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('day') + startpos:
+                    leftmost_match[0] = m.start('day') + startpos
+                    leftmost_match[1] = m.end('day') + startpos
+                    leftmost_match[2] = m.group('day')
+                    leftmost_match[3] = 1
+                    leftmost_match[4] = 'dayStr'
+
+            # Weekday
+            m = self.ptc.CRE_WEEKDAY.search(inputString[startpos:])
+            if m is not None:
+                if inputString[startpos:] not in self.ptc.dayOffsets:
+                    if leftmost_match[1] == 0 or leftmost_match[0] > m.start('weekday') + startpos:
+                        leftmost_match[0] = m.start('weekday') + startpos
+                        leftmost_match[1] = m.end('weekday') + startpos
+                        leftmost_match[2] = m.group('weekday')
+                        leftmost_match[3] = 1
+                        leftmost_match[4] = 'weekdy'
+
+            # Natural language time strings
+            m = self.ptc.CRE_TIME.search(inputString[startpos:])
+            if m is not None:
+                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('time') + startpos:
+                    leftmost_match[0] = m.start('time') + startpos
+                    leftmost_match[1] = m.end('time') + startpos
+                    leftmost_match[2] = m.group('time')
+                    leftmost_match[3] = 2
+                    leftmost_match[4] = 'timeStr'
+
+            # HH:MM(:SS) am/pm time strings
+            m = self.ptc.CRE_TIMEHMS2.search(inputString[startpos:])
+            if m is not None:
+                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('hours') + startpos:
+                    leftmost_match[0] = m.start('hours') + startpos
+                    leftmost_match[1] = m.end('meridian') + startpos
+                    leftmost_match[2] = inputString[leftmost_match[0]:leftmost_match[1]]
+                    leftmost_match[3] = 2
+                    leftmost_match[4] = 'meridian'
+
+            # HH:MM(:SS) time strings
+            m = self.ptc.CRE_TIMEHMS.search(inputString[startpos:])
+            if m is not None:
+                if leftmost_match[1] == 0 or leftmost_match[0] > m.start('hours') + startpos:
+                    leftmost_match[0] = m.start('hours') + startpos
+                    if m.group('seconds') is not None:
+                        leftmost_match[1] = m.end('seconds') + startpos
+                    else:
+                        leftmost_match[1] = m.end('minutes') + startpos
+                    leftmost_match[2] = inputString[leftmost_match[0]:leftmost_match[1]]
+                    leftmost_match[3] = 2
+                    leftmost_match[4] = 'timeStd'
+
+            # set the start position to the end pos of the leftmost match
+            startpos = leftmost_match[1]
+
+            # nothing was detected
+            # so break out of the loop
+            if startpos == 0:
+                startpos = len(inputString)
+            else:
+                if leftmost_match[3] > 0:
+                    m = self.ptc.CRE_NLP_PREFIX.search(inputString[:leftmost_match[0]] + ' ' + str(leftmost_match[3]))
+                    if m is not None:
+                        leftmost_match[0] = m.start('nlp_prefix')
+                        leftmost_match[2] = inputString[leftmost_match[0]:leftmost_match[1]]
+                matches.append(leftmost_match)
+
+        # find matches in proximity with one another and return all the parsed values
+        proximity_matches = []
+        if len(matches) > 1:
+            combined = ''
+            from_match_index = 0
+            modifier1 = matches[0][4] == 'modifier'
+            modifier2 = matches[0][4] == 'modifier2'
+            date = matches[0][3] == 1
+            time = matches[0][3] == 2
+            units = matches[0][3] == 3
+            for i in range(1, len(matches)):
+
+                # test proximity (are there characters between matches?)
+                endofprevious = matches[i - 1][1]
+                begofcurrent = matches[i][0]
+                if orig_inputstring[endofprevious:begofcurrent].lower().strip() != '':
+                    # this one isn't in proximity, but maybe
+                    # we have enough to make a datetime
+                    # todo: make sure the combination of formats (modifier, dateStd, etc) makes logical sense before parsing together
+                    if date or time:
+                        combined = orig_inputstring[matches[from_match_index][0]:matches[i - 1][1]]
+                        parsed_datetime, flags = self.parse(combined, sourceTime)
+                        proximity_matches.append((datetime.datetime(parsed_datetime[0], parsed_datetime[1], parsed_datetime[2], parsed_datetime[3], parsed_datetime[4], parsed_datetime[5]), flags, matches[from_match_index][0], matches[i - 1][1], combined))
+                        #proximity_matches.append((parsed_datetime, flags, matches[from_match_index][0], matches[i - 1][1], combined))
+                    # not in proximity, reset starting from current
+                    from_match_index = i
+                    modifier1 = matches[i][4] == 'modifier'
+                    modifier2 = matches[i][4] == 'modifier2'
+                    date = matches[i][3] == 1
+                    time = matches[i][3] == 2
+                    units = matches[i][3] == 3
+                    continue
+                else:
+                    if matches[i][4] == 'modifier':
+                        modifier1 = True
+                    if matches[i][4] == 'modifier2':
+                        modifier2 = True
+                    if matches[i][3] == 1:
+                        date = True
+                    if matches[i][3] == 2:
+                        time = True
+                    if matches[i][3] == 3:
+                        units = True
+
+            # check last
+            # we have enough to make a datetime
+            if date or time or units:
+
+                combined = orig_inputstring[matches[from_match_index][0]:matches[len(matches) - 1][1]]
+                parsed_datetime, flags = self.parse(combined, sourceTime)
+                proximity_matches.append((datetime.datetime(parsed_datetime[0], parsed_datetime[1], parsed_datetime[2], parsed_datetime[3], parsed_datetime[4], parsed_datetime[5]), flags, matches[from_match_index][0], matches[len(matches) - 1][1], combined))
+                #proximity_matches.append((parsed_datetime, flags, matches[from_match_index][0], matches[len(matches) - 1][1], combined))
+
+        elif len(matches) == 0:
+            return None
+        else:
+            if matches[0][3] == 0:  # not enough info to parse
+                return None
+            else:
+                parsed_datetime, flags = self.parse(matches[0][2], sourceTime)
+                proximity_matches.append((datetime.datetime(parsed_datetime[0], parsed_datetime[1], parsed_datetime[2], parsed_datetime[3], parsed_datetime[4], parsed_datetime[5]), flags, matches[0][0], matches[0][1], matches[0][2]))
+                #proximity_matches.append((parsed_datetime, flags, matches[0][0], matches[0][1], matches[0][2]))
+
+        return tuple(proximity_matches)
+
 
 def _initSymbols(ptc):
     """
@@ -1884,52 +2130,39 @@ class Constants(object):
         #                                  ((?P<day>\d\d?)(\s?|%(daysuffix)s|$)+)?
         #                                  (,\s?(?P<year>\d\d(\d\d)?))?))
         #                        (\s?|$|[^0-9a-zA-Z])''' % ptc.locale.re_values
-        self.RE_DATE3     = r'''(?P<date>(
-                                          (((?P<mthname>(%(months)s|%(shortmonths)s))|
-                                          ((?P<day>\d\d?)(?P<suffix>%(daysuffix)s)?))(\s)?){1,2}
-                                          ((,)?(\s)?(?P<year>\d\d(\d\d)?))?
-                                         )
-                                )''' % self.locale.re_values
-        # match month then day and optional year
-        self.RE_DATE_MDY     = r'''(?P<date>
-                                    (
-                                        (\s|^)
-                                        (?P<mthname>(%(months)s|%(shortmonths)s))
-                                        (
-                                            (
-                                                (\s)?
-                                                (?P<day>\d\d?)
-                                                (?P<suffix>%(daysuffix)s)?
-                                            )
-                                            (
-                                                ,?\s?
-                                                (?P<year>\d\d(\d\d)?)
-                                            )?
-                                        |
-                                            (\s|$)
-                                        )
-                                    )
-                                )''' % self.locale.re_values
+        # self.RE_DATE3     = r'''(?P<date>(
+        #                                   (((?P<mthname>(%(months)s|%(shortmonths)s))|
+        #                                   ((?P<day>\d\d?)(?P<suffix>%(daysuffix)s)?))(\s)?){1,2}
+        #                                   ((,)?(\s)?(?P<year>\d\d(\d\d)?))?
+        #                                  )
+        #                         )''' % self.locale.re_values
 
-        # match day then month and optional year
-        self.RE_DATE_DMY     = r'''
-                                (?P<date>
-                                    (
-                                        (\s|^)
+        # still not completely sure of the behavior of the regex and
+        # whether it would be best to consume all possible irrelevant characters
+        # before the option groups (but within the {1,3} repetition group
+        # or inside of each option group, as it currently does
+        # however, right now, all tests are passing that were,
+        # including fixing the bug of matching a 4-digit year as ddyy
+        # when the day is absent from the string
+        self.RE_DATE3     = r'''(?P<date>
+                                (
                                         (
-                                            (?P<day>\d\d?)
+                                            (^|\s)
+                                            (?P<mthname>(%(months)s|%(shortmonths)s)(?![a-zA-Z_]))
+                                        ){1}
+                                        |
+                                        (
+                                            (^|\s)
+                                            (?P<day>([1-9]|[0-2][0-9]|3[0-1])(?!(\d|pm|am)))
                                             (?P<suffix>%(daysuffix)s)?
-                                        )
-                                        (
-                                            \s?
-                                            (?P<mthname>(%(months)s|%(shortmonths)s))
-                                        )
+                                        ){1}
+                                        |
                                         (
                                             ,?\s?
                                             (?P<year>\d\d(\d\d)?)
-                                        )?
-                                    )
-                                )''' % self.locale.re_values
+                                        ){1}
+                                ){1,3}
+                            )''' % self.locale.re_values
         # not being used in code, but kept in case others are manually utilizing this regex for their own purposes
         self.RE_MONTH     = r'''(\s|^)
                                 (?P<month>(
@@ -1974,6 +2207,13 @@ class Constants(object):
                                  (?:(?P=tsep)
                                     (?P<seconds>\d\d?
                                      (?:[.,]\d+)?))?)?''' % self.locale.re_values
+        self.RE_NLP_PREFIX = r'''(?P<nlp_prefix>
+                                    (on)(\s)+1
+                                    |
+                                    (at|in)(\s)+2
+                                    |
+                                    (in)(\s)+3
+                                )'''
 
         if 'meridian' in self.locale.re_values:
             self.RE_TIMEHMS2 += r'\s?(?P<meridian>(%(meridian)s))' % self.locale.re_values
@@ -2056,8 +2296,6 @@ class Constants(object):
                             'CRE_DATE':      self.RE_DATE,
                             'CRE_DATE2':     self.RE_DATE2,
                             'CRE_DATE3':     self.RE_DATE3,
-                            'CRE_DATE_MDY':  self.RE_DATE_MDY,
-                            'CRE_DATE_DMY':  self.RE_DATE_DMY,
                             'CRE_DATE4':     self.RE_DATE4,
                             'CRE_MONTH':     self.RE_MONTH,
                             'CRE_WEEKDAY':   self.RE_WEEKDAY,
@@ -2076,6 +2314,7 @@ class Constants(object):
                             'CRE_DATERNG1':  self.DATERNG1,
                             'CRE_DATERNG2':  self.DATERNG2,
                             'CRE_DATERNG3':  self.DATERNG3,
+                            'CRE_NLP_PREFIX': self.RE_NLP_PREFIX,
                           }
         self.cre_keys = list(self.cre_source.keys())
 
@@ -2141,5 +2380,3 @@ class Constants(object):
                               values['hr'], values['mn'], values['sec'], wd, yd, isdst )
 
         return sources
-
-
