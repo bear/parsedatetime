@@ -52,6 +52,18 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('1',      start), (start, 0)))
         self.assertTrue(_compareResults(self.cal.parse('174565', start), (start, 0)))
         self.assertTrue(_compareResults(self.cal.parse('177505', start), (start, 0)))
+        # ensure short month names do not cause false positives within a word - jun (june)
+        self.assertTrue(_compareResults(self.cal.parse('injunction', start), (start, 0)))
+        # ensure short month names do not cause false positives at the start of a word - jul (juuly)
+        self.assertTrue(_compareResults(self.cal.parse('julius', start), (start, 0)))
+        # ensure short month names do not cause false positives at the end of a word - mar (march)
+        self.assertTrue(_compareResults(self.cal.parse('lamar', start), (start, 0)))
+        # ensure short weekday names do not cause false positives within a word - mon (monday)
+        self.assertTrue(_compareResults(self.cal.parse('demonize', start), (start, 0)))
+        # ensure short weekday names do not cause false positives at the start of a word - mon (monday)
+        self.assertTrue(_compareResults(self.cal.parse('money', start), (start, 0)))
+        # ensure short weekday names do not cause false positives at the end of a word - th (thursday)
+        self.assertTrue(_compareResults(self.cal.parse('month', start), (start, 0)))
 
         # This test actually parses into *something* for some locales, so need to check the error flag
         self.assertTrue(_compareResultsErrorFlag(self.cal.parse('30/030/01/071/07', start), (start, 1)))
