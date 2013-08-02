@@ -2083,6 +2083,20 @@ class Constants(object):
             self.locale.re_values['modifiers-before'] = '|'.join(tuple(map(re.escape, lbefore)))
             self.locale.re_values['modifiers-after']  = '|'.join(tuple(map(re.escape, lafter)))
 
+            # todo: analyze all the modifiers to figure out which ones truly belong where.
+            #       while it is obvious looking at the code that _evalModifier2 should be
+            #       handling 'after', it remains to be researched which ones belong where
+            #       and how to make it locale-independent
+            lmodifiers = []
+            lmodifiers2 = []
+            for s in self.locale.Modifiers:
+                if self.locale.Modifiers[s] < 0 or s == 'after':
+                    lmodifiers2.append(s)
+                elif self.locale.Modifiers[s] > 0:
+                    lmodifiers.append(s)
+            self.locale.re_values['modifiers-one'] = '|'.join(tuple(map(re.escape, lmodifiers)))
+            self.locale.re_values['modifiers-two'] = '|'.join(tuple(map(re.escape, lmodifiers2)))
+
             l = []
             for s in self.locale.re_sources:
                 l.append(s)
@@ -2191,10 +2205,10 @@ class Constants(object):
         #                         (\s?|$|[^0-9a-zA-Z])''' % self.locale.re_values
         self.RE_MODIFIER  = r'''(\s|^)
                                 (?P<modifier>
-                                 (%(modifiers-after)s))''' % self.locale.re_values
+                                 (%(modifiers-one)s))''' % self.locale.re_values
         self.RE_MODIFIER2 = r'''(\s|^)
                                 (?P<modifier>
-                                 (%(modifiers-before)s))
+                                 (%(modifiers-two)s))
                                 (\s|$|[^0-9a-zA-Z])''' % self.locale.re_values
         self.RE_TIMEHMS   = r'''(\s?|^)
                                 (?P<hours>\d\d?)
