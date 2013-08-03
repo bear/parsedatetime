@@ -54,8 +54,12 @@ class test(unittest.TestCase):
                   (datetime.datetime(2013, 8, 9, 21, 0), 2, 72, 90, 'next Friday at 9PM'),
                   (datetime.datetime(2013, 8, 1, 21, 30, 0), 2, 120, 132, 'in 5 minutes'))
 
+        # positive testing
         self.assertTrue(_compareResults(self.cal.nlp("I'm so excited!! At 8PM on August 5th i'm going to fly to Florida"
                                                      ". Then next Friday at 9PM i'm going to Dog n Bone! And in 5 "
                                                      "minutes I'm going to eat some food!", start), target))
 
         target = datetime.datetime(self.yr, self.mth, self.dy, 17, 0, 0).timetuple()
+
+        # negative testing - no matches should return None
+        self.assertTrue(_compareResults(self.cal.nlp("I'm so excited!! So many things that are going to happen!!", start), None))
