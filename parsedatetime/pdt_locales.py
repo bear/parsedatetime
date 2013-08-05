@@ -35,7 +35,7 @@ class pdtLocale_base(object):
                     'dateFormats', 'dateSep', 'dayOffsets', 'dp_order', 
                     'localeID', 'meridian', 'Modifiers', 're_sources', 're_values', 
                     'shortMonths', 'shortWeekdays', 'timeFormats', 'timeSep', 'units', 
-                    'uses24', 'usesMeridian' ]
+                    'uses24', 'usesMeridian', 'numbers' ]
 
     def __init__(self):
         self.localeID      = None   # don't use a unicode string
@@ -78,6 +78,15 @@ class pdtLocale_base(object):
                              }
 
         self.dp_order = [ 'm', 'd', 'y' ]
+
+        # Used to parse expressions like "in 5 hours"
+        self.numbers = { 'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+                         'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9,
+                         'ten': 10, 'eleven': 11, 'twelve': 12, 'thirtheen': 13,
+                         'fourteen': 14, 'fifteen': 15, 'sixteen': 16,
+                         'seventeen': 17, 'eighteen': 18, 'nineteen': 19,
+                         'twenty': 20 }
+
 
           # this will be added to re_values later
         self.units = { 'seconds': [ 'second', 'seconds', 'sec', 's' ],
@@ -153,6 +162,10 @@ class pdtLocale_icu(pdtLocale_base):
             self.icu = pyicu.Locale(localeID)
 
         if self.icu is not None:
+            # grab spelled out format of all numbers from 0 to 100
+            rbnf = pyicu.RuleBasedNumberFormat(pyicu.URBNFRuleSetTag.SPELLOUT, self.icu)
+            self.numbers = dict([(rbnf.format(i), i) for i in xrange(0, 100)])
+
             self.symbols = pyicu.DateFormatSymbols(self.icu)
 
               # grab ICU list of weekdays, skipping first entry which

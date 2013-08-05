@@ -37,10 +37,17 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('5 hr from now',    start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('in 5 hours',       start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('in 5 hour',        start), (target, 2)))
-        self.assertTrue(_compareResults(self.cal.parse('5 hr from now',    start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5 hours',          start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5 hr',             start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5h',               start), (target, 2)))
+
+        self.assertTrue(_compareResults(self.cal.parse('five hours from now', start), (target, 2)))
+        self.assertTrue(_compareResults(self.cal.parse('five hour from now',  start), (target, 2)))
+        self.assertTrue(_compareResults(self.cal.parse('five hr from now',    start), (target, 2)))
+        self.assertTrue(_compareResults(self.cal.parse('in five hours',       start), (target, 2)))
+        self.assertTrue(_compareResults(self.cal.parse('in five hour',        start), (target, 2)))
+        self.assertTrue(_compareResults(self.cal.parse('five hours',          start), (target, 2)))
+        self.assertTrue(_compareResults(self.cal.parse('five hr',             start), (target, 2)))
 
     def testHoursBeforeNow(self):
         s = datetime.datetime.now()
@@ -52,6 +59,9 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('5 hours before now', start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5 hr before now',    start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5h before now',      start), (target, 2)))
+
+        self.assertTrue(_compareResults(self.cal.parse('five hours before now', start), (target, 2)))
+        self.assertTrue(_compareResults(self.cal.parse('five hr before now',    start), (target, 2)))
 
 
 if __name__ == "__main__":
