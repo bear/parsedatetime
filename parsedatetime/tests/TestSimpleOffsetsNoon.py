@@ -34,6 +34,7 @@ class test(unittest.TestCase):
         target = t.timetuple()
 
         self.assertTrue(_compareResults(self.cal.parse('5 hours after 12pm',     start), (target, 2)))
+        self.assertTrue(_compareResults(self.cal.parse('five hours after 12pm',  start), (target, 2)))
         #self.assertTrue(_compareResults(self.cal.parse('5 hours after 12 pm',    start), (target, 2)))
         #self.assertTrue(_compareResults(self.cal.parse('5 hours after 12:00pm',  start), (target, 2)))
         #self.assertTrue(_compareResults(self.cal.parse('5 hours after 12:00 pm', start), (target, 2)))
@@ -49,6 +50,7 @@ class test(unittest.TestCase):
 
         #self.assertTrue(_compareResults(self.cal.parse('5 hours before noon',     start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5 hours before 12pm',     start), (target, 2)))
+        self.assertTrue(_compareResults(self.cal.parse('five hours before 12pm',  start), (target, 2)))
         #self.assertTrue(_compareResults(self.cal.parse('5 hours before 12 pm',    start), (target, 2)))
         #self.assertTrue(_compareResults(self.cal.parse('5 hours before 12:00pm',  start), (target, 2)))
         #self.assertTrue(_compareResults(self.cal.parse('5 hours before 12:00 pm', start), (target, 2)))
