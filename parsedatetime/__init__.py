@@ -283,13 +283,7 @@ class Calendar:
         else:
             quantity = quantity.strip()
 
-        if len(quantity) == 0:
-            qty = 1
-        else:
-            try:
-                qty = int(quantity)
-            except ValueError:
-                qty = 0
+        qty = self._quantityToInt(quantity)
 
         if modifier in self.ptc.Modifiers:
             qty = qty * self.ptc.Modifiers[modifier]
@@ -703,6 +697,29 @@ class Calendar:
 
         return diff
 
+    def _quantityToInt(self, quantity):
+        """
+        Convert a quantity, either spelled-out or numeric, to an integer
+
+        @type    quantity: string
+        @param   quantity: quantity to parse to int
+        @rtype:  int
+        @return: the quantity as an integer, defaulting to 0
+        """
+        if(len(quantity) == 0):
+           return 1
+
+        try:
+           return int(quantity)
+        except ValueError:
+           pass
+
+        try:
+           return self.ptc.numbers[quantity]
+        except KeyError:
+           pass
+
+        return 0
 
     def _evalModifier(self, modifier, chunk1, chunk2, sourceTime):
         """
@@ -943,7 +960,6 @@ class Calendar:
         """
 
         offset = self.ptc.Modifiers[modifier]
-        digit  = r'\d+'
 
         self.modifier2Flag = False
         log.debug("modifier2 [%s] chunk1 [%s] chunk2 [%s] sourceTime %s" % (modifier, chunk1, chunk2, sourceTime))
@@ -961,9 +977,9 @@ class Calendar:
 
             currDOWParseStyle = self.ptc.DOWParseStyle
             if offset < 0:
-                m = re.match(digit, chunk2.strip())
+                m = self.ptc.CRE_NUMBER.match(chunk2.strip())
                 if m is not None:
-                    qty    = int(m.group()) * -1
+                    qty    = self._quantityToInt(m.group()) * -1
                     chunk2 = chunk2[m.end():]
                     chunk2 = '%d%s' % (qty, chunk2)
                 else:
@@ -985,9 +1001,9 @@ class Calendar:
 
         if chunk1 != '':
             if offset < 0:
-                m = re.search(digit, chunk1.strip())
+                m = self.ptc.CRE_NUMBER.search(chunk1.strip())
                 if m is not None:
-                    qty    = int(m.group()) * -1
+                    qty    = self._quantityToInt(m.group()) * -1
                     chunk1 = chunk1[m.end():]
                     chunk1 = '%d%s' % (qty, chunk1)
 
@@ -2065,6 +2081,8 @@ class Constants(object):
             self.locale.re_values['days']        = '%s|%s|%s|%s|%s|%s|%s' % wd
             self.locale.re_values['shortdays']   = '%s|%s|%s|%s|%s|%s|%s' % swd
 
+            self.locale.re_values['numbers']     = '|'.join(map(re.escape, self.locale.numbers))
+
             l = []
             for s in self.locale.units:
                 l = l + self.locale.units[s]
@@ -2188,11 +2206,13 @@ class Constants(object):
                                 (?P<weekday>(%(days)s|%(shortdays)s))
                                 (\s|$|[^0-9a-zA-Z])''' % self.locale.re_values
 
+        self.RE_NUMBER    = r'(%(numbers)s|\d+)' % self.locale.re_values
+
         self.RE_SPECIAL   = r'(?P<special>^[%(specials)s]+)\s+' % self.locale.re_values
-        self.RE_UNITS     = r'''(?P<qty>(-?\d+\s*
+        self.RE_UNITS     = r'''(?P<qty>(-?(%(numbers)s|\d+)\s*
                                          (?P<units>((%(units)s)s?))
                                         ))''' % self.locale.re_values
-        self.RE_QUNITS    = r'''(?P<qty>(-?\d+\s?
+        self.RE_QUNITS    = r'''(?P<qty>(-?(%(numbers)s|\d+)\s?
                                          (?P<qunits>%(qunits)s)
                                          (\s?|,|$)
                                         ))''' % self.locale.re_values
@@ -2301,6 +2321,7 @@ class Constants(object):
 
         self.re_option = re.IGNORECASE + re.VERBOSE
         self.cre_source = { 'CRE_SPECIAL':   self.RE_SPECIAL,
+                            'CRE_NUMBER':    self.RE_NUMBER,
                             'CRE_UNITS':     self.RE_UNITS,
                             'CRE_QUNITS':    self.RE_QUNITS,
                             'CRE_MODIFIER':  self.RE_MODIFIER,
