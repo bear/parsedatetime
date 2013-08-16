@@ -63,3 +63,12 @@ class test(unittest.TestCase):
 
         # negative testing - no matches should return None
         self.assertTrue(_compareResults(self.cal.nlp("I'm so excited!! So many things that are going to happen!!", start), None))
+
+        # quotes should not interfere with datetime language recognition
+        target = self.cal.nlp("I'm so excited!! At '8PM on August 5th' i'm going to fly to Florida"
+                                                     ". Then 'next Friday at 9PM' i'm going to Dog n Bone! And in '5 "
+                                                     "minutes' I'm going to eat some food!", start)
+
+        self.assertTrue(target[0][4] == "At '8PM on August 5th")
+        self.assertTrue(target[1][4] == "next Friday at 9PM")
+        self.assertTrue(target[2][4] == "in '5 minutes")

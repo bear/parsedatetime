@@ -332,7 +332,7 @@ class Calendar:
         return target.timetuple()
 
 
-    def parseDate(self, dateString):
+    def parseDate(self, dateString, sourceTime=None):
         """
         Parse short-form date strings::
 
@@ -344,7 +344,10 @@ class Calendar:
         @rtype:  struct_time
         @return: calculated C{struct_time} value of dateString
         """
-        yr, mth, dy, hr, mn, sec, wd, yd, isdst = time.localtime()
+        if sourceTime is None:
+            yr, mth, dy, hr, mn, sec, wd, yd, isdst = time.localtime()
+        else:
+            yr, mth, dy, hr, mn, sec, wd, yd, isdst = sourceTime
 
         # values pulled from regex's will be stored here and later
         # assigned to mth, dy, yr based on information from the locale
@@ -408,7 +411,7 @@ class Calendar:
         return sourceTime
 
 
-    def parseDateText(self, dateString):
+    def parseDateText(self, dateString, sourceTime=None):
         """
         Parse long-form date strings::
 
@@ -422,7 +425,10 @@ class Calendar:
         @rtype:  struct_time
         @return: calculated C{struct_time} value of dateString
         """
-        yr, mth, dy, hr, mn, sec, wd, yd, isdst = time.localtime()
+        if sourceTime is None:
+            yr, mth, dy, hr, mn, sec, wd, yd, isdst = time.localtime()
+        else:
+            yr, mth, dy, hr, mn, sec, wd, yd, isdst = sourceTime
 
         currentMth = mth
         currentDy  = dy
@@ -1138,13 +1144,13 @@ class Calendar:
 
         # Given string is in the format 07/21/2006
         if self.dateStdFlag:
-            sourceTime       = self.parseDate(s)
+            sourceTime       = self.parseDate(s, sourceTime)
             self.dateStdFlag = False
 
         # Given string is in the format  "May 23rd, 2005"
         if self.dateStrFlag:
             log.debug('checking for MMM DD YYYY')
-            sourceTime       = self.parseDateText(s)
+            sourceTime       = self.parseDateText(s, sourceTime)
             log.debug('parseDateText(%s) returned %s' % (s, sourceTime))
             self.dateStrFlag = False
 
@@ -1295,6 +1301,8 @@ class Calendar:
         """
 
         datetimeString = re.sub(r'(\w)(\.)(\s)', r'\1\3', datetimeString)
+        datetimeString = re.sub(r'(\w)(\'|")(\s|$)', r'\1 \3', datetimeString)
+        datetimeString = re.sub(r'(\s|^)(\'|")(\w)', r'\1 \3', datetimeString)
 
         if sourceTime:
             if isinstance(sourceTime, datetime.datetime):
@@ -1681,6 +1689,8 @@ class Calendar:
         # retain relative positions (identified by alpha, period, space).
         # this is required for some of the regex patterns to match
         inputString = re.sub(r'(\w)(\.)(\s)', r'\1 \3', inputString).lower()
+        inputString = re.sub(r'(\w)(\'|")(\s|$)', r'\1 \3', inputString)
+        inputString = re.sub(r'(\s|^)(\'|")(\w)', r'\1 \3', inputString)
 
         startpos = 0  # the start position in the inputString during the loop
 
