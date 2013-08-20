@@ -5,6 +5,8 @@ desc    = """Parse human-readable date/time text.
 
 How to use parsedatetime:
 
+.. code::
+
     import parsedatetime as pdt
 
     cal = pdt.Calendar()
@@ -14,7 +16,7 @@ How to use parsedatetime:
 More detailed examples can be found in the examples
 directory.
 
-Python 2.6+ is required for parsedatetime v1.+
+Python 2.6 or greater is required for parsedatetime version 1.0 or greater.
 """
 
 setup(name='parsedatetime',
