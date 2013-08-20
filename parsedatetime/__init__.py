@@ -2219,11 +2219,11 @@ class Constants(object):
         self.RE_NUMBER    = r'(%(numbers)s|\d+)' % self.locale.re_values
 
         self.RE_SPECIAL   = r'(?P<special>^[%(specials)s]+)\s+' % self.locale.re_values
-        self.RE_UNITS     = r'''(?P<qty>(-?(%(numbers)s|\d+)\s*
-                                         (?P<units>((%(units)s)s?))
+        self.RE_UNITS     = r'''(?P<qty>(-?(\b(%(numbers)s)\b|\d+)\s*
+                                         (?P<units>((\b%(units)s)s?))
                                         ))''' % self.locale.re_values
-        self.RE_QUNITS    = r'''(?P<qty>(-?(%(numbers)s|\d+)\s?
-                                         (?P<qunits>%(qunits)s)
+        self.RE_QUNITS    = r'''(?P<qty>(-?(\b(%(numbers)s)\b|\d+)\s?
+                                         (?P<qunits>\b%(qunits)s)
                                          (\s?|,|$)
                                         ))''' % self.locale.re_values
         # self.RE_MODIFIER  = r'''(\s?|^)
