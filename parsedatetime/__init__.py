@@ -22,7 +22,11 @@ import calendar
 import logging
 import email.utils
 
-from itertools import imap, chain
+try:
+    from itertools import imap
+except ImportError:
+    imap = map
+from itertools import chain
 
 from . import pdt_locales
 
