@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-VERSION = '1.2'
+VERSION = '1.3'
 desc    = """Parse human-readable date/time text.
 
 How to use parsedatetime:

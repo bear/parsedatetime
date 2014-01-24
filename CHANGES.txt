@@ -1,4 +1,6 @@
 24 Jan 2014 - bear
+    bumped version to 1.3
+    
     many changes - amazing how hard it is to keep this file up to date
     when using GitHub.
 
