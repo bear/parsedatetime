@@ -1,3 +1,15 @@
+24 Jan 2014 - bear
+    many changes - amazing how hard it is to keep this file up to date
+    when using GitHub.
+
+    See https://github.com/bear/parsedatetime/commits/master for details.
+
+    Biggest change is the addition of the nlp() function by Geoffrey Floyd:
+      nlp() function that utilizes parse() after making judgements about 
+      what datetime information belongs together. It makes logical groupings 
+      based on proximity and returns a parsed datetime for each matched 
+      grouping of datetime text, along with location info within the given inputString.
+
 27 Jun 2013 - bear
     bumped version to 1.2
 
