@@ -900,7 +900,7 @@ class Calendar:
 
         if not flag:
             m = self.ptc.CRE_TIME.match(unit)
-            if m is not None:
+            if m is not None or unit in self.ptc.re_values['now']:
                 log.debug('CRE_TIME matched')
                 self.modifierFlag = False
                 (yr, mth, dy, hr, mn, sec, wd, yd, isdst), _ = self.parse(unit)
@@ -1492,10 +1492,10 @@ class Calendar:
             if parseStr == '':
                 # Natural language time strings
                 m = self.ptc.CRE_TIME.search(s)
-                if m is not None:
+                if m is not None or s in self.ptc.re_values['now']:
                     self.timeStrFlag = True
                     self.timeFlag    = 2
-                    if (m.group('time') != s):
+                    if (m and m.group('time') != s):
                         # capture remaining string
                         parseStr = m.group('time')
                         chunk1   = s[:m.start('time')]
@@ -2122,7 +2122,7 @@ class Constants(object):
             lmodifiers = []
             lmodifiers2 = []
             for s in self.locale.Modifiers:
-                if self.locale.Modifiers[s] < 0 or s == 'after':
+                if self.locale.Modifiers[s] < 0 or s in ['after', 'from']:
                     lmodifiers2.append(s)
                 elif self.locale.Modifiers[s] > 0:
                     lmodifiers.append(s)
