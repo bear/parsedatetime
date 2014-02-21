@@ -26,6 +26,14 @@ class test(unittest.TestCase):
         self.cal = pdt.Calendar()
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
 
+    def testNow(self):
+        s = datetime.datetime.now()
+
+        start = s.timetuple()
+        target = s.timetuple()
+
+        self.assertTrue(_compareResults(self.cal.parse('now', start), (target, 2)))
+
     def testMinutesFromNow(self):
         s = datetime.datetime.now()
         t = s + datetime.timedelta(minutes=5)
@@ -87,11 +95,11 @@ class test(unittest.TestCase):
         start  = s.timetuple()
         target = t.timetuple()
 
-        self.assertTrue(_compareResults(self.cal.parse('1 week before now',     start), (target, 0)))
-        self.assertTrue(_compareResults(self.cal.parse('one week before now',   start), (target, 0)))
-        self.assertTrue(_compareResults(self.cal.parse('7 days before now',     start), (target, 0)))
-        self.assertTrue(_compareResults(self.cal.parse('seven days before now', start), (target, 0)))
-        #self.assertTrue(_compareResults(self.cal.parse('last week',             start), (target, 0)))
+        self.assertTrue(_compareResults(self.cal.parse('1 week before now',     start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('one week before now',   start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('7 days before now',     start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('seven days before now', start), (target, 1)))
+        #self.assertTrue(_compareResults(self.cal.parse('last week',              tart), (target, 1)))
 
     def testSpecials(self):
         s = datetime.datetime.now()
