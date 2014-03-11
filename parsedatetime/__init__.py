@@ -1281,21 +1281,46 @@ class Calendar:
         """
         C{datetimeString} is as C{.parse}, C{sourceTime} has the same semantic
         meaning as C{.parse}, but now also accepts datetime objects.  C{tzinfo}
-        accepts a tzinfo object.  It is adviseable to use pytz.
+        accepts a tzinfo object.  It is advisable to use pytz.
+
+
+        @type  datetimeString: string
+        @param datetimeString: date/time text to evaluate
+        @type  sourceTime:     struct_time, datetime, date, time
+        @param sourceTime:     time value to use as the base
+        @type  tzinfo:         tzinfo
+        @param tzinfo:         Timezone to apply to generated datetime objs.
+
+        @rtype:  date, time, datetime, None
+        @return: date, time, datetime object, or None if no parsing is done
         """
-        # check to see if sourceTime is of the three datetime types.  Yes, I said three.
-        if isinstance(sourceTime, (datetime.date, datetime.time)):
-            sourceTime = sourceTime.timetuple()
-        # and if not, prey the user knows what they are doing.
-        else:
-            sourceTime = sourceTime
-        # You REALLY SHOULD be using pytz.  Using localize if available, hacking if not
-        if tzinfo:
-            localize = getattr(tzinfo, 'localize', lambda dt: dt.replace(tzinfo=tzinfo))
-        else:
-            localize = lambda dt: dt
-        
-        time_struct, ret_code = self.parse(datetimeString, sourceTime=sourceTime)
+        # if sourceTime has a timetuple method, use thet, else, just pass the
+        # entire thing to parse and prey the user knows what the hell they are
+        # doing.
+        sourceTime = getattr(sourceTime, 'timetuple', (lambda: sourceTime))()
+        # You REALLY SHOULD be using pytz.  Using localize if available,
+        # hacking if not.  Note, None is a valid tzinfo object in the case of
+        # the ugly hack.
+        localize = getattr(
+            tzinfo,
+            'localize',
+            (lambda dt: dt.replace(tzinfo=tzinfo)),  # ugly hack is ugly :(
+        )
+
+        # Punt
+        time_struct, ret_code = self.parse(
+            datetimeString,
+            sourceTime=sourceTime
+        )
+
+        # Here is where I could use some comments.  As it stands, I am
+        # returning the most logical type for what was parsed... BUT that
+        # leaves this function returning 4 possible types.  The idea here is
+        # that it is easy enough to type check to see what you got back.  The
+        # other options include always returning a datetime object, or
+        # returning a tuple of (date/time/datetime, ret_code).  The first 2 are
+        # my favorites, and I like the last one a little less than a hot poker
+        # to the eye.
         if ret_code == 1:
             dt = datetime.date(*time_struct[:3])
         elif ret_code == 2:
@@ -1303,7 +1328,7 @@ class Calendar:
         elif ret_code == 3:
             dt = localize(datetime.datetime(*time_struct[:6]))
         else:
-            dt = localize(datetime.datetime.now())
+            dt = None
         return dt
 
     def parse(self, datetimeString, sourceTime=None):
