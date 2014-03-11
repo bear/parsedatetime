@@ -1277,6 +1277,35 @@ class Calendar:
         else:
             return False
 
+    def parseDT(self, datetimeString, sourceTime=None, tzinfo=None):
+        """
+        C{datetimeString} is as C{.parse}, C{sourceTime} has the same semantic
+        meaning as C{.parse}, but now also accepts datetime objects.  C{tzinfo}
+        accepts a tzinfo object.  It is adviseable to use pytz.
+        """
+        # check to see if sourceTime is of the three datetime types.  Yes, I said three.
+        if not isinstance(sourceTime (datetime.date, datetime.time)):
+            sourceTime = sourceTime.timetuple()
+        # and if not, prey the user knows what they are doing.
+        else:
+            sourceTime = sourceTime
+        # You REALLY SHOULD be using pytz.  Using localize if available, hacking if not
+        if tzinfo:
+            localize = tzinfo.getattr('localize', lambda dt: dt.replace(tzinfo=tzinfo))
+        else:
+            localize = lambda dt: dt
+        
+        time_struct, ret_code = self.parse(datetimeString, sourceTime=sourceTime)
+        if ret_code == 1:
+            dt = datetime.date(*time_struct[:3])
+        elif ret_code == 2:
+            dt = datetime.time(*time_struct[0][3:6], tzinfo=tzinfo)
+        elif ret_code == 3:
+            dt = localize(datetime.datetime(*time_struct[:6]))
+        else:
+            dt = localize(datetime.datetime.now())
+        return dt
+
     def parse(self, datetimeString, sourceTime=None):
         """
         Splits the given C{datetimeString} into tokens, finds the regex
