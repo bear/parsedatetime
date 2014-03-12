@@ -1291,8 +1291,10 @@ class Calendar:
         @type  tzinfo:         tzinfo
         @param tzinfo:         Timezone to apply to generated datetime objs.
 
-        @rtype:  date, time, datetime, None
-        @return: date, time, datetime object, or None if no parsing is done
+        @rtype:  tuple
+        @return: tuple of datetime object and an int of the return code
+
+        see .parse for return code details.
         """
         # if sourceTime has a timetuple method, use thet, else, just pass the
         # entire thing to parse and prey the user knows what the hell they are
@@ -1313,23 +1315,11 @@ class Calendar:
             sourceTime=sourceTime
         )
 
-        # Here is where I could use some comments.  As it stands, I am
-        # returning the most logical type for what was parsed... BUT that
-        # leaves this function returning 4 possible types.  The idea here is
-        # that it is easy enough to type check to see what you got back.  The
-        # other options include always returning a datetime object, or
-        # returning a tuple of (date/time/datetime, ret_code).  The first 2 are
-        # my favorites, and I like the last one a little less than a hot poker
-        # to the eye.
-        if ret_code == 1:
-            dt = datetime.date(*time_struct[:3])
-        elif ret_code == 2:
-            dt = datetime.time(*time_struct[3:6], tzinfo=tzinfo)
-        elif ret_code == 3:
-            dt = localize(datetime.datetime(*time_struct[:6]))
-        else:
-            dt = None
-        return dt
+        # Comments from GHI indicate that it is desired to have the same return
+        # signature on this method as that one it punts to, with the exception
+        # of using datetime objects instead of time_structs.
+        dt = localize(datetime.datetime(*time_struct[:6]))
+        return (dt, ret_code)
 
     def parse(self, datetimeString, sourceTime=None):
         """
