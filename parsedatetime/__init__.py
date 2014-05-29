@@ -227,7 +227,7 @@ class Calendar:
         self.weekdyFlag    = False  # monday/tuesday/...
         self.dateStdFlag   = False  # 07/21/06
         self.dateStrFlag   = False  # July 21st, 2006
-        self.timeStdFlag   = False  # 5:50 
+        self.timeStdFlag   = False  # 5:50
         self.meridianFlag  = False  # am/pm
         self.dayStrFlag    = False  # tomorrow/yesterday/today/..
         self.timeStrFlag   = False  # lunch/noon/breakfast/...
@@ -1648,7 +1648,7 @@ class Calendar:
             m = m % 12      # get remaining months
 
             if mi < 0:
-                y *= -1                 # otherwise negative mi will give future dates                                
+                y *= -1                 # otherwise negative mi will give future dates
                 mth = mth - m           # sub months from start month
                 if mth < 1:             # cross start-of-year?
                     y   -= 1            #   yes - decrement year
@@ -1931,7 +1931,7 @@ def _initSymbols(ptc):
     Initialize symbols and single character constants.
     """
       # build am and pm lists to contain
-      # original case, lowercase and first-char
+      # original case, lowercase, first-char and dotted
       # versions of the meridian text
 
     if len(ptc.locale.meridian) > 0:
@@ -1940,9 +1940,11 @@ def _initSymbols(ptc):
 
         if len(am) > 0:
             ptc.am.append(am[0])
+            ptc.am.append('{}.{}.'.format(am[0], am[1]))
             am = am.lower()
             ptc.am.append(am)
             ptc.am.append(am[0])
+            ptc.am.append('{}.{}.'.format(am[0], am[1]))
     else:
         am     = ''
         ptc.am = [ '', '' ]
@@ -1953,9 +1955,11 @@ def _initSymbols(ptc):
 
         if len(pm) > 0:
             ptc.pm.append(pm[0])
+            ptc.pm.append('{}.{}.'.format(pm[0], pm[1]))
             pm = pm.lower()
             ptc.pm.append(pm)
             ptc.pm.append(pm[0])
+            ptc.pm.append('{}.{}.'.format(pm[0], pm[1]))
     else:
         pm     = ''
         ptc.pm = [ '', '' ]
@@ -2066,7 +2070,7 @@ class Constants(object):
         # week +1                       F
 
         self.CurrentDOWParseStyle = False
-        
+
         if self.usePyICU:
             self.locale = pdtLocales['icu'](self.localeID)
 
