@@ -1277,6 +1277,50 @@ class Calendar:
         else:
             return False
 
+    def parseDT(self, datetimeString, sourceTime=None, tzinfo=None):
+        """
+        C{datetimeString} is as C{.parse}, C{sourceTime} has the same semantic
+        meaning as C{.parse}, but now also accepts datetime objects.  C{tzinfo}
+        accepts a tzinfo object.  It is advisable to use pytz.
+
+
+        @type  datetimeString: string
+        @param datetimeString: date/time text to evaluate
+        @type  sourceTime:     struct_time, datetime, date, time
+        @param sourceTime:     time value to use as the base
+        @type  tzinfo:         tzinfo
+        @param tzinfo:         Timezone to apply to generated datetime objs.
+
+        @rtype:  tuple
+        @return: tuple of datetime object and an int of the return code
+
+        see .parse for return code details.
+        """
+        # if sourceTime has a timetuple method, use thet, else, just pass the
+        # entire thing to parse and prey the user knows what the hell they are
+        # doing.
+        sourceTime = getattr(sourceTime, 'timetuple', (lambda: sourceTime))()
+        # You REALLY SHOULD be using pytz.  Using localize if available,
+        # hacking if not.  Note, None is a valid tzinfo object in the case of
+        # the ugly hack.
+        localize = getattr(
+            tzinfo,
+            'localize',
+            (lambda dt: dt.replace(tzinfo=tzinfo)),  # ugly hack is ugly :(
+        )
+
+        # Punt
+        time_struct, ret_code = self.parse(
+            datetimeString,
+            sourceTime=sourceTime
+        )
+
+        # Comments from GHI indicate that it is desired to have the same return
+        # signature on this method as that one it punts to, with the exception
+        # of using datetime objects instead of time_structs.
+        dt = localize(datetime.datetime(*time_struct[:6]))
+        return (dt, ret_code)
+
     def parse(self, datetimeString, sourceTime=None):
         """
         Splits the given C{datetimeString} into tokens, finds the regex
