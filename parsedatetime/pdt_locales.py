@@ -164,7 +164,10 @@ class pdtLocale_icu(pdtLocale_base):
         if self.icu is not None:
             # grab spelled out format of all numbers from 0 to 100
             rbnf = pyicu.RuleBasedNumberFormat(pyicu.URBNFRuleSetTag.SPELLOUT, self.icu)
-            self.numbers = dict([(rbnf.format(i), i) for i in xrange(0, 100)])
+            try:
+                self.numbers = dict([(rbnf.format(i), i) for i in xrange(0, 100)])
+            except NameError:
+                self.numbers = dict([(rbnf.format(i), i) for i in range(0, 100)])
 
             self.symbols = pyicu.DateFormatSymbols(self.icu)
 
