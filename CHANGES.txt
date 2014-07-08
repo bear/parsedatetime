@@ -1,4 +1,6 @@
 8 Jul 2014 - bear
+    bumped version to 1.4
+
     Issue #45 make a new release to really fix backwards compatibility
     Issue #43 Please tag version 1.3
 
