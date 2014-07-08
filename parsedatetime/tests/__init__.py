@@ -24,4 +24,4 @@ echoHandler   = logging.StreamHandler()
 echoFormatter = logging.Formatter('%(levelname)-8s %(message)s')
 log.addHandler(echoHandler)
 
-log.setLevel(logging.DEBUG)     
+#log.setLevel(logging.DEBUG)     
