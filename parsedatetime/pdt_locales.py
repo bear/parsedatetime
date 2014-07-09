@@ -376,7 +376,7 @@ class pdtLocale_de(pdtLocale_base):
         self.units['days']    = [ 'tag',  'tage',     't' ]
         self.units['weeks']   = [ 'wochen',           'w' ]
         self.units['months']  = [ 'monat', 'monate' ]  #the short version would be a capital M,
-                                                       #as I understand it we can't distinguis
+                                                       #as I understand it we can't distinguish
                                                        #between m for minutes and M for months.
         self.units['years']   = [ 'jahr', 'jahre',    'j' ]
 
