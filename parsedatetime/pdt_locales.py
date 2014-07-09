@@ -251,7 +251,6 @@ class pdtLocale_icu(pdtLocale_base):
             self.dp_order = dp_order
 
 
-
 class pdtLocale_en(pdtLocale_base):
     """
     en_US Locale
@@ -282,6 +281,7 @@ class pdtLocale_au(pdtLocale_base):
         self.timeFormats['long']   = self.timeFormats['full']
 
         self.dp_order = [ 'd', 'm', 'y' ]
+
 
 class pdtLocale_es(pdtLocale_base):
     """
