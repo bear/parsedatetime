@@ -1,4 +1,7 @@
 11 Jul 2014 - bear
+    bump version to v1.5
+    released v1.4
+
     Updated setup.py for wheel compatibility
     renamed README.txt to README.rst
     renamed MANIFEST to MANIFEST.in
