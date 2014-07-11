@@ -29,6 +29,14 @@ class test(unittest.TestCase):
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
 
     def testPhrases(self):
+        #
+        # NOTE - this test will fail under certain conditions
+        #        It is building an absolute date for comparison and then testing
+        #        the parsing of relative phrases and as such will fail if run
+        #        near the midnight transition.
+        #        Thanks to Chris Petrilli for asking about it and prompting me
+        #        to create this note!
+        #
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
         target = datetime.datetime(self.yr, self.mth, self.dy, 16, 0, 0).timetuple()
 
