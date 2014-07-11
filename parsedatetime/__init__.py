@@ -1984,11 +1984,11 @@ def _initSymbols(ptc):
 
         if len(am) > 0:
             ptc.am.append(am[0])
-            ptc.am.append('{}.{}.'.format(am[0], am[1]))
+            ptc.am.append('{0}.{1}.'.format(am[0], am[1]))
             am = am.lower()
             ptc.am.append(am)
             ptc.am.append(am[0])
-            ptc.am.append('{}.{}.'.format(am[0], am[1]))
+            ptc.am.append('{0}.{1}.'.format(am[0], am[1]))
     else:
         am     = ''
         ptc.am = [ '', '' ]
@@ -1999,11 +1999,11 @@ def _initSymbols(ptc):
 
         if len(pm) > 0:
             ptc.pm.append(pm[0])
-            ptc.pm.append('{}.{}.'.format(pm[0], pm[1]))
+            ptc.pm.append('{0}.{1}.'.format(pm[0], pm[1]))
             pm = pm.lower()
             ptc.pm.append(pm)
             ptc.pm.append(pm[0])
-            ptc.pm.append('{}.{}.'.format(pm[0], pm[1]))
+            ptc.pm.append('{0}.{1}.'.format(pm[0], pm[1]))
     else:
         pm     = ''
         ptc.pm = [ '', '' ]
