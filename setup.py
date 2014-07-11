@@ -1,38 +1,26 @@
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+import os
 
-VERSION = '1.4'
-desc    = """Parse human-readable date/time text.
+from setuptools import setup, find_packages
+from parsedatetime import __version__
 
-How to use parsedatetime:
-
-.. code::
-
-    import parsedatetime as pdt
-
-    cal = pdt.Calendar()
-
-    cal.parse("tomorrow")
-
-More detailed examples can be found in the examples
-directory.
-
-Python 2.6 or greater is required for parsedatetime version 1.0 or greater.
-"""
+def read(*paths):
+    """Build a file path from *paths* and return the contents."""
+    with open(os.path.join(*paths), 'r') as f:
+        return f.read()
 
 setup(name='parsedatetime',
-        version=VERSION, 
+        version=__version__,
         author='Mike Taylor',
-        author_email='bear@code-bear.com',
+        author_email='bear@bear.im',
         url='http://github.com/bear/parsedatetime/',
         download_url='https://pypi.python.org/pypi/parsedatetime/',
         description='Parse human-readable date/time text.',
-        license='http://www.apache.org/licenses/LICENSE-2.0',
-        packages=['parsedatetime'],
+        license='Apache License 2.0',
+        packages=find_packages(exclude=['tests*']),
         platforms=['Any'],
-        long_description=desc,
+        long_description=(read('README.rst') + '\n\n' +
+                          read('AUTHORS.txt') + '\n\n' +
+                          read('CHANGES.txt')),
         classifiers=['Development Status :: 5 - Production/Stable',
                      'Intended Audience :: Developers',
                      'License :: OSI Approved :: Apache Software License',
@@ -47,5 +35,4 @@ setup(name='parsedatetime',
                      'Programming Language :: Python :: 3.1',
                      'Programming Language :: Python :: 3.2',
                     ]
-        )
-
+    )

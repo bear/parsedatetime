@@ -1,3 +1,12 @@
+11 Jul 2014 - bear
+    Updated setup.py for wheel compatibility
+    renamed README.txt to README.rst
+    renamed MANIFEST to MANIFEST.in
+    cleaned up a lot of the doc and notes
+
+    Commit 3fc165e701 mafagafo Now it works for Python 3.4.1
+    Commit d5883801e7 borgstrom Restore Python 2.6 compatibility
+
 8 Jul 2014 - bear
     bumped version to 1.4
 

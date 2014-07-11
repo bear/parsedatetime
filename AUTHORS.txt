@@ -1,13 +1,11 @@
-Mike Taylor         mailto://bear@code-bear.com
-                    http://code-bear.com
-Darshana Chhajed    mailto://darshana@osafoundation.org
+Mike Taylor         https://bear.im
+Darshana Chhajed    <darshana@osafoundation.org>
+Michael Lim         <lim.ck.michael@gmail.com>
+Bernd Zeimetz       <bzed@debian.org>
+Geoffrey Floyd      https://github.com/geoffreyfloyd
+Alexis Sasha Acker  https://github.com/sashaacker
+Yu-Jie Lin          https://github.com/livibetter
+rl-0x0              https://github.com/rl-0x0
+Bernardo Sulzbach   https://github.com/mafagafo
 
-Bug Fixes
-
-    Issue 26        Michael Lim <lim.ck.michael@gmail.com>
-                    patch to all day of month to be before month
-
-Locale Patches:
-
-    de_DE           Bernd Zeimetz <bzed@debian.org>
-
+see https://github.com/bear/parsedatetime/graphs/contributors for the full list

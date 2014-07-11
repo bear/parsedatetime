@@ -25,5 +25,4 @@ OSAF
     The folks at OSAF (Open Source Applications Foundation) helped a lot
     in shaping how the code works and in answering my "how do I do *this*"
     questions - especially Jeffrey, Philippe, Grant, Andi, Alex and Katie.
-
     
