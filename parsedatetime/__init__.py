@@ -50,50 +50,6 @@ pdtLocales = { 'icu':   pdt_locales.pdtLocale_icu,
                'de_DE': pdt_locales.pdtLocale_de,
              }
 
-small = {'zero': 0,
-         'one': 1,
-         'two': 2,
-         'three': 3,
-         'four': 4,
-         'five': 5,
-         'six': 6,
-         'seven': 7,
-         'eight': 8,
-         'nine': 9,
-         'ten': 10,
-         'eleven': 11,
-         'twelve': 12,
-         'thirteen': 13,
-         'fourteen': 14,
-         'fifteen': 15,
-         'sixteen': 16,
-         'seventeen': 17,
-         'eighteen': 18,
-         'nineteen': 19,
-         'twenty': 20,
-         'thirty': 30,
-         'forty': 40,
-         'fifty': 50,
-         'sixty': 60,
-         'seventy': 70,
-         'eighty': 80,
-         'ninety': 90
-         }
-
-magnitude = {'thousand':    1000,
-             'million':     1000000,
-             'billion':     1000000000,
-             'trillion':    1000000000000,
-             'quadrillion': 1000000000000000,
-             'quintillion': 1000000000000000000,
-             'sextillion':  1000000000000000000000,
-             'septillion':  1000000000000000000000000,
-             'octillion':   1000000000000000000000000000,
-             'nonillion':   1000000000000000000000000000000,
-             'decillion':   1000000000000000000000000000000000,
-             }
-
-ignore = ('and', ',')
 
 # Copied from feedparser.py
 # Universal Feedparser
@@ -294,17 +250,17 @@ class Calendar:
         """
         word_list, a, b = re.split(r"[,\s-]+", unitText), 0, 0
         for word in word_list:
-            x = small.get(word)
+            x = self.ptc.small.get(word)
             if x is not None:
                 a += x
             elif word == "hundred":
                 a *= 100
             else:
-                x = magnitude.get(word)
+                x = self.ptc.magnitude.get(word)
                 if x is not None:
                     b += a * x
                     a = 0
-                elif word in ignore:
+                elif word in self.ptc.ignore:
                     pass
                 else:
                     raise Exception("Unknown number: " + word)
