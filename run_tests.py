@@ -14,24 +14,24 @@ class ScanningLoader(TestLoader):
             tests.append(module.additional_tests())
 
         if hasattr(module, '__path__'):
-            for dir in module.__path__:
-                for file in os.listdir(dir):
-                    if file.endswith('.py') and file!='__init__.py':
+            for directory in module.__path__:
+                for file in os.listdir(directory):
+                    if file.endswith('.py') and file != '__init__.py':
                         if file.lower().startswith('test'):
                             submodule = module.__name__+'.'+file[:-3]
                         else:
                             continue
                     else:
-                        subpkg = os.path.join(dir,file,'__init__.py')
+                        subpkg = os.path.join(directory, file, '__init__.py')
 
                         if os.path.exists(subpkg):
-                            submodule = module.__name__+'.'+file
+                            submodule = module.__name__ + '.' + file
                         else:
                             continue
 
                     tests.append(self.loadTestsFromName(submodule))
 
-        if len(tests)>1:
+        if len(tests) > 1:
             return self.suiteClass(tests)
         else:
             return tests[0] # don't create a nested suite for only one return

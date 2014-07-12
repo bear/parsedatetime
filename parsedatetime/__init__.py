@@ -19,14 +19,12 @@ import re
 import time
 import datetime
 import calendar
-import logging
 import email.utils
 
 try:
     from itertools import imap
 except ImportError:
     imap = map
-from itertools import chain
 
 from . import pdt_locales
 
@@ -51,6 +49,51 @@ pdtLocales = { 'icu':   pdt_locales.pdtLocale_icu,
                'es_ES': pdt_locales.pdtLocale_es,
                'de_DE': pdt_locales.pdtLocale_de,
              }
+
+small = {'zero': 0,
+         'one': 1,
+         'two': 2,
+         'three': 3,
+         'four': 4,
+         'five': 5,
+         'six': 6,
+         'seven': 7,
+         'eight': 8,
+         'nine': 9,
+         'ten': 10,
+         'eleven': 11,
+         'twelve': 12,
+         'thirteen': 13,
+         'fourteen': 14,
+         'fifteen': 15,
+         'sixteen': 16,
+         'seventeen': 17,
+         'eighteen': 18,
+         'nineteen': 19,
+         'twenty': 20,
+         'thirty': 30,
+         'forty': 40,
+         'fifty': 50,
+         'sixty': 60,
+         'seventy': 70,
+         'eighty': 80,
+         'ninety': 90
+         }
+
+magnitude = {'thousand':    1000,
+             'million':     1000000,
+             'billion':     1000000000,
+             'trillion':    1000000000000,
+             'quadrillion': 1000000000000000,
+             'quintillion': 1000000000000000000,
+             'sextillion':  1000000000000000000000,
+             'septillion':  1000000000000000000000000,
+             'octillion':   1000000000000000000000000000,
+             'nonillion':   1000000000000000000000000000000,
+             'decillion':   1000000000000000000000000000000000,
+             }
+
+ignore = ('and', ',')
 
 # Copied from feedparser.py
 # Universal Feedparser
@@ -239,16 +282,9 @@ class Calendar:
         self.timeFlag      = 0
         self.dateFlag      = 0
 
-
     def _convertUnitAsWords(self, unitText):
         """
-        Converts text units into their number value
-
-        Five = 5
-        Twenty Five = 25
-        Two hundred twenty five = 225
-        Two thousand and twenty five = 2025
-        Two thousand twenty five = 2025
+        Converts text units into their number value.
 
         @type  unitText: string
         @param unitText: number text to convert
@@ -256,9 +292,23 @@ class Calendar:
         @rtype:  integer
         @return: numerical value of unitText
         """
-        # TODO: implement this
-        pass
-
+        word_list, a, b = re.split(r"[,\s-]+", unitText), 0, 0
+        for word in word_list:
+            x = small.get(word)
+            if x is not None:
+                a += x
+            elif word == "hundred":
+                a *= 100
+            else:
+                x = magnitude.get(word)
+                if x is not None:
+                    b += a * x
+                    a = 0
+                elif word in ignore:
+                    pass
+                else:
+                    raise Exception("Unknown number: " + word)
+        return a + b
 
     def _buildTime(self, source, quantity, modifier, units):
         """
@@ -334,7 +384,6 @@ class Calendar:
                 self.dateFlag = 1
 
         return target.timetuple()
-
 
     def parseDate(self, dateString, sourceTime=None):
         """
@@ -414,7 +463,6 @@ class Calendar:
 
         return sourceTime
 
-
     def parseDateText(self, dateString, sourceTime=None):
         """
         Parse long-form date strings::
@@ -470,7 +518,6 @@ class Calendar:
             sourceTime    = time.localtime()
 
         return sourceTime
-
 
     def evalRanges(self, datetimeString, sourceTime=None):
         """
@@ -635,7 +682,6 @@ class Calendar:
             sourceTime = time.localtime()
 
             return (sourceTime, sourceTime, 0)
-
 
     def _CalculateDOWDelta(self, wd, wkdy, offset, style, currentDayStyle):
         """
@@ -1032,7 +1078,6 @@ class Calendar:
             self.dateFlag = tempDateFlag
 
         return sourceTime, (flag1 and flag2)
-
 
     def _evalString(self, datetimeString, sourceTime=None):
         """
@@ -1648,7 +1693,6 @@ class Calendar:
             self.timeFlag = 0
         log.debug('return')
         return (totalTime, self.dateFlag + self.timeFlag)
-
 
     def inc(self, source, month=None, year=None):
         """
