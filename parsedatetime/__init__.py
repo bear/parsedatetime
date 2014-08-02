@@ -1672,7 +1672,7 @@ class Calendar:
                     parseStr  = ''
 
         # String is not parsed at all
-        if totalTime is None or totalTime == sourceTime:
+        if totalTime is None:
             log.debug('not parsed [%s]' % str(totalTime))
             totalTime     = time.localtime()
             self.dateFlag = 0
