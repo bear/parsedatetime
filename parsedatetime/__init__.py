@@ -455,6 +455,8 @@ class Calendar:
         currentMth = mth
         currentDy  = dy
 
+        log.debug('parseDateText currentMth %s currentDy %s' % (mth, dy))
+
         s   = dateString.lower()
         m   = self.ptc.CRE_DATE3.search(s)
         mth = m.group('mthname')
@@ -486,6 +488,9 @@ class Calendar:
             self.dateFlag = 0
             self.timeFlag = 0
             sourceTime    = time.localtime()
+
+        log.debug('parseDateText returned dateFlag %d timeFlag %d mth %d dy %d yr %d sourceTime %s' % 
+                    (self.dateFlag, self.timeFlag, mth, dy, yr, sourceTime))
 
         return sourceTime
 
@@ -1178,6 +1183,7 @@ class Calendar:
 
         # Given string is a weekday
         if self.weekdyFlag:
+            log.debug('weekdyFlag is set')
             if sourceTime is None:
                 (yr, mth, dy, hr, mn, sec, wd, yd, isdst) = now
             else:
@@ -1204,6 +1210,7 @@ class Calendar:
         # Given string is a natural language time string like
         # lunch, midnight, etc
         if self.timeStrFlag:
+            log.debug('timeStrFlag is set')
             if s in self.ptc.re_values['now']:
                 sourceTime = now
             else:
@@ -1220,6 +1227,7 @@ class Calendar:
 
         # Given string is a natural language date string like today, tomorrow..
         if self.dayStrFlag:
+            log.debug('dayStrFlag is set')
             if sourceTime is None:
                 sourceTime = now
 
@@ -1238,6 +1246,7 @@ class Calendar:
 
         # Given string is a time string with units like "5 hrs 30 min"
         if self.unitsFlag:
+            log.debug('unitsFlag is set')
             modifier = ''  # TODO
 
             if sourceTime is None:
@@ -1253,6 +1262,7 @@ class Calendar:
 
         # Given string is a time string with single char units like "5 h 30 m"
         if self.qunitsFlag:
+            log.debug('qunitsFlag is set')
             modifier = ''  # TODO
 
             if sourceTime is None:
@@ -1268,6 +1278,7 @@ class Calendar:
 
           # Given string does not match anything
         if sourceTime is None:
+            log.debug('sourceTime is None - setting to current date')
             sourceTime    = now
             self.dateFlag = 0
             self.timeFlag = 0
@@ -1365,6 +1376,7 @@ class Calendar:
         @rtype:  tuple
         @return: tuple of: modified C{sourceTime} and the result flag
         """
+        log.debug('parse()')
 
         datetimeString = re.sub(r'(\w)(\.)(\s)', r'\1\3', datetimeString)
         datetimeString = re.sub(r'(\w)(\'|")(\s|$)', r'\1 \3', datetimeString)
@@ -1661,10 +1673,11 @@ class Calendar:
 
         # String is not parsed at all
         if totalTime is None or totalTime == sourceTime:
+            log.debug('not parsed [%s]' % str(totalTime))
             totalTime     = time.localtime()
             self.dateFlag = 0
             self.timeFlag = 0
-        log.debug('return')
+        log.debug('parse() return dateFlag %d timeFlag %d totalTime %s' % (self.dateFlag, self.timeFlag, totalTime))
         return (totalTime, self.dateFlag + self.timeFlag)
 
 
