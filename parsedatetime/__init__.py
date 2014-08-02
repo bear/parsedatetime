@@ -1426,6 +1426,8 @@ class Calendar:
                     else:
                         parseStr = s
 
+            log.debug('parse 1 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+
             if parseStr == '':
                 # Modifier like from\after\prior..
                 m = self.ptc.CRE_MODIFIER2.search(s)
@@ -1439,6 +1441,8 @@ class Calendar:
                         flag     = True
                     else:
                         parseStr = s
+
+            log.debug('parse 2 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # Quantity + Units
@@ -1463,6 +1467,8 @@ class Calendar:
                             flag = True
                         else:
                             parseStr = s
+
+            log.debug('parse 3 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # Quantity + Units
@@ -1489,6 +1495,8 @@ class Calendar:
                         else:
                             parseStr = s
 
+            log.debug('parse 4 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+
             if parseStr == '':
                 valid_date = False
                 for match in self.ptc.CRE_DATE3.finditer(s):
@@ -1504,15 +1512,44 @@ class Calendar:
                 if valid_date:
                     self.dateStrFlag = True
                     self.dateFlag    = 1
+
                     if (m.group('date') != s):
                         # capture remaining string
+                        mStart   = m.start('date')
+                        mEnd     = m.end('date')
                         parseStr = m.group('date')
-                        chunk1   = s[:m.start('date')]
-                        chunk2   = s[m.end('date'):]
-                        s        = '%s %s' % (chunk1, chunk2)
-                        flag     = True
+                        chunk1   = s[:mStart]
+                        chunk2   = s[mEnd:]
+
+                        # we need to check that anything following the parsed date
+                        # is a time expression because it is often picked up as
+                        # a valid year if the hour is 2 digits
+                        fTime = False
+                        mm    = self.ptc.CRE_TIMEHMS2.search(s)
+                        # "February 24th 1PM" doesn't get caught
+                        # "February 24th 12PM" does
+                        if mm is not None and m.group('year') is not None:
+                            fTime = True
+                        else:
+                            # "February 24th 12:00"
+                            mm = self.ptc.CRE_TIMEHMS.search(s)
+                            if mm is not None and m.group('year') is None:
+                                fTime = True
+                        if fTime:
+                            n      = mm.end('hours') - mm.start('hours')
+                            sEnd   = parseStr[-n:]
+                            sStart = mm.group('hours')
+
+                            if sStart == sEnd:
+                                parseStr = parseStr[:mEnd - n].strip()
+                                chunk2   = s[mEnd - n:]
+
+                        s    = '%s %s' % (chunk1, chunk2)
+                        flag = True
                     else:
                         parseStr = s
+
+            log.debug('parse 5 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # Standard date format
@@ -1530,6 +1567,8 @@ class Calendar:
                     else:
                         parseStr = s
 
+            log.debug('parse 6 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+
             if parseStr == '':
                 # Natural language day strings
                 m = self.ptc.CRE_DAY.search(s)
@@ -1545,6 +1584,8 @@ class Calendar:
                         flag     = True
                     else:
                         parseStr = s
+
+            log.debug('parse 7 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # Weekday
@@ -1564,6 +1605,8 @@ class Calendar:
                         else:
                             parseStr = s
 
+            log.debug('parse 8 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+
             if parseStr == '':
                 # Natural language time strings
                 m = self.ptc.CRE_TIME.search(s)
@@ -1579,6 +1622,8 @@ class Calendar:
                         flag     = True
                     else:
                         parseStr = s
+
+            log.debug('parse 9 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # HH:MM(:SS) am/pm time strings
@@ -1605,6 +1650,8 @@ class Calendar:
 
                     s    = '%s %s' % (chunk1, chunk2)
                     flag = True
+
+            log.debug('parse A [%s][%s][%s]' % (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # HH:MM(:SS) time strings
