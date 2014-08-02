@@ -25,7 +25,7 @@ class pdtLocale_base(object):
                     'dateFormats', 'dateSep', 'dayOffsets', 'dp_order',
                     'localeID', 'meridian', 'Modifiers', 're_sources', 're_values',
                     'shortMonths', 'shortWeekdays', 'timeFormats', 'timeSep', 'units',
-                    'uses24', 'usesMeridian', 'numbers' ]
+                    'uses24', 'usesMeridian', 'numbers', 'small', 'magnitude', 'ignore' ]
 
     def __init__(self):
         self.localeID      = None   # don't use a unicode string
