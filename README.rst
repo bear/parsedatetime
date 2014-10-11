@@ -24,6 +24,18 @@ From the source directory::
 
     python run_tests.py parsedatetime
 
+To run tests on several python versions, type ``tox``::
+
+  $ tox
+  [... tox creates a virtualenv for every python version and runs tests inside of each]
+  py26: commands succeeded
+  py27: commands succeeded
+  py32: commands succeeded
+  py33: commands succeeded
+  py34: commands succeeded
+
+This assumes that you have ``python2.6``, ``python2.7``, ``python3.2``, etc in ``PATH``.
+
 ===================
 Using parsedatetime
 ===================
