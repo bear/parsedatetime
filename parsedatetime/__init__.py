@@ -2220,7 +2220,7 @@ class Constants(object):
             self.locale.re_values['shortmonths'] = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s' % smth
             self.locale.re_values['days']        = '%s|%s|%s|%s|%s|%s|%s' % wd
             self.locale.re_values['shortdays']   = '%s|%s|%s|%s|%s|%s|%s' % swd
-
+            self.locale.re_values['dayoffsets']  = '|'.join(map(re.escape, self.locale.dayOffsets))
             self.locale.re_values['numbers']     = '|'.join(map(re.escape, self.locale.numbers))
 
             l = []
@@ -2398,8 +2398,10 @@ class Constants(object):
                                 (?P<date>(\d\d?[%s]\d\d?([%s]\d\d(\d\d)?)?))
                                 (\s?|$|[^0-9a-zA-Z])''' % (dateSeps, dateSeps)
         self.RE_DATE2     = r'[%s]' % dateSeps
+
+        assert 'dayoffsets' in self.locale.re_values
         self.RE_DAY       = r'''(\s|^)
-                                (?P<day>(today|tomorrow|yesterday))
+                                (?P<day>(%(dayoffsets)s))
                                 (\s|$|[^0-9a-zA-Z])''' % self.locale.re_values
         self.RE_DAY2      = r'''(?P<day>\d\d?)(?P<suffix>%(daysuffix)s)?
                              ''' % self.locale.re_values
