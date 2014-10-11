@@ -4,7 +4,7 @@ Test parsing of simple date and times using the French locale
 
 Note: requires PyICU
 """
-
+from __future__ import unicode_literals
 import unittest, time, datetime
 import parsedatetime as pdt
 
