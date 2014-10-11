@@ -97,7 +97,7 @@ class test(unittest.TestCase):
 class pdtLocale_fr(pdt.pdt_locales.pdtLocale_icu):
     """French locale with french today/tomorrow/yesterday"""
     def __init__(self):
-        pdt.pdt_locales.pdtLocale_icu.__init__(self, localeID='fr_FR')
+        super(pdtLocale_fr, self).__init__(localeID='fr_FR')
         self.dayOffsets.update({"aujourd'hui": 0, 'demain': 1, 'hier': -1})
 
 class TestDayOffsets(test):
