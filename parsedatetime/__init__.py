@@ -2223,10 +2223,9 @@ class Constants(object):
             self.locale.re_values['dayoffsets']  = '|'.join(map(re.escape, self.locale.dayOffsets))
             self.locale.re_values['numbers']     = '|'.join(map(re.escape, self.locale.numbers))
 
-            l = []
-            for s in self.locale.units:
-                l = l + self.locale.units[s]
-            self.locale.re_values['units'] = '|'.join(tuple(map(re.escape, l)))
+            units = [unit for units in self.locale.units.values() for unit in units] # flatten
+            units.sort(key=len, reverse=True) # longest first
+            self.locale.re_values['units'] = '|'.join(tuple(map(re.escape, units)))
 
             l = []
             lbefore = []
