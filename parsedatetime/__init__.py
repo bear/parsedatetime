@@ -167,14 +167,14 @@ def _parse_date_w3dtf(dateString):
             return -offset
         return offset
 
-    __date_re = ('(?P<year>\d\d\d\d)'
-                 '(?:(?P<dsep>-|)'
-                 '(?:(?P<julian>\d\d\d)'
-                 '|(?P<month>\d\d)(?:(?P=dsep)(?P<day>\d\d))?))?')
-    __tzd_re = '(?P<tzd>[-+](?P<tzdhours>\d\d)(?::?(?P<tzdminutes>\d\d))|Z)'
+    __date_re = (r'(?P<year>\d\d\d\d)'
+                 r'(?:(?P<dsep>-|)'
+                 r'(?:(?P<julian>\d\d\d)'
+                 r'|(?P<month>\d\d)(?:(?P=dsep)(?P<day>\d\d))?))?')
+    __tzd_re = r'(?P<tzd>[-+](?P<tzdhours>\d\d)(?::?(?P<tzdminutes>\d\d))|Z)'
     __tzd_rx = re.compile(__tzd_re)
-    __time_re = ('(?P<hours>\d\d)(?P<tsep>:|)(?P<minutes>\d\d)'
-                 '(?:(?P=tsep)(?P<seconds>\d\d(?:[.,]\d+)?))?'
+    __time_re = (r'(?P<hours>\d\d)(?P<tsep>:|)(?P<minutes>\d\d)'
+                 r'(?:(?P=tsep)(?P<seconds>\d\d(?:[.,]\d+)?))?'
                  + __tzd_re)
     __datetime_re = '%s(?:T%s)?' % (__date_re, __time_re)
     __datetime_rx = re.compile(__datetime_re)
@@ -493,7 +493,7 @@ class Calendar:
             self.timeFlag = 0
             sourceTime    = time.localtime()
 
-        log.debug('parseDateText returned dateFlag %d timeFlag %d mth %d dy %d yr %d sourceTime %s' % 
+        log.debug('parseDateText returned dateFlag %d timeFlag %d mth %d dy %d yr %d sourceTime %s' %
                     (self.dateFlag, self.timeFlag, mth, dy, yr, sourceTime))
 
         return sourceTime
@@ -2202,8 +2202,8 @@ class Constants(object):
 
         if self.locale is None:
             if not self.localeID in pdtLocales:
-                for id in range(0, len(self.fallbackLocales)):
-                    self.localeID = self.fallbackLocales[id]
+                for localeId in range(0, len(self.fallbackLocales)):
+                    self.localeID = self.fallbackLocales[localeId]
                     if self.localeID in pdtLocales:
                         break
 
@@ -2289,11 +2289,22 @@ class Constants(object):
         # TODO find all hard-coded uses of date/time seperators
 
         # not being used in code, but kept in case others are manually utilizing this regex for their own purposes
-        self.RE_DATE4     = r'''(?P<date>(((?P<day>\d\d?)(?P<suffix>%(daysuffix)s)?(,)?(\s)?)
-                                           (?P<mthname>(%(months)s|%(shortmonths)s))\s?
-                                           (?P<year>\d\d(\d\d)?)?
-                                         )
-                                )''' % self.locale.re_values
+        self.RE_DATE4     = r'''(?P<date>
+                                    (
+                                        (
+                                            (?P<day>\d\d?)
+                                            (?P<suffix>{daysuffix})?
+                                            (,)?
+                                            (\s)?
+                                        )
+                                        (?P<mthname>
+                                            ({months}|{shortmonths})
+                                        )\s?
+                                        (?P<year>\d\d
+                                            (\d\d)?
+                                        )?
+                                    )
+                                )'''.format(**self.locale.re_values)
 
         # I refactored DATE3 to fix Issue 16 http://code.google.com/p/parsedatetime/issues/detail?id=16
         # I suspect the final line was for a trailing time - but testing shows it's not needed
@@ -2319,42 +2330,70 @@ class Constants(object):
                                 (
                                         (
                                             (^|\s)
-                                            (?P<mthname>(%(months)s|%(shortmonths)s)(?![a-zA-Z_]))
-                                        ){1}
+                                            (?P<mthname>
+                                                ({months}|{shortmonths})(?![a-zA-Z_])
+                                            )
+                                        ){{1}}
                                         |
                                         (
                                             (^|\s)
                                             (?P<day>([1-9]|[0-2][0-9]|3[0-1])(?!(\d|pm|am)))
-                                            (?P<suffix>%(daysuffix)s)?
-                                        ){1}
+                                            (?P<suffix>{daysuffix})?
+                                        ){{1}}
                                         |
                                         (
                                             ,?\s?
                                             (?P<year>\d\d(\d\d)?)
-                                        ){1}
-                                ){1,3}
-                            )''' % self.locale.re_values
+                                        ){{1}}
+                                ){{1,3}}
+                            )'''.format(**self.locale.re_values)
+
         # not being used in code, but kept in case others are manually utilizing this regex for their own purposes
         self.RE_MONTH     = r'''(\s|^)
-                                (?P<month>(
-                                           (?P<mthname>(%(months)s|%(shortmonths)s))
-                                           (\s?(?P<year>(\d\d\d\d)))?
-                                          ))
-                                (\s|$|[^0-9a-zA-Z])''' % self.locale.re_values
+                                (?P<month>
+                                    (
+                                            (?P<mthname>
+                                                ({months}|{shortmonths})
+                                            )
+                                            (\s?
+                                                (?P<year>(\d\d\d\d))
+                                            )?
+                                    )
+                                )
+                                (\s|$|[^0-9a-zA-Z])'''.format(**self.locale.re_values)
+
         self.RE_WEEKDAY   = r'''(\s|^)
-                                (?P<weekday>(%(days)s|%(shortdays)s))
-                                (\s|$|[^0-9a-zA-Z])''' % self.locale.re_values
+                                (?P<weekday>
+                                    ({days}|{shortdays})
+                                )
+                                (\s|$|[^0-9a-zA-Z])'''.format(**self.locale.re_values)
 
-        self.RE_NUMBER    = r'(%(numbers)s|\d+)' % self.locale.re_values
+        self.RE_NUMBER    = r'({numbers}|\d+)'.format(**self.locale.re_values)
 
-        self.RE_SPECIAL   = r'(?P<special>^[%(specials)s]+)\s+' % self.locale.re_values
-        self.RE_UNITS     = r'''(?P<qty>(-?(\b(%(numbers)s)\b|\d+)\s*
-                                         (?P<units>((\b%(units)s)s?))
-                                        ))''' % self.locale.re_values
-        self.RE_QUNITS    = r'''(?P<qty>(-?(\b(%(numbers)s)\b|\d+)\s?
-                                         (?P<qunits>\b%(qunits)s)
-                                         (\s?|,|$)
-                                        ))''' % self.locale.re_values
+        self.RE_SPECIAL   = r'(?P<special>^[{specials}]+)\s+'.format(**self.locale.re_values)
+
+        self.RE_UNITS     = r'''(?P<qty>
+                                    (-?
+                                        (\b
+                                            ({numbers})\b|\d+
+                                        )\s*
+                                        (?P<units>
+                                            (\b{units})
+                                        )
+                                    )
+                                )'''.format(**self.locale.re_values)
+
+        self.RE_QUNITS    = r'''(?P<qty>
+                                    (-?
+                                        (\b
+                                            ({numbers}s)\b|\d+
+                                        )\s?
+                                        \b
+                                        (?P<qunits>{qunits})
+                                        (\s?|,|$)
+                                    )
+                                )'''.format(**self.locale.re_values)
+
         # self.RE_MODIFIER  = r'''(\s?|^)
         #                         (?P<modifier>
         #                          (previous|prev|last|next|eod|eo|(end\sof)|(in\sa)))''' % self.locale.re_values
@@ -2364,101 +2403,141 @@ class Constants(object):
         #                         (\s?|$|[^0-9a-zA-Z])''' % self.locale.re_values
         self.RE_MODIFIER  = r'''(\s|^)
                                 (?P<modifier>
-                                 (%(modifiers-one)s))''' % self.locale.re_values
+                                    ({modifiers-one})
+                                )'''.format(**self.locale.re_values)
+
         self.RE_MODIFIER2 = r'''(\s|^)
                                 (?P<modifier>
-                                 (%(modifiers-two)s))
-                                (\s|$|[^0-9a-zA-Z])''' % self.locale.re_values
+                                    ({modifiers-two})
+                                )
+                                (\s|$|[^0-9a-zA-Z])'''.format(**self.locale.re_values)
+
         self.RE_TIMEHMS   = r'''(\s?|^)
                                 (?P<hours>\d\d?)
-                                (?P<tsep>%(timeseperator)s|)
+                                (?P<tsep>{timeseperator}|)
                                 (?P<minutes>\d\d)
-                                (?:(?P=tsep)(?P<seconds>\d\d(?:[.,]\d+)?))?''' % self.locale.re_values
-        self.RE_TIMEHMS2  = r'''(?P<hours>(\d\d?))
-                                ((?P<tsep>%(timeseperator)s|)
-                                 (?P<minutes>(\d\d?))
-                                 (?:(?P=tsep)
-                                    (?P<seconds>\d\d?
-                                     (?:[.,]\d+)?))?)?''' % self.locale.re_values
+                                (?:(?P=tsep)
+                                    (?P<seconds>\d\d
+                                        (?:[.,]\d+)?
+                                    )
+                                )?'''.format(**self.locale.re_values)
+
+        self.RE_TIMEHMS2  = r'''(?P<hours>
+                                    (\d\d?)
+                                )
+                                (
+                                    (?P<tsep>{timeseperator}|)
+                                    (?P<minutes>
+                                        (\d\d?)
+                                    )
+                                    (?:(?P=tsep)
+                                        (?P<seconds>\d\d?
+                                            (?:[.,]\d+)?
+                                        )
+                                    )?
+                                )?'''.format(**self.locale.re_values)
+
         self.RE_NLP_PREFIX = r'''(?P<nlp_prefix>
-                                    (on)(\s)+1
+                                    (on)
+                                    (\s)+1
                                     |
-                                    (at|in)(\s)+2
+                                    (at|in)
+                                    (\s)+2
                                     |
-                                    (in)(\s)+3
+                                    (in)
+                                    (\s)+3
                                 )'''
 
         if 'meridian' in self.locale.re_values:
-            self.RE_TIMEHMS2 += r'\s?(?P<meridian>(%(meridian)s))' % self.locale.re_values
+            self.RE_TIMEHMS2 += r'\s?(?P<meridian>({meridian}))'.format(**self.locale.re_values)
 
         dateSeps = ''.join(self.locale.dateSep) + '.'
 
         self.RE_DATE      = r'''(\s?|^)
                                 (?P<date>(\d\d?[%s]\d\d?([%s]\d\d(\d\d)?)?))
                                 (\s?|$|[^0-9a-zA-Z])''' % (dateSeps, dateSeps)
+
         self.RE_DATE2     = r'[%s]' % dateSeps
 
         assert 'dayoffsets' in self.locale.re_values
+
         self.RE_DAY       = r'''(\s|^)
-                                (?P<day>(%(dayoffsets)s))
-                                (\s|$|[^0-9a-zA-Z])''' % self.locale.re_values
-        self.RE_DAY2      = r'''(?P<day>\d\d?)(?P<suffix>%(daysuffix)s)?
-                             ''' % self.locale.re_values
+                                (?P<day>
+                                    ({dayoffsets})
+                                )
+                                (\s|$|[^0-9a-zA-Z])'''.format(**self.locale.re_values)
+
+        self.RE_DAY2      = r'''(?P<day>\d\d?)
+                                (?P<suffix>{daysuffix})?
+                            '''.format(**self.locale.re_values)
+
         # self.RE_TIME      = r'''(\s?|^)
         #                         (?P<time>(morning|breakfast|noon|lunch|evening|midnight|tonight|dinner|night|now))
         #                         (\s?|$|[^0-9a-zA-Z])''' % self.locale.re_values
+
         self.RE_TIME      = r'''(\s?|^)
-                                (?P<time>(%(sources)s))
-                                (\s?|$|[^0-9a-zA-Z])''' % self.locale.re_values
+                                (?P<time>
+                                    ({sources})
+                                )
+                                (\s?|$|[^0-9a-zA-Z])'''.format(**self.locale.re_values)
+
         self.RE_REMAINING = r'\s+'
 
         # Regex for date/time ranges
         self.RE_RTIMEHMS  = r'''(\s?|^)
-                                (\d\d?)%(timeseperator)s
+                                (\d\d?){timeseperator}
                                 (\d\d)
-                                (%(timeseperator)s(\d\d))?
-                                (\s?|$)''' % self.locale.re_values
+                                ({timeseperator}(\d\d))?
+                                (\s?|$)'''.format(**self.locale.re_values)
+
         self.RE_RTIMEHMS2 = r'''(\s?|^)
                                 (\d\d?)
-                                (%(timeseperator)s(\d\d?))?
-                                (%(timeseperator)s(\d\d?))?''' % self.locale.re_values
+                                ({timeseperator}(\d\d?))?
+                                ({timeseperator}(\d\d?))?'''.format(**self.locale.re_values)
 
         if 'meridian' in self.locale.re_values:
-            self.RE_RTIMEHMS2 += r'\s?(%(meridian)s)' % self.locale.re_values
+            self.RE_RTIMEHMS2 += r'\s?({meridian})'.format(**self.locale.re_values)
 
         self.RE_RDATE  = r'(\d+([%s]\d+)+)' % dateSeps
-        self.RE_RDATE3 = r'''((((%(months)s))\s?
-                              ((\d\d?)
-                               (\s?|%(daysuffix)s|$)+)?
-                              (,\s?\d\d\d\d)?))''' % self.locale.re_values
+        self.RE_RDATE3 = r'''(
+                                (
+                                    (
+                                        ({months})
+                                    )\s?
+                                    (
+                                        (\d\d?)
+                                        (\s?|{daysuffix}|$)+
+                                    )?
+                                    (,\s?\d\d\d\d)?
+                                )
+                            )'''.format(**self.locale.re_values)
 
         # "06/07/06 - 08/09/06"
-        self.DATERNG1 = self.RE_RDATE + r'\s?%(rangeseperator)s\s?' + self.RE_RDATE
-        self.DATERNG1 = self.DATERNG1 % self.locale.re_values
+        self.DATERNG1 = self.RE_RDATE + r'\s?{rangeseperator}\s?' + self.RE_RDATE
+        self.DATERNG1 = self.DATERNG1.format(**self.locale.re_values)
 
         # "march 31 - june 1st, 2006"
-        self.DATERNG2 = self.RE_RDATE3 + r'\s?%(rangeseperator)s\s?' + self.RE_RDATE3
-        self.DATERNG2 = self.DATERNG2 % self.locale.re_values
+        self.DATERNG2 = self.RE_RDATE3 + r'\s?{rangeseperator}\s?' + self.RE_RDATE3
+        self.DATERNG2 = self.DATERNG2.format(**self.locale.re_values)
 
         # "march 1rd -13th"
-        self.DATERNG3 = self.RE_RDATE3 + r'\s?%(rangeseperator)s\s?(\d\d?)\s?(rd|st|nd|th)?'
-        self.DATERNG3 = self.DATERNG3 % self.locale.re_values
+        self.DATERNG3 = self.RE_RDATE3 + r'\s?{rangeseperator}\s?(\d\d?)\s?(rd|st|nd|th)?'
+        self.DATERNG3 = self.DATERNG3.format(**self.locale.re_values)
 
         # "4:00:55 pm - 5:90:44 am", '4p-5p'
-        self.TIMERNG1 = self.RE_RTIMEHMS2 + r'\s?%(rangeseperator)s\s?' + self.RE_RTIMEHMS2
-        self.TIMERNG1 = self.TIMERNG1 % self.locale.re_values
+        self.TIMERNG1 = self.RE_RTIMEHMS2 + r'\s?{rangeseperator}\s?' + self.RE_RTIMEHMS2
+        self.TIMERNG1 = self.TIMERNG1.format(**self.locale.re_values)
 
-        # "4:00 - 5:90 ", "4:55:55-3:44:55"
-        self.TIMERNG2 = self.RE_RTIMEHMS + r'\s?%(rangeseperator)s\s?' + self.RE_RTIMEHMS
-        self.TIMERNG2 = self.TIMERNG2 % self.locale.re_values
+        self.TIMERNG2 = self.RE_RTIMEHMS + r'\s?{rangeseperator}\s?' + self.RE_RTIMEHMS
+        self.TIMERNG2 = self.TIMERNG2.format(**self.locale.re_values)
 
         # "4-5pm "
-        self.TIMERNG3 = r'\d\d?\s?%(rangeseperator)s\s?' + self.RE_RTIMEHMS2
-        self.TIMERNG3 = self.TIMERNG3 % self.locale.re_values
+        self.TIMERNG3 = r'\d\d?\s?{rangeseperator}\s?' + self.RE_RTIMEHMS2
+        self.TIMERNG3 = self.TIMERNG3.format(**self.locale.re_values)
 
         # "4:30-5pm "
-        self.TIMERNG4 = self.RE_RTIMEHMS + r'\s?%(rangeseperator)s\s?' + self.RE_RTIMEHMS2
-        self.TIMERNG4 = self.TIMERNG4 % self.locale.re_values
+        self.TIMERNG4 = self.RE_RTIMEHMS + r'\s?{rangeseperator}\s?' + self.RE_RTIMEHMS2
+        self.TIMERNG4 = self.TIMERNG4.format(**self.locale.re_values)
 
         self.re_option = re.IGNORECASE + re.VERBOSE
         self.cre_source = { 'CRE_SPECIAL':   self.RE_SPECIAL,

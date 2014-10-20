@@ -206,12 +206,12 @@ class pdtLocale_icu(pdtLocale_base):
 
             self.symbols = pyicu.DateFormatSymbols(self.icu)
 
-              # grab ICU list of weekdays, skipping first entry which
-              # is always blank
+            # grab ICU list of weekdays, skipping first entry which
+            # is always blank
             wd  = list(map(lcase, self.symbols.getWeekdays()[1:]))
             swd = list(map(lcase, self.symbols.getShortWeekdays()[1:]))
 
-              # store them in our list with Monday first (ICU puts Sunday first)
+            # store them in our list with Monday first (ICU puts Sunday first)
             self.Weekdays      = wd[1:] + wd[0:1]
             self.shortWeekdays = swd[1:] + swd[0:1]
             self.Months        = list(map(lcase, self.symbols.getMonths()))
@@ -250,27 +250,27 @@ class pdtLocale_icu(pdtLocale_base):
             self.usesMeridian = 'a' in s
             self.uses24       = 'H' in s
 
-              # '11:45 AM' or '11:45'
+            # '11:45 AM' or '11:45'
             s = o.format(datetime.datetime(2003, 10, 30, 11, 45))
 
-              # ': AM' or ':'
+            # ': AM' or ':'
             s = s.replace('11', '').replace('45', '')
 
             if len(s) > 0:
-               ts = s[0]
+                ts = s[0]
 
             if self.usesMeridian:
                  # '23:45 AM' or '23:45'
-               am = s[1:].strip()
-               s  = o.format(datetime.datetime(2003, 10, 30, 23, 45))
+                am = s[1:].strip()
+                s  = o.format(datetime.datetime(2003, 10, 30, 23, 45))
 
-               if self.uses24:
-                   s = s.replace('23', '')
-               else:
-                   s = s.replace('11', '')
+                if self.uses24:
+                    s = s.replace('23', '')
+                else:
+                    s = s.replace('11', '')
 
                  # 'PM' or ''
-               pm = s.replace('45', '').replace(ts, '').strip()
+                pm = s.replace('45', '').replace(ts, '').strip()
 
             self.timeSep  = [ ts ]
             self.meridian = [ am, pm ]
@@ -280,9 +280,9 @@ class pdtLocale_icu(pdtLocale_base):
             s = s.replace('10', '').replace('30', '').replace('03', '').replace('2003', '')
 
             if len(s) > 0:
-               ds = s[0]
+                ds = s[0]
             else:
-               ds = '/'
+                ds = '/'
 
             self.dateSep = [ ds ]
             s            = self.dateFormats['short']
@@ -432,8 +432,8 @@ class pdtLocale_de(pdtLocale_base):
         self.re_values['qunits']         = 'h|m|s|t|w|m|j'
         self.re_values['now']            = [ 'jetzt' ]
 
-          # Used to adjust the returned date before/after the source
-          #still looking for insight on how to translate all of them to german.
+        # Used to adjust the returned date before/after the source
+        #still looking for insight on how to translate all of them to german.
         self.Modifiers['from']        =  1
         self.Modifiers['before']      = -1
         self.Modifiers['after']       =  1
@@ -449,30 +449,30 @@ class pdtLocale_de(pdtLocale_base):
         self.Modifiers['eod']         =  0
         self.Modifiers['eo']          =  0
 
-          #morgen/abermorgen does not work, see http://code.google.com/p/parsedatetime/issues/detail?id=19
+        #morgen/abermorgen does not work, see http://code.google.com/p/parsedatetime/issues/detail?id=19
         self.dayOffsets['morgen']        =  1
         self.dayOffsets['heute']         =  0
         self.dayOffsets['gestern']       = -1
         self.dayOffsets['vorgestern']    = -2
         self.dayOffsets['\xfcbermorgen'] =  2
 
-          # special day and/or times, i.e. lunch, noon, evening
-          # each element in the dictionary is a dictionary that is used
-          # to fill in any value to be replace - the current date/time will
-          # already have been populated by the method buildSources
-        self.re_sources['mittag']         = { 'hr': 12, 'mn': 0, 'sec': 0 }
-        self.re_sources['mittags']        = { 'hr': 12, 'mn': 0, 'sec': 0 }
-        self.re_sources['mittagessen']    = { 'hr': 12, 'mn': 0, 'sec': 0 }
-        self.re_sources['morgen']         = { 'hr':  6, 'mn': 0, 'sec': 0 }
-        self.re_sources['morgens']        = { 'hr':  6, 'mn': 0, 'sec': 0 }
-        self.re_sources['fr\e4hst\xe4ck'] = { 'hr':  8, 'mn': 0, 'sec': 0 }
-        self.re_sources['abendessen']     = { 'hr': 19, 'mn': 0, 'sec': 0 }
-        self.re_sources['abend']          = { 'hr': 18, 'mn': 0, 'sec': 0 }
-        self.re_sources['abends']         = { 'hr': 18, 'mn': 0, 'sec': 0 }
-        self.re_sources['mitternacht']    = { 'hr':  0, 'mn': 0, 'sec': 0 }
-        self.re_sources['nacht']          = { 'hr': 21, 'mn': 0, 'sec': 0 }
-        self.re_sources['nachts']         = { 'hr': 21, 'mn': 0, 'sec': 0 }
-        self.re_sources['heute abend']    = { 'hr': 21, 'mn': 0, 'sec': 0 }
-        self.re_sources['heute nacht']    = { 'hr': 21, 'mn': 0, 'sec': 0 }
-        self.re_sources['feierabend']     = { 'hr': 17, 'mn': 0, 'sec': 0 }
+        # special day and/or times, i.e. lunch, noon, evening
+        # each element in the dictionary is a dictionary that is used
+        # to fill in any value to be replace - the current date/time will
+        # already have been populated by the method buildSources
+        self.re_sources['mittag']          = { 'hr': 12, 'mn': 0, 'sec': 0 }
+        self.re_sources['mittags']         = { 'hr': 12, 'mn': 0, 'sec': 0 }
+        self.re_sources['mittagessen']     = { 'hr': 12, 'mn': 0, 'sec': 0 }
+        self.re_sources['morgen']          = { 'hr':  6, 'mn': 0, 'sec': 0 }
+        self.re_sources['morgens']         = { 'hr':  6, 'mn': 0, 'sec': 0 }
+        self.re_sources[r'fr\e4hst\xe4ck'] = { 'hr':  8, 'mn': 0, 'sec': 0 }
+        self.re_sources['abendessen']      = { 'hr': 19, 'mn': 0, 'sec': 0 }
+        self.re_sources['abend']           = { 'hr': 18, 'mn': 0, 'sec': 0 }
+        self.re_sources['abends']          = { 'hr': 18, 'mn': 0, 'sec': 0 }
+        self.re_sources['mitternacht']     = { 'hr':  0, 'mn': 0, 'sec': 0 }
+        self.re_sources['nacht']           = { 'hr': 21, 'mn': 0, 'sec': 0 }
+        self.re_sources['nachts']          = { 'hr': 21, 'mn': 0, 'sec': 0 }
+        self.re_sources['heute abend']     = { 'hr': 21, 'mn': 0, 'sec': 0 }
+        self.re_sources['heute nacht']     = { 'hr': 21, 'mn': 0, 'sec': 0 }
+        self.re_sources['feierabend']      = { 'hr': 17, 'mn': 0, 'sec': 0 }
 
