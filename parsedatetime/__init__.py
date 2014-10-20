@@ -167,14 +167,14 @@ def _parse_date_w3dtf(dateString):
             return -offset
         return offset
 
-    __date_re = ('(?P<year>\d\d\d\d)'
-                 '(?:(?P<dsep>-|)'
-                 '(?:(?P<julian>\d\d\d)'
-                 '|(?P<month>\d\d)(?:(?P=dsep)(?P<day>\d\d))?))?')
-    __tzd_re = '(?P<tzd>[-+](?P<tzdhours>\d\d)(?::?(?P<tzdminutes>\d\d))|Z)'
+    __date_re = (r'(?P<year>\d\d\d\d)'
+                 r'(?:(?P<dsep>-|)'
+                 r'(?:(?P<julian>\d\d\d)'
+                 r'|(?P<month>\d\d)(?:(?P=dsep)(?P<day>\d\d))?))?')
+    __tzd_re = r'(?P<tzd>[-+](?P<tzdhours>\d\d)(?::?(?P<tzdminutes>\d\d))|Z)'
     __tzd_rx = re.compile(__tzd_re)
-    __time_re = ('(?P<hours>\d\d)(?P<tsep>:|)(?P<minutes>\d\d)'
-                 '(?:(?P=tsep)(?P<seconds>\d\d(?:[.,]\d+)?))?'
+    __time_re = (r'(?P<hours>\d\d)(?P<tsep>:|)(?P<minutes>\d\d)'
+                 r'(?:(?P=tsep)(?P<seconds>\d\d(?:[.,]\d+)?))?'
                  + __tzd_re)
     __datetime_re = '%s(?:T%s)?' % (__date_re, __time_re)
     __datetime_rx = re.compile(__datetime_re)
@@ -2202,8 +2202,8 @@ class Constants(object):
 
         if self.locale is None:
             if not self.localeID in pdtLocales:
-                for id in range(0, len(self.fallbackLocales)):
-                    self.localeID = self.fallbackLocales[id]
+                for localeId in range(0, len(self.fallbackLocales)):
+                    self.localeID = self.fallbackLocales[localeId]
                     if self.localeID in pdtLocales:
                         break
 
@@ -2289,11 +2289,22 @@ class Constants(object):
         # TODO find all hard-coded uses of date/time seperators
 
         # not being used in code, but kept in case others are manually utilizing this regex for their own purposes
-        self.RE_DATE4     = r'''(?P<date>(((?P<day>\d\d?)(?P<suffix>%(daysuffix)s)?(,)?(\s)?)
-                                           (?P<mthname>(%(months)s|%(shortmonths)s))\s?
-                                           (?P<year>\d\d(\d\d)?)?
-                                         )
-                                )''' % self.locale.re_values
+        self.RE_DATE4     = r'''(?P<date>
+                                    (
+                                        (
+                                            (?P<day>\d\d?)
+                                            (?P<suffix>{daysuffix})?
+                                            (,)?
+                                            (\s)?
+                                        )
+                                        (?P<mthname>
+                                            ({months}|{shortmonths})
+                                        )\s?
+                                        (?P<year>\d\d
+                                            (\d\d)?
+                                        )?
+                                    )
+                                )'''.format(**self.locale.re_values)
 
         # I refactored DATE3 to fix Issue 16 http://code.google.com/p/parsedatetime/issues/detail?id=16
         # I suspect the final line was for a trailing time - but testing shows it's not needed
@@ -2377,7 +2388,8 @@ class Constants(object):
                                         (\b
                                             ({numbers}s)\b|\d+
                                         )\s?
-                                        (?P<qunits>\b{qunits})
+                                        \b
+                                        (?P<qunits>{qunits})
                                         (\s?|,|$)
                                     )
                                 )'''.format(**self.locale.re_values)
