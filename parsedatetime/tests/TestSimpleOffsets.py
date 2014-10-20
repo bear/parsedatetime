@@ -67,6 +67,7 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('5 minutes before now', start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5 min before now',     start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('5m before now',        start), (target, 2)))
+        self.assertTrue(_compareResults(self.cal.parse('5 minutes ago',        start), (target, 2)))
 
         self.assertTrue(_compareResults(self.cal.parse('five minutes before now', start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('five min before now',     start), (target, 2)))
@@ -99,6 +100,7 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('one week before now',   start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('7 days before now',     start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('seven days before now', start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('1 week ago',            start), (target, 1)))
         #self.assertTrue(_compareResults(self.cal.parse('last week',              tart), (target, 1)))
 
     def testSpecials(self):
