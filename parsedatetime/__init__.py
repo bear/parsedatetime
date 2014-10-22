@@ -1079,7 +1079,7 @@ class Calendar:
                  if not parsed
         """
         s   = datetimeString.strip()
-        now = time.localtime()
+        now = sourceTime or time.localtime()
 
         log.debug('_evalString(%s, %s)' % (datetimeString, sourceTime))
 
