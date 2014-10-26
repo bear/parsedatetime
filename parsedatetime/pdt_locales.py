@@ -43,7 +43,7 @@ class pdtLocale_base(object):
                                'thursday', 'friday', 'saturday', 'sunday',
                              ]
         self.shortWeekdays = [ 'mon', 'tues', 'wed',
-                               'th', 'fri', 'sat', 'sun',
+                               'thu', 'fri', 'sat', 'sun',
                              ]
         self.Months        = [ 'january', 'february', 'march',
                                'april',   'may',      'june',

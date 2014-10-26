@@ -267,6 +267,39 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('12P.M.',        start), (target, 2)))
         self.assertTrue(_compareResults(self.cal.parse('12p.m.',        start), (target, 2)))
 
+
+    def testDaysOfWeek(self):
+        start =  datetime.datetime(2014, 10, 25, self.hr, self.mn, self.sec).timetuple()
+
+        target = datetime.datetime(2014, 10, 26, self.hr, self.mn, self.sec).timetuple()
+        self.assertTrue(_compareResults(self.cal.parse('sunday',          start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('sun',          start), (target, 1)))
+
+        target = datetime.datetime(2014, 10, 27, self.hr, self.mn, self.sec).timetuple()
+        self.assertTrue(_compareResults(self.cal.parse('Monday',          start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('mon',          start), (target, 1)))
+
+        target = datetime.datetime(2014, 10, 28, self.hr, self.mn, self.sec).timetuple()
+        self.assertTrue(_compareResults(self.cal.parse('tuesday',          start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('tues',          start), (target, 1)))
+
+        target = datetime.datetime(2014, 10, 29, self.hr, self.mn, self.sec).timetuple()
+        self.assertTrue(_compareResults(self.cal.parse('wednesday',          start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('wed',          start), (target, 1)))
+
+        target = datetime.datetime(2014, 10, 30, self.hr, self.mn, self.sec).timetuple()
+        self.assertTrue(_compareResults(self.cal.parse('thursday',          start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('thu',          start), (target, 1)))
+
+        target = datetime.datetime(2014, 10, 31, self.hr, self.mn, self.sec).timetuple()
+        self.assertTrue(_compareResults(self.cal.parse('friday',          start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('fri',          start), (target, 1)))
+
+        target = datetime.datetime(2014, 11, 1, self.hr, self.mn, self.sec).timetuple()
+        self.assertTrue(_compareResults(self.cal.parse('saturday',          start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('sat',          start), (target, 1)))
+
+
     # def testMonths(self):
     #
     #     start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
