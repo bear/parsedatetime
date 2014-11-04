@@ -13,7 +13,7 @@ def _compareResults(result, check):
             (t_hr == v_hr) and (t_min == v_min)) and (t_flag == v_flag)
 
 class pdtLocale_en(pdt.pdt_locales.pdtLocale_icu):
-    """French locale with french today/tomorrow/yesterday"""
+    """Update en locale to include a bunch of different abbreviations"""
     def __init__(self):
         super(pdtLocale_en, self).__init__(localeID='en_us')
         self.Weekdays      = [ 'monday', 'tuesday', 'wednesday',
