@@ -2210,16 +2210,30 @@ class Constants(object):
             self.locale = pdtLocales[self.localeID]()
 
         if self.locale is not None:
-              # escape any regex special characters that may be found
-            wd   = tuple(map(re.escape, self.locale.Weekdays))
-            swd  = tuple(map(re.escape, self.locale.shortWeekdays))
-            mth  = tuple(map(re.escape, self.locale.Months))
-            smth = tuple(map(re.escape, self.locale.shortMonths))
 
-            self.locale.re_values['months']      = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s' % mth
-            self.locale.re_values['shortmonths'] = '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s' % smth
-            self.locale.re_values['days']        = '%s|%s|%s|%s|%s|%s|%s' % wd
-            self.locale.re_values['shortdays']   = '%s|%s|%s|%s|%s|%s|%s' % swd
+
+            def _getLocaleDataAdjusted(localeData):
+                """
+                If localeData is defined as ["mon|mnd", 'tu|tues'...] then this function splits those definitions on |
+                """
+                adjusted = []
+                for d in localeData:
+                    if len(d.split("|"))>0:
+                        adjusted += d.split("|")
+                    else:
+                        adjusted.append(d)
+                return adjusted
+
+            mths = _getLocaleDataAdjusted(self.locale.Months)
+            smths = _getLocaleDataAdjusted(self.locale.shortMonths)
+            swds = _getLocaleDataAdjusted(self.locale.shortWeekdays)
+            wds = _getLocaleDataAdjusted(self.locale.Weekdays)
+
+            # escape any regex special characters that may be found
+            self.locale.re_values['months']      = '|'.join(map(re.escape, mths))
+            self.locale.re_values['shortmonths'] = '|'.join(map(re.escape, smths))
+            self.locale.re_values['days']        = '|'.join(map(re.escape, wds))
+            self.locale.re_values['shortdays']   = '|'.join(map(re.escape, swds))
             self.locale.re_values['dayoffsets']  = '|'.join(map(re.escape, self.locale.dayOffsets))
             self.locale.re_values['numbers']     = '|'.join(map(re.escape, self.locale.numbers))
 
@@ -2261,25 +2275,24 @@ class Constants(object):
 
               # build weekday offsets - yes, it assumes the Weekday and shortWeekday
               # lists are in the same order and Mon..Sun (Python style)
-            o = 0
-            for key in self.locale.Weekdays:
-                self.locale.WeekdayOffsets[key] = o
-                o += 1
-            o = 0
-            for key in self.locale.shortWeekdays:
-                self.locale.WeekdayOffsets[key] = o
-                o += 1
+
+            def _buildOffsets(offsetDict,localeData, indexStart):
+                o = indexStart
+                for key in localeData:
+                    if key.split("|")>0:
+                        for k in key.split("|"):
+                            offsetDict[k] = o
+                    else:
+                        offsetDict[key] = o
+                    o += 1
+            _buildOffsets( self.locale.WeekdayOffsets,self.locale.Weekdays, 0)
+            _buildOffsets( self.locale.WeekdayOffsets,self.locale.shortWeekdays, 0)
 
               # build month offsets - yes, it assumes the Months and shortMonths
               # lists are in the same order and Jan..Dec
-            o = 1
-            for key in self.locale.Months:
-                self.locale.MonthOffsets[key] = o
-                o += 1
-            o = 1
-            for key in self.locale.shortMonths:
-                self.locale.MonthOffsets[key] = o
-                o += 1
+            _buildOffsets( self.locale.MonthOffsets,self.locale.Months, 1)
+            _buildOffsets( self.locale.MonthOffsets,self.locale.shortMonths, 1)
+
 
             # self.locale.DaySuffixes = self.locale.re_values['daysuffix'].split('|')
 
@@ -2635,3 +2648,5 @@ class Constants(object):
                               values['hr'], values['mn'], values['sec'], wd, yd, isdst )
 
         return sources
+
+
