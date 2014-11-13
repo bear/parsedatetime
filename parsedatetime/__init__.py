@@ -66,7 +66,7 @@ pdtLocales = { 'icu':   pdt_locales.pdtLocale_icu,
                'en_AU': pdt_locales.pdtLocale_au,
                'es_ES': pdt_locales.pdtLocale_es,
                'de_DE': pdt_locales.pdtLocale_de,
-			   'nl_NL': pdt_locales.pdfLocale_nl,
+               'nl_NL': pdt_locales.pdtLocale_nl,
              }
 
 
