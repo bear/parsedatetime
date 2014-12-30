@@ -8,6 +8,10 @@ Python 2.6 or greater is required for parsedatetime version 1.0 or greater.
     :target: https://pypi.python.org/pypi/parsedatetime/
     :alt: Wheel Status
 
+.. image:: https://travis-ci.org/bear/parsedatetime.svg
+    :target: https://pypi.python.org/pypi/parsedatetime/
+    :alt: Travis CI
+
 ==========
 Installing
 ==========
