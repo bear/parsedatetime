@@ -2,7 +2,7 @@ parsedatetime
 
 Parse human-readable date/time strings.
 
-Python 2.6 or greater is required for parsedatetime version 1.0 or greater.
+Python 2.7 or greater is required for parsedatetime version 1.0 or greater.
 
 .. image:: https://pypip.in/wheel/parsedatetime/badge.png
     :target: https://pypi.python.org/pypi/parsedatetime/
@@ -32,13 +32,11 @@ To run tests on several python versions, type ``tox``::
 
   $ tox
   [... tox creates a virtualenv for every python version and runs tests inside of each]
-  py26: commands succeeded
   py27: commands succeeded
-  py32: commands succeeded
   py33: commands succeeded
   py34: commands succeeded
 
-This assumes that you have ``python2.6``, ``python2.7``, ``python3.2``, etc in ``PATH``.
+This assumes that you have ``python2.7``, ``python3.4``, etc in ``PATH``.
 
 ===================
 Using parsedatetime
