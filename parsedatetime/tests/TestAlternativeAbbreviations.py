@@ -1,5 +1,6 @@
 import unittest, time, datetime
 import parsedatetime as pdt
+
   # a special compare function is used to allow us to ignore the seconds as
   # the running of the test could cross a minute boundary
 def _compareResults(result, check):
@@ -98,6 +99,5 @@ class test(unittest.TestCase):
                   ('dec|decem|december', datetime.datetime(2014, 12, 1, self.hr, self.mn, self.sec).timetuple() )
                              ]:
                 for dateText in dates.split("|"):
-                    print dateText
+                    # print dateText
                     self.assertTrue(_compareResults(self.cal.parse(dateText,          start), (expected_date, 1)))
-
