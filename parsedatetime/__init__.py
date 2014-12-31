@@ -2280,7 +2280,7 @@ class Constants(object):
             def _buildOffsets(offsetDict,localeData, indexStart):
                 o = indexStart
                 for key in localeData:
-                    if key.split("|")>0:
+                    if len(key.split("|")) > 0:
                         for k in key.split("|"):
                             offsetDict[k] = o
                     else:
