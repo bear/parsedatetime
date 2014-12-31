@@ -30,6 +30,9 @@ class test(unittest.TestCase):
 
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
 
+        if self.ptc.localeID != 'fr_FR':
+            raise unittest.SkipTest('Locale not set to fr_FR - check if PyICU is installed')
+
     def testTimes(self):
         if self.ptc.localeID == 'fr_FR':
             start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()

@@ -28,6 +28,9 @@ class test(unittest.TestCase):
 
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
 
+        if self.ptc.localeID != 'en_AU':
+            raise unittest.SkipTest('Locale not set to en_AU - check if PyICU is installed')
+
     def testTimes(self):
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
         target = datetime.datetime(self.yr, self.mth, self.dy, 23, 0, 0).timetuple()
