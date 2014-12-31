@@ -10,4 +10,4 @@ install:
   - travis_retry pip install .
 
 script:
-  - run_tests.py parsedatetime
+  - python run_tests.py parsedatetime
