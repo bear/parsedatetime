@@ -783,6 +783,15 @@ class Calendar:
         else:
             (yr, mth, dy, hr, mn, sec, wd, yd, isdst) = time.localtime()
 
+        if self.ptc.StartTimeFromSourceTime:
+            startHour   = hr
+            startMinute = mn
+            startSecond = sec
+        else:
+            startHour   = 9
+            startMinute = 0
+            startSecond = 0
+
         # capture the units after the modifier and the remaining
         # string after the unit
         m = self.ptc.CRE_REMAINING.search(chunk2)
@@ -803,18 +812,18 @@ class Calendar:
            unit == 'm':
             if offset == 0:
                 dy         = self.ptc.daysInMonth(mth, yr)
-                sourceTime = (yr, mth, dy, 9, 0, 0, wd, yd, isdst)
+                sourceTime = (yr, mth, dy, startHour, startMinute, startSecond, wd, yd, isdst)
             elif offset == 2:
                 # if day is the last day of the month, calculate the last day
                 # of the next month
                 if dy == self.ptc.daysInMonth(mth, yr):
                     dy = self.ptc.daysInMonth(mth + 1, yr)
 
-                start      = datetime.datetime(yr, mth, dy, 9, 0, 0)
+                start      = datetime.datetime(yr, mth, dy, startHour, startMinute, startSecond)
                 target     = self.inc(start, month=1)
                 sourceTime = target.timetuple()
             else:
-                start      = datetime.datetime(yr, mth, 1, 9, 0, 0)
+                start      = datetime.datetime(yr, mth, 1, startHour, startMinute, startSecond)
                 target     = self.inc(start, month=offset)
                 sourceTime = target.timetuple()
 
@@ -829,7 +838,7 @@ class Calendar:
                 target     = start + datetime.timedelta(days=(4 - wd))
                 sourceTime = target.timetuple()
             elif offset == 2:
-                start      = datetime.datetime(yr, mth, dy, 9, 0, 0)
+                start      = datetime.datetime(yr, mth, dy, startHour, startMinute, startSecond)
                 target     = start + datetime.timedelta(days=7)
                 sourceTime = target.timetuple()
             else:
@@ -849,7 +858,7 @@ class Calendar:
                 target     = start + datetime.timedelta(days=1)
                 sourceTime = target.timetuple()
             else:
-                start      = datetime.datetime(yr, mth, dy, 9, 0, 0)
+                start      = datetime.datetime(yr, mth, dy, startHour, startMinute, startSecond)
                 target     = start + datetime.timedelta(days=offset)
                 sourceTime = target.timetuple()
 
@@ -876,7 +885,7 @@ class Calendar:
             elif offset == 2:
                 sourceTime = (yr + 1, mth, dy, hr, mn, sec, wd, yd, isdst)
             else:
-                sourceTime = (yr + offset, 1, 1, 9, 0, 0, wd, yd, isdst)
+                sourceTime = (yr + offset, 1, 1, startHour, startMinute, startSecond, wd, yd, isdst)
 
             flag          = True
             self.dateFlag = 1
@@ -885,14 +894,14 @@ class Calendar:
             if modifier == 'eom':
                 self.modifierFlag = False
                 dy                = self.ptc.daysInMonth(mth, yr)
-                sourceTime        = (yr, mth, dy, 9, 0, 0, wd, yd, isdst)
+                sourceTime        = (yr, mth, dy, startHour, startMinute, startSecond, wd, yd, isdst)
                 self.dateFlag     = 2
                 flag              = True
             elif modifier == 'eoy':
                 self.modifierFlag = False
                 mth               = 12
                 dy                = self.ptc.daysInMonth(mth, yr)
-                sourceTime        = (yr, mth, dy, 9, 0, 0, wd, yd, isdst)
+                sourceTime        = (yr, mth, dy, startHour, startMinute, startSecond, wd, yd, isdst)
                 self.dateFlag     = 2
                 flag              = True
 
@@ -917,7 +926,7 @@ class Calendar:
                     diff       = self._CalculateDOWDelta(wd, wkdy, offset,
                                                          self.ptc.DOWParseStyle,
                                                          self.ptc.CurrentDOWParseStyle)
-                    start      = datetime.datetime(yr, mth, dy, 9, 0, 0)
+                    start      = datetime.datetime(yr, mth, dy, startHour, startMinute, startSecond)
                     target     = start + datetime.timedelta(days=diff)
                     sourceTime = target.timetuple()
 
@@ -1240,7 +1249,16 @@ class Calendar:
             else:
                 offset = 0
 
-            start      = datetime.datetime(yr, mth, dy, 9, 0, 0)
+            if self.ptc.StartTimeFromSourceTime:
+                startHour   = hr
+                startMinute = mn
+                startSecond = sec
+            else:
+                startHour   = 9
+                startMinute = 0
+                startSecond = 0
+
+            start      = datetime.datetime(yr, mth, dy, startHour, startMinute, startSecond)
             target     = start + datetime.timedelta(days=offset)
             sourceTime = target.timetuple()
 
@@ -2135,6 +2153,11 @@ class Constants(object):
         self._DaysInMonthList = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
         self.rangeSep         = '-'
         self.BirthdayEpoch    = 50
+
+        # When True the starting time for all relative calculations will come
+        # from the given SourceTime, otherwise it will be 9am
+
+        self.StartTimeFromSourceTime = False
 
         # YearParseStyle controls how we parse "Jun 12", i.e. dates that do
         # not have a year present.  The default is to compare the date given
