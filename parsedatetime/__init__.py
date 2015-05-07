@@ -966,6 +966,7 @@ class Calendar:
                 # check if the remaining text is parsable and if so,
                 # use it as the base time for the modifier source time
                 t, flag2 = self.parse('%s %s' % (chunk1, unit), sourceTime)
+                chunk1 = ''
 
                 log.debug('flag2 = %s t = %s' % (flag2, t))
 
@@ -994,10 +995,10 @@ class Calendar:
 
         self.modifierFlag = False
 
-        log.debug('returning chunk = "%s" and sourceTime = %s' % (chunk2, sourceTime))
+        log.debug('returning chunk = "%s %s" and sourceTime = %s' %
+                  (chunk1, chunk2, sourceTime))
 
-        #return '%s %s' % (chunk1, chunk2), sourceTime
-        return '%s' % chunk2, sourceTime
+        return '%s %s' % (chunk1, chunk2), sourceTime
 
     def _evalModifier2(self, modifier, chunk1 , chunk2, sourceTime):
         """
