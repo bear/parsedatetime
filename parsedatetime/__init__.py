@@ -2494,7 +2494,7 @@ class Constants(object):
                                 )'''
 
         if 'meridian' in self.locale.re_values:
-            self.RE_TIMEHMS2 += r'\s?(?P<meridian>({meridian}))'.format(**self.locale.re_values)
+            self.RE_TIMEHMS2 += r'\s?(?P<meridian>({meridian})\b)'.format(**self.locale.re_values)
 
         dateSeps = ''.join(self.locale.dateSep) + '.'
 
