@@ -125,6 +125,7 @@ class pdtLocale_base(object):
           # to fill in any value to be replace - the current date/time will
           # already have been populated by the method buildSources
         self.re_sources    = { 'noon':      { 'hr': 12, 'mn': 0, 'sec': 0 },
+                               'afternoon': { 'hr': 13, 'mn': 0, 'sec': 0 },
                                'lunch':     { 'hr': 12, 'mn': 0, 'sec': 0 },
                                'morning':   { 'hr':  6, 'mn': 0, 'sec': 0 },
                                'breakfast': { 'hr':  8, 'mn': 0, 'sec': 0 },
