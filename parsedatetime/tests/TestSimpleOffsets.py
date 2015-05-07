@@ -80,13 +80,13 @@ class test(unittest.TestCase):
         target = t.timetuple()
 
         self.assertTrue(_compareResults(self.cal.parse('in 1 week',           start), (target, 1)))
-        self.assertTrue(_compareResults(self.cal.parse('1 week from now',     start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('1 week from now',     start), (target, 3)))
         self.assertTrue(_compareResults(self.cal.parse('in one week',         start), (target, 1)))
-        self.assertTrue(_compareResults(self.cal.parse('one week from now',   start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('one week from now',   start), (target, 3)))
         self.assertTrue(_compareResults(self.cal.parse('in 7 days',           start), (target, 1)))
-        self.assertTrue(_compareResults(self.cal.parse('7 days from now',     start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('7 days from now',     start), (target, 3)))
         self.assertTrue(_compareResults(self.cal.parse('in seven days',       start), (target, 1)))
-        self.assertTrue(_compareResults(self.cal.parse('seven days from now', start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('seven days from now', start), (target, 3)))
         #self.assertTrue(_compareResults(self.cal.parse('next week',           start), (target, 1)))
 
     def testWeekBeforeNow(self):
@@ -96,10 +96,10 @@ class test(unittest.TestCase):
         start  = s.timetuple()
         target = t.timetuple()
 
-        self.assertTrue(_compareResults(self.cal.parse('1 week before now',     start), (target, 1)))
-        self.assertTrue(_compareResults(self.cal.parse('one week before now',   start), (target, 1)))
-        self.assertTrue(_compareResults(self.cal.parse('7 days before now',     start), (target, 1)))
-        self.assertTrue(_compareResults(self.cal.parse('seven days before now', start), (target, 1)))
+        self.assertTrue(_compareResults(self.cal.parse('1 week before now',     start), (target, 3)))
+        self.assertTrue(_compareResults(self.cal.parse('one week before now',   start), (target, 3)))
+        self.assertTrue(_compareResults(self.cal.parse('7 days before now',     start), (target, 3)))
+        self.assertTrue(_compareResults(self.cal.parse('seven days before now', start), (target, 3)))
         self.assertTrue(_compareResults(self.cal.parse('1 week ago',            start), (target, 1)))
         #self.assertTrue(_compareResults(self.cal.parse('last week',              tart), (target, 1)))
 

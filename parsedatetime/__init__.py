@@ -23,6 +23,7 @@ Parse human-readable date/time text.
 
 Requires Python 2.6 or later
 """
+from __future__ import with_statement
 
 __author__       = 'Mike Taylor (bear@bear.im)'
 __copyright__    = 'Copyright (c) 2004 Mike Taylor'
@@ -37,6 +38,7 @@ import re
 import time
 import datetime
 import calendar
+import contextlib
 import email.utils
 
 try:
@@ -256,6 +258,18 @@ class Calendar:
 
         self.timeFlag      = 0
         self.dateFlag      = 0
+
+    @contextlib.contextmanager
+    def _mergeFlags(self):
+        """
+        Keep old dateFlag and timeFlag in cache and
+        merge them after context executed
+        """
+        tempDateFlag = self.dateFlag
+        tempTimeFlag = self.timeFlag
+        yield
+        self.dateFlag = tempDateFlag | self.dateFlag
+        self.timeFlag = tempTimeFlag | self.timeFlag
 
     def _convertUnitAsWords(self, unitText):
         """
@@ -1033,13 +1047,11 @@ class Calendar:
                     # FIXME: this is not threadsafe!
                     self.ptc.DOWParseStyle = -1
 
-            sourceTime, flag1 = self.parse(chunk2, sourceTime)
+            with self._mergeFlags():
+                sourceTime, flag1 = self.parse(chunk2, sourceTime)
             # restore DOWParseStyle setting
             self.DOWParseStyle = currDOWParseStyle
-            if flag1 == 0:
-                flag1 = True
-            else:
-                flag1 = False
+            flag1 = (flag1 == 0)
             flag2 = False
         else:
             flag1 = False
@@ -1052,9 +1064,8 @@ class Calendar:
                     chunk1 = chunk1[m.end():]
                     chunk1 = '%d%s' % (qty, chunk1)
 
-            tempDateFlag       = self.dateFlag
-            tempTimeFlag       = self.timeFlag
-            sourceTime2, flag2 = self.parse(chunk1, sourceTime)
+            with self._mergeFlags():
+                sourceTime2, flag2 = self.parse(chunk1, sourceTime)
         else:
             return sourceTime, (flag1 and flag2)
 
@@ -1062,9 +1073,6 @@ class Calendar:
         # value returned by parsing chunk1
         if not (flag1 == False and flag2 == 0):
             sourceTime = sourceTime2
-        else:
-            self.timeFlag = tempTimeFlag
-            self.dateFlag = tempDateFlag
 
         return sourceTime, (flag1 and flag2)
 
@@ -1698,6 +1706,7 @@ class Calendar:
             if not flag:
                 s = ''
 
+            log.debug('dateFlag %s, timeFlag %s' % (self.dateFlag, self.timeFlag))
             log.debug('parse (bottom) [%s][%s][%s][%s]' % (s, parseStr, chunk1, chunk2))
             log.debug('weekday %s, dateStd %s, dateStr %s, time %s, timeStr %s, meridian %s' % \
                       (self.weekdyFlag, self.dateStdFlag, self.dateStrFlag, self.timeStdFlag, self.timeStrFlag, self.meridianFlag))
@@ -1707,30 +1716,26 @@ class Calendar:
             # evaluate the matched string
 
             if parseStr != '':
-                if self.modifierFlag == True:
+                if self.modifierFlag is True:
                     t, totalTime = self._evalModifier(parseStr, chunk1, chunk2, totalTime)
                     # t is the unparsed part of the chunks.
                     # If it is not date/time, return current
                     # totalTime as it is; else return the output
                     # after parsing t.
-                    if (t != '') and (t != None):
-                        tempDateFlag       = self.dateFlag
-                        tempTimeFlag       = self.timeFlag
-                        (totalTime2, flag) = self.parse(t, totalTime)
+                    if (t != '') and (t is not None):
+                        with self._mergeFlags():
+                            totalTime2, flag = self.parse(t, totalTime)
 
                         if flag == 0 and totalTime is not None:
-                            self.timeFlag = tempTimeFlag
-                            self.dateFlag = tempDateFlag
-
                             log.debug('return 1')
                             return (totalTime, self.dateFlag + self.timeFlag)
                         else:
                             log.debug('return 2')
                             return (totalTime2, self.dateFlag + self.timeFlag)
 
-                elif self.modifier2Flag == True:
+                elif self.modifier2Flag is True:
                     totalTime, invalidFlag = self._evalModifier2(parseStr, chunk1, chunk2, totalTime)
-                    if invalidFlag == True:
+                    if invalidFlag is True:
                         self.dateFlag = 0
                         self.timeFlag = 0
 
