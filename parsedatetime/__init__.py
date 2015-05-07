@@ -2259,17 +2259,19 @@ class Constants(object):
             swds = _getLocaleDataAdjusted(self.locale.shortWeekdays)
             wds = _getLocaleDataAdjusted(self.locale.Weekdays)
 
+            re_join = lambda g: '|'.join(r'\b%s\b' % re.escape(i) for i in g)
+
             # escape any regex special characters that may be found
-            self.locale.re_values['months']      = '|'.join(map(re.escape, mths))
-            self.locale.re_values['shortmonths'] = '|'.join(map(re.escape, smths))
-            self.locale.re_values['days']        = '|'.join(map(re.escape, wds))
-            self.locale.re_values['shortdays']   = '|'.join(map(re.escape, swds))
-            self.locale.re_values['dayoffsets']  = '|'.join(map(re.escape, self.locale.dayOffsets))
+            self.locale.re_values['months']      = re_join(mths)
+            self.locale.re_values['shortmonths'] = re_join(smths)
+            self.locale.re_values['days']        = re_join(wds)
+            self.locale.re_values['shortdays']   = re_join(swds)
+            self.locale.re_values['dayoffsets']  = re_join(self.locale.dayOffsets)
             self.locale.re_values['numbers']     = '|'.join(map(re.escape, self.locale.numbers))
 
             units = [unit for units in self.locale.units.values() for unit in units] # flatten
-            units.sort(key=len, reverse=True) # longest first
-            self.locale.re_values['units'] = '|'.join(tuple(map(re.escape, units)))
+            units.sort(key=len, reverse=True)  # longest first
+            self.locale.re_values['units'] = '|'.join(r"(?<![a-z'-])%s\b" % re.escape(u) for u in units)  # units can be preceded by numerics but not alphas
 
             l = []
             lbefore = []
@@ -2280,9 +2282,9 @@ class Constants(object):
                     lbefore.append(s)
                 elif self.locale.Modifiers[s] > 0:
                     lafter.append(s)
-            self.locale.re_values['modifiers']        = '|'.join(tuple(map(re.escape, l)))
-            self.locale.re_values['modifiers-before'] = '|'.join(tuple(map(re.escape, lbefore)))
-            self.locale.re_values['modifiers-after']  = '|'.join(tuple(map(re.escape, lafter)))
+            self.locale.re_values['modifiers']        = re_join(l)
+            self.locale.re_values['modifiers-before'] = re_join(lbefore)
+            self.locale.re_values['modifiers-after']  = re_join(lafter)
 
             # todo: analyze all the modifiers to figure out which ones truly belong where.
             #       while it is obvious looking at the code that _evalModifier2 should be
@@ -2291,17 +2293,17 @@ class Constants(object):
             lmodifiers = []
             lmodifiers2 = []
             for s in self.locale.Modifiers:
-                if self.locale.Modifiers[s] < 0 or s in ['after', 'from']:
+                if self.locale.Modifiers[s] < 0 or s in ('after', 'from'):
                     lmodifiers2.append(s)
                 elif self.locale.Modifiers[s] > 0:
                     lmodifiers.append(s)
-            self.locale.re_values['modifiers-one'] = '|'.join(tuple(map(re.escape, lmodifiers)))
-            self.locale.re_values['modifiers-two'] = '|'.join(tuple(map(re.escape, lmodifiers2)))
+            self.locale.re_values['modifiers-one'] = re_join(lmodifiers)
+            self.locale.re_values['modifiers-two'] = re_join(lmodifiers2)
 
             l = []
             for s in self.locale.re_sources:
                 l.append(s)
-            self.locale.re_values['sources'] = '|'.join(r'\b' + re.escape(ll) + r'\b' for ll in l)
+            self.locale.re_values['sources'] = re_join(l)
 
               # build weekday offsets - yes, it assumes the Weekday and shortWeekday
               # lists are in the same order and Mon..Sun (Python style)
@@ -2432,7 +2434,7 @@ class Constants(object):
                                             ({numbers}s)\b|\d+
                                         )\s?
                                         \b
-                                        (?P<qunits>{qunits})
+                                        (?P<qunits>{qunits})\b
                                         (\s?|,|$)
                                     )
                                 )'''.format(**self.locale.re_values)
