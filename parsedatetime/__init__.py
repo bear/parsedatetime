@@ -2295,7 +2295,7 @@ class Constants(object):
             l = []
             for s in self.locale.re_sources:
                 l.append(s)
-            self.locale.re_values['sources'] = '|'.join(tuple(map(re.escape, l)))
+            self.locale.re_values['sources'] = '|'.join(r'\b' + re.escape(ll) + r'\b' for ll in l)
 
               # build weekday offsets - yes, it assumes the Weekday and shortWeekday
               # lists are in the same order and Mon..Sun (Python style)
