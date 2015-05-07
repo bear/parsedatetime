@@ -51,7 +51,7 @@ class test(unittest.TestCase):
         #       correct portions of text and their positions are extracted and processed.
         start  = datetime.datetime(2013, 8, 1, 21, 25, 0).timetuple()
         target = ((datetime.datetime(2013, 8, 5, 20, 0), 3, 17, 37, 'At 8PM on August 5th'),
-                  (datetime.datetime(2013, 8, 9, 21, 0), 2, 72, 90, 'next Friday at 9PM'),
+                  (datetime.datetime(2013, 8, 9, 21, 0), 3, 72, 90, 'next Friday at 9PM'),
                   (datetime.datetime(2013, 8, 1, 21, 30, 0), 2, 120, 132, 'in 5 minutes'))
 
         # positive testing

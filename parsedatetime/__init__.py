@@ -23,6 +23,7 @@ Parse human-readable date/time text.
 
 Requires Python 2.6 or later
 """
+from __future__ import with_statement
 
 __author__       = 'Mike Taylor (bear@bear.im)'
 __copyright__    = 'Copyright (c) 2004 Mike Taylor'
@@ -37,6 +38,7 @@ import re
 import time
 import datetime
 import calendar
+import contextlib
 import email.utils
 
 try:
@@ -256,6 +258,18 @@ class Calendar:
 
         self.timeFlag      = 0
         self.dateFlag      = 0
+
+    @contextlib.contextmanager
+    def _mergeFlags(self):
+        """
+        Keep old dateFlag and timeFlag in cache and
+        merge them after context executed
+        """
+        tempDateFlag = self.dateFlag
+        tempTimeFlag = self.timeFlag
+        yield
+        self.dateFlag = tempDateFlag | self.dateFlag
+        self.timeFlag = tempTimeFlag | self.timeFlag
 
     def _convertUnitAsWords(self, unitText):
         """
@@ -952,6 +966,7 @@ class Calendar:
                 # check if the remaining text is parsable and if so,
                 # use it as the base time for the modifier source time
                 t, flag2 = self.parse('%s %s' % (chunk1, unit), sourceTime)
+                chunk1 = ''
 
                 log.debug('flag2 = %s t = %s' % (flag2, t))
 
@@ -980,10 +995,10 @@ class Calendar:
 
         self.modifierFlag = False
 
-        log.debug('returning chunk = "%s" and sourceTime = %s' % (chunk2, sourceTime))
+        log.debug('returning chunk = "%s %s" and sourceTime = %s' %
+                  (chunk1, chunk2, sourceTime))
 
-        #return '%s %s' % (chunk1, chunk2), sourceTime
-        return '%s' % chunk2, sourceTime
+        return '%s %s' % (chunk1, chunk2), sourceTime
 
     def _evalModifier2(self, modifier, chunk1 , chunk2, sourceTime):
         """
@@ -1033,13 +1048,11 @@ class Calendar:
                     # FIXME: this is not threadsafe!
                     self.ptc.DOWParseStyle = -1
 
-            sourceTime, flag1 = self.parse(chunk2, sourceTime)
+            with self._mergeFlags():
+                sourceTime, flag1 = self.parse(chunk2, sourceTime)
             # restore DOWParseStyle setting
             self.DOWParseStyle = currDOWParseStyle
-            if flag1 == 0:
-                flag1 = True
-            else:
-                flag1 = False
+            flag1 = (flag1 == 0)
             flag2 = False
         else:
             flag1 = False
@@ -1052,9 +1065,8 @@ class Calendar:
                     chunk1 = chunk1[m.end():]
                     chunk1 = '%d%s' % (qty, chunk1)
 
-            tempDateFlag       = self.dateFlag
-            tempTimeFlag       = self.timeFlag
-            sourceTime2, flag2 = self.parse(chunk1, sourceTime)
+            with self._mergeFlags():
+                sourceTime2, flag2 = self.parse(chunk1, sourceTime)
         else:
             return sourceTime, (flag1 and flag2)
 
@@ -1062,9 +1074,6 @@ class Calendar:
         # value returned by parsing chunk1
         if not (flag1 == False and flag2 == 0):
             sourceTime = sourceTime2
-        else:
-            self.timeFlag = tempTimeFlag
-            self.dateFlag = tempDateFlag
 
         return sourceTime, (flag1 and flag2)
 
@@ -1698,6 +1707,7 @@ class Calendar:
             if not flag:
                 s = ''
 
+            log.debug('dateFlag %s, timeFlag %s' % (self.dateFlag, self.timeFlag))
             log.debug('parse (bottom) [%s][%s][%s][%s]' % (s, parseStr, chunk1, chunk2))
             log.debug('weekday %s, dateStd %s, dateStr %s, time %s, timeStr %s, meridian %s' % \
                       (self.weekdyFlag, self.dateStdFlag, self.dateStrFlag, self.timeStdFlag, self.timeStrFlag, self.meridianFlag))
@@ -1707,30 +1717,26 @@ class Calendar:
             # evaluate the matched string
 
             if parseStr != '':
-                if self.modifierFlag == True:
+                if self.modifierFlag is True:
                     t, totalTime = self._evalModifier(parseStr, chunk1, chunk2, totalTime)
                     # t is the unparsed part of the chunks.
                     # If it is not date/time, return current
                     # totalTime as it is; else return the output
                     # after parsing t.
-                    if (t != '') and (t != None):
-                        tempDateFlag       = self.dateFlag
-                        tempTimeFlag       = self.timeFlag
-                        (totalTime2, flag) = self.parse(t, totalTime)
+                    if (t != '') and (t is not None):
+                        with self._mergeFlags():
+                            totalTime2, flag = self.parse(t, totalTime)
 
                         if flag == 0 and totalTime is not None:
-                            self.timeFlag = tempTimeFlag
-                            self.dateFlag = tempDateFlag
-
                             log.debug('return 1')
                             return (totalTime, self.dateFlag + self.timeFlag)
                         else:
                             log.debug('return 2')
                             return (totalTime2, self.dateFlag + self.timeFlag)
 
-                elif self.modifier2Flag == True:
+                elif self.modifier2Flag is True:
                     totalTime, invalidFlag = self._evalModifier2(parseStr, chunk1, chunk2, totalTime)
-                    if invalidFlag == True:
+                    if invalidFlag is True:
                         self.dateFlag = 0
                         self.timeFlag = 0
 
@@ -2253,17 +2259,19 @@ class Constants(object):
             swds = _getLocaleDataAdjusted(self.locale.shortWeekdays)
             wds = _getLocaleDataAdjusted(self.locale.Weekdays)
 
+            re_join = lambda g: '|'.join(r'\b%s\b' % re.escape(i) for i in g)
+
             # escape any regex special characters that may be found
-            self.locale.re_values['months']      = '|'.join(map(re.escape, mths))
-            self.locale.re_values['shortmonths'] = '|'.join(map(re.escape, smths))
-            self.locale.re_values['days']        = '|'.join(map(re.escape, wds))
-            self.locale.re_values['shortdays']   = '|'.join(map(re.escape, swds))
-            self.locale.re_values['dayoffsets']  = '|'.join(map(re.escape, self.locale.dayOffsets))
+            self.locale.re_values['months']      = re_join(mths)
+            self.locale.re_values['shortmonths'] = re_join(smths)
+            self.locale.re_values['days']        = re_join(wds)
+            self.locale.re_values['shortdays']   = re_join(swds)
+            self.locale.re_values['dayoffsets']  = re_join(self.locale.dayOffsets)
             self.locale.re_values['numbers']     = '|'.join(map(re.escape, self.locale.numbers))
 
             units = [unit for units in self.locale.units.values() for unit in units] # flatten
-            units.sort(key=len, reverse=True) # longest first
-            self.locale.re_values['units'] = '|'.join(tuple(map(re.escape, units)))
+            units.sort(key=len, reverse=True)  # longest first
+            self.locale.re_values['units'] = '|'.join(r"(?<![a-z'-])%s\b" % re.escape(u) for u in units)  # units can be preceded by numerics but not alphas
 
             l = []
             lbefore = []
@@ -2274,9 +2282,9 @@ class Constants(object):
                     lbefore.append(s)
                 elif self.locale.Modifiers[s] > 0:
                     lafter.append(s)
-            self.locale.re_values['modifiers']        = '|'.join(tuple(map(re.escape, l)))
-            self.locale.re_values['modifiers-before'] = '|'.join(tuple(map(re.escape, lbefore)))
-            self.locale.re_values['modifiers-after']  = '|'.join(tuple(map(re.escape, lafter)))
+            self.locale.re_values['modifiers']        = re_join(l)
+            self.locale.re_values['modifiers-before'] = re_join(lbefore)
+            self.locale.re_values['modifiers-after']  = re_join(lafter)
 
             # todo: analyze all the modifiers to figure out which ones truly belong where.
             #       while it is obvious looking at the code that _evalModifier2 should be
@@ -2285,17 +2293,17 @@ class Constants(object):
             lmodifiers = []
             lmodifiers2 = []
             for s in self.locale.Modifiers:
-                if self.locale.Modifiers[s] < 0 or s in ['after', 'from']:
+                if self.locale.Modifiers[s] < 0 or s in ('after', 'from'):
                     lmodifiers2.append(s)
                 elif self.locale.Modifiers[s] > 0:
                     lmodifiers.append(s)
-            self.locale.re_values['modifiers-one'] = '|'.join(tuple(map(re.escape, lmodifiers)))
-            self.locale.re_values['modifiers-two'] = '|'.join(tuple(map(re.escape, lmodifiers2)))
+            self.locale.re_values['modifiers-one'] = re_join(lmodifiers)
+            self.locale.re_values['modifiers-two'] = re_join(lmodifiers2)
 
             l = []
             for s in self.locale.re_sources:
                 l.append(s)
-            self.locale.re_values['sources'] = '|'.join(tuple(map(re.escape, l)))
+            self.locale.re_values['sources'] = re_join(l)
 
               # build weekday offsets - yes, it assumes the Weekday and shortWeekday
               # lists are in the same order and Mon..Sun (Python style)
@@ -2426,7 +2434,7 @@ class Constants(object):
                                             ({numbers}s)\b|\d+
                                         )\s?
                                         \b
-                                        (?P<qunits>{qunits})
+                                        (?P<qunits>{qunits})\b
                                         (\s?|,|$)
                                     )
                                 )'''.format(**self.locale.re_values)

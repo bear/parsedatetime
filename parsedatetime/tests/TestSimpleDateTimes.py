@@ -216,6 +216,10 @@ class test(unittest.TestCase):
 
         self.assertTrue(_compareResults(self.cal.parse('lunch', start), (target, 2)))
 
+        target = datetime.datetime(self.yr, self.mth, self.dy, 13, 0, 0).timetuple()
+
+        self.assertTrue(_compareResults(self.cal.parse('afternoon', start), (target, 2)))
+
         target = datetime.datetime(self.yr, self.mth, self.dy, 18, 0, 0).timetuple()
 
         self.assertTrue(_compareResults(self.cal.parse('evening', start), (target, 2)))
