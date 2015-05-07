@@ -3,7 +3,7 @@
 Test parsing of simple date and times
 """
 
-import unittest, time, datetime
+import unittest, time, datetime, string
 import parsedatetime as pdt
 
 
@@ -302,6 +302,40 @@ class test(unittest.TestCase):
         target = datetime.datetime(2014, 11, 1, self.hr, self.mn, self.sec).timetuple()
         self.assertTrue(_compareResults(self.cal.parse('saturday',          start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('sat',          start), (target, 1)))
+
+    def testWordBoundaries(self):
+        # Ensure that keywords appearing at the start of a word are not parsed
+        # as if they were standalone keywords. For example, "10 dogs" should
+        # not be interpreted the same as "10 d"
+        start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
+        target = datetime.datetime.now().timetuple()
+
+        keywords = []
+        loc = self.cal.ptc.locale
+
+        # Test all known keywords for the locale
+        keywords.extend(loc.meridian)
+        keywords.extend(loc.Weekdays)
+        keywords.extend(loc.shortWeekdays)
+        keywords.extend(loc.Months)
+        keywords.extend(loc.shortMonths)
+        keywords.extend(loc.numbers.keys())
+        keywords.extend(loc.Modifiers.keys())
+        keywords.extend(loc.dayOffsets.keys())
+        keywords.extend(loc.re_sources.keys())
+        keywords.extend(loc.small.keys())
+        keywords.extend(loc.magnitude.keys())
+
+        for units in loc.units.values():
+            keywords.extend(units)
+
+        # Finally, test all lowercase letters to be particularly thorough - it
+        # would be very difficult to track down bugs due to single letters.
+        keywords.extend(list(string.ascii_lowercase))
+
+        for keyword in keywords:
+            phrase = '1 %sfoo' % keyword
+            self.assertTrue(_compareResults(self.cal.parse(phrase, start), (target, 0)), '"%s" is mistakenly parsed as a datetime' % phrase)
 
 
     # def testMonths(self):
