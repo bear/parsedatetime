@@ -923,7 +923,7 @@ class Calendar:
             m = self.ptc.CRE_WEEKDAY.match(unit)
             if m is not None:
                 log.debug('CRE_WEEKDAY matched')
-                wkdy          = m.group()
+                wkdy          = m.group('weekday')
                 self.dateFlag = 1
 
                 if modifier == 'eod':
