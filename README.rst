@@ -9,7 +9,7 @@ Python 2.7 or greater is required for parsedatetime version 1.0 or greater.
     :alt: Wheel Status
 
 .. image:: https://travis-ci.org/bear/parsedatetime.svg?branch=master
-    :target: https://pypi.python.org/pypi/parsedatetime/
+    :target: https://travis-ci.org/bear/parsedatetime
     :alt: Travis CI
 
 ==========
