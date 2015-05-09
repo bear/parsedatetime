@@ -2405,13 +2405,13 @@ class Constants(object):
                                             )?
                                     )
                                 )
-                                (\s|$|[^0-9a-zA-Z])'''.format(**self.locale.re_values)
+                                (?=\s|$|[^0-9a-zA-Z])'''.format(**self.locale.re_values)
 
         self.RE_WEEKDAY   = r'''(\s|^)
                                 (?P<weekday>
                                     ({days}|{shortdays})
                                 )
-                                (\s|$|[^0-9a-zA-Z])'''.format(**self.locale.re_values)
+                                (?=\s|$|[^0-9a-zA-Z])'''.format(**self.locale.re_values)
 
         self.RE_NUMBER    = r'({numbers}|\d+)'.format(**self.locale.re_values)
 

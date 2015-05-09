@@ -3,21 +3,27 @@
 Test parsing of 'simple' offsets
 """
 
-import unittest, time, datetime
+import time
+import datetime
+import unittest
 import parsedatetime as pdt
 
 
-  # a special compare function is used to allow us to ignore the seconds as
-  # the running of the test could cross a minute boundary
-def _compareResults(result, check):
+# a special compare function is used to allow us to ignore the seconds as
+# the running of the test could cross a minute boundary
+def _compareResults(result, check, ignore_hr=False):
     target, t_flag = result
     value,  v_flag = check
 
     t_yr, t_mth, t_dy, t_hr, t_min, _, _, _, _ = target
     v_yr, v_mth, v_dy, v_hr, v_min, _, _, _, _ = value
 
-    return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
-            (t_hr == v_hr) and (t_min == v_min)) and (t_flag == v_flag)
+    if ignore_hr:
+        return ((t_yr == v_yr) and (t_mth == v_mth) and
+                (t_dy == v_dy) and (t_flag == v_flag))
+    else:
+        return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
+                (t_hr == v_hr) and (t_min == v_min) and (t_flag == v_flag))
 
 
 class test(unittest.TestCase):
@@ -88,6 +94,20 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('in seven days',       start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('seven days from now', start), (target, 3)))
         #self.assertTrue(_compareResults(self.cal.parse('next week',           start), (target, 1)))
+
+    def testNextWeekDay(self):
+        start = datetime.datetime.now()
+        target = start + datetime.timedelta(days=4 + 7 - start.weekday())
+        start = start.timetuple()
+        target = target.timetuple()
+
+        self.assertTrue(_compareResults(self.cal.parse('next friday', start),
+                                        (target, 1), ignore_hr=True))
+        self.assertTrue(_compareResults(self.cal.parse('next friday?', start),
+                                        (target, 1), ignore_hr=True))
+        self.cal.ptc.StartTimeFromSourceTime = True
+        self.assertTrue(_compareResults(self.cal.parse('next friday', start),
+                                        (target, 1)))
 
     def testWeekBeforeNow(self):
         s = datetime.datetime.now()
