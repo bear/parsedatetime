@@ -26,6 +26,21 @@ def _compareResults(result, check, ignore_hr=False):
                 (t_hr == v_hr) and (t_min == v_min) and (t_flag == v_flag))
 
 
+def _truncateResult(result, trunc_seconds=True, trunc_hours=False):
+    try:
+        dt, flag = result
+    except ValueError:
+        # wtf?!
+        return result
+    if trunc_seconds:
+        dt = dt[:5] + (0,) * 4
+    if trunc_hours:
+        dt = dt[:3] + (0,) * 6
+    return dt, flag
+
+_tr = _truncateResult
+
+
 class test(unittest.TestCase):
 
     def setUp(self):
@@ -93,7 +108,7 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('7 days from now',     start), (target, 3)))
         self.assertTrue(_compareResults(self.cal.parse('in seven days',       start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('seven days from now', start), (target, 3)))
-        #self.assertTrue(_compareResults(self.cal.parse('next week',           start), (target, 1)))
+        # self.assertTrue(_compareResults(self.cal.parse('next week',           start), (target, 1)))
 
     def testNextWeekDay(self):
         start = datetime.datetime.now()
@@ -113,15 +128,21 @@ class test(unittest.TestCase):
         s = datetime.datetime.now()
         t = s + datetime.timedelta(weeks=-1)
 
-        start  = s.timetuple()
+        start = s.timetuple()
         target = t.timetuple()
 
-        self.assertTrue(_compareResults(self.cal.parse('1 week before now',     start), (target, 3)))
-        self.assertTrue(_compareResults(self.cal.parse('one week before now',   start), (target, 3)))
-        self.assertTrue(_compareResults(self.cal.parse('7 days before now',     start), (target, 3)))
-        self.assertTrue(_compareResults(self.cal.parse('seven days before now', start), (target, 3)))
-        self.assertTrue(_compareResults(self.cal.parse('1 week ago',            start), (target, 1)))
-        #self.assertTrue(_compareResults(self.cal.parse('last week',              tart), (target, 1)))
+        self.assertEqual(_tr(self.cal.parse('1 week before now', start)),
+                         _tr((target, 3)))
+        self.assertEqual(_tr(self.cal.parse('one week before now', start)),
+                         _tr((target, 3)))
+        self.assertEqual(_tr(self.cal.parse('7 days before now', start)),
+                         _tr((target, 3)))
+        self.assertEqual(_tr(self.cal.parse('seven days before now', start)),
+                         _tr((target, 3)))
+        self.assertEqual(_tr(self.cal.parse('1 week ago', start)),
+                         _tr((target, 1)))
+        self.assertEqual(_tr(self.cal.parse('last week', start)),
+                         _tr((target, 1)))
 
     def testSpecials(self):
         s = datetime.datetime.now()

@@ -868,8 +868,10 @@ class Calendar:
                 target = start + datetime.timedelta(days=7)
                 sourceTime = target.timetuple()
             else:
-                return self._evalModifier(modifier, chunk1,
-                                          "monday " + chunk2, sourceTime)
+                start = datetime.datetime(yr, mth, dy, startHour,
+                                          startMinute, startSecond)
+                target = start + datetime.timedelta(days=7 - start.weekday())
+                sourceTime = target.timetuple()
 
             flag = True
             self.dateFlag = 1
@@ -1051,17 +1053,25 @@ class Calendar:
 
             currDOWParseStyle = self.ptc.DOWParseStyle
             if offset < 0:
-                m = self.ptc.CRE_NUMBER.match(chunk2.strip())
+                chunk2 = chunk2.strip()
+                m = self.ptc.CRE_NUMBER.match(chunk2)
+                qty = None
                 if m is not None:
-                    qty = self._quantityToInt(m.group()) * -1
+                    logging.debug('Modifier2: CRE_NUMBER matched')
+                    qty = self._quantityToInt(m.group()) * offset
                     chunk2 = chunk2[m.end():]
-                    chunk2 = '%d%s' % (qty, chunk2)
                 else:
+                    m = self.ptc.CRE_UNITS_ONLY.match(chunk2)
+                    if m is not None:
+                        logging.debug('Modifier2: CRE_UNITS_ONLY matched')
+                        qty = offset
+                if qty is None:
                     # enforce selection of the previous period
                     # driven by DOWParseStyle and CurrentDOWParseStyle
                     # FIXME: this is not threadsafe!
                     self.ptc.DOWParseStyle = -1
-
+                else:
+                    chunk2 = '%d %s' % (qty, chunk2)
             with self._mergeFlags():
                 sourceTime, flag1 = self.parse(chunk2, sourceTime)
             # restore DOWParseStyle setting
@@ -2465,6 +2475,8 @@ class Constants(object):
         self.RE_SPECIAL = (r'(?P<special>^[{specials}]+)\s+'
                            .format(**self.locale.re_values))
 
+        self.RE_UNITS_ONLY = r'''(\b{units})'''.format(**self.locale.re_values)
+
         self.RE_UNITS = r'''(?P<qty>
                                 (-?
                                     (\b
@@ -2630,6 +2642,7 @@ class Constants(object):
         self.cre_source = {'CRE_SPECIAL':   self.RE_SPECIAL,
                            'CRE_NUMBER':    self.RE_NUMBER,
                            'CRE_UNITS':     self.RE_UNITS,
+                           'CRE_UNITS_ONLY': self.RE_UNITS_ONLY,
                            'CRE_QUNITS':    self.RE_QUNITS,
                            'CRE_MODIFIER':  self.RE_MODIFIER,
                            'CRE_MODIFIER2': self.RE_MODIFIER2,
