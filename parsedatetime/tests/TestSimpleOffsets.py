@@ -108,7 +108,9 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('7 days from now',     start), (target, 3)))
         self.assertTrue(_compareResults(self.cal.parse('in seven days',       start), (target, 1)))
         self.assertTrue(_compareResults(self.cal.parse('seven days from now', start), (target, 3)))
-        # self.assertTrue(_compareResults(self.cal.parse('next week',           start), (target, 1)))
+        self.assertEqual(_tr(self.cal.parse('next week', start),
+                             trunc_hours=True),
+                         _tr((target, 1), trunc_hours=True))
 
     def testNextWeekDay(self):
         start = datetime.datetime.now()
@@ -141,8 +143,8 @@ class test(unittest.TestCase):
                          _tr((target, 3)))
         self.assertEqual(_tr(self.cal.parse('1 week ago', start)),
                          _tr((target, 1)))
-        self.assertEqual(_tr(self.cal.parse('last week', start)),
-                         _tr((target, 1)))
+        self.assertEqual(_tr(self.cal.parse('last week', start), trunc_hours=True),
+                         _tr((target, 1), trunc_hours=True))
 
     def testSpecials(self):
         s = datetime.datetime.now()

@@ -702,6 +702,10 @@ class Calendar:
         # offset = 0 means current week
         # offset = 1 means next week
         diff = diffBase + 7 * offset
+        if style == 1 and diff < -7:
+            diff += 7
+        elif style == -1 and diff > 7:
+            diff -= 7
 
         log.debug("wd %s, wkdy %s, offset %d, style %d, currentDayStyle %d" %
                   (wd, wkdy, origOffset, style, currentDayStyle))
@@ -783,15 +787,16 @@ class Calendar:
         log.debug("modifier [%s] chunk1 [%s] chunk2 [%s] unit [%s] flag %s" %
                   (modifier, chunk1, chunk2, unit, flag))
 
-        if unit in ('month', 'mth', 'm'):
+        if unit in self.ptc.units['months']:
+            currentDaysInMonth = self.ptc.daysInMonth(mth, yr)
             if offset == 0:
-                dy = self.ptc.daysInMonth(mth, yr)
+                dy = currentDaysInMonth
                 sourceTime = (yr, mth, dy, startHour, startMinute,
                               startSecond, wd, yd, isdst)
             elif offset == 2:
                 # if day is the last day of the month, calculate the last day
                 # of the next month
-                if dy == self.ptc.daysInMonth(mth, yr):
+                if dy == currentDaysInMonth:
                     dy = self.ptc.daysInMonth(mth + 1, yr)
 
                 start = datetime.datetime(yr, mth, dy, startHour,
@@ -807,7 +812,7 @@ class Calendar:
             flag = True
             self.dateFlag = 1
 
-        if unit in ('week', 'wk', 'w'):
+        if unit in self.ptc.units['weeks']:
             if offset == 0:
                 start = datetime.datetime(yr, mth, dy, 17, 0, 0)
                 target = start + datetime.timedelta(days=(4 - wd))
@@ -820,13 +825,13 @@ class Calendar:
             else:
                 start = datetime.datetime(yr, mth, dy, startHour,
                                           startMinute, startSecond)
-                target = start + datetime.timedelta(days=7 - start.weekday())
+                target = start + offset * datetime.timedelta(weeks=1)
                 sourceTime = target.timetuple()
 
             flag = True
             self.dateFlag = 1
 
-        if unit in ('day', 'dy', 'd'):
+        if unit in self.ptc.units['days']:
             if offset == 0:
                 sourceTime = (yr, mth, dy, 17, 0, 0, wd, yd, isdst)
                 self.timeFlag = 2
@@ -843,7 +848,7 @@ class Calendar:
             flag = True
             self.dateFlag = 1
 
-        if unit in ('hour', 'hr'):
+        if unit in self.ptc.units['hours']:
             if offset == 0:
                 sourceTime = (yr, mth, dy, hr, 0, 0, wd, yd, isdst)
             else:
@@ -854,7 +859,7 @@ class Calendar:
             flag = True
             self.timeFlag = 2
 
-        if unit in ('year', 'yr', 'y'):
+        if unit in self.ptc.units['years']:
             if offset == 0:
                 sourceTime = (yr, 12, 31, hr, mn, sec, wd, yd, isdst)
             elif offset == 2:
@@ -914,7 +919,7 @@ class Calendar:
 
         if not flag:
             m = self.ptc.CRE_TIME.match(unit)
-            if m is not None or unit in self.ptc.re_values['now']:
+            if m is not None:
                 log.debug('CRE_TIME matched')
                 self.modifierFlag = False
                 (yr, mth, dy, hr, mn, sec, wd, yd, isdst), _ = self.parse(unit)
@@ -924,20 +929,45 @@ class Calendar:
                 sourceTime = target.timetuple()
                 flag = True
             else:
-                self.modifierFlag = False
-
-                log.debug('check for modifications to source time')
-
                 # check if the remaining text is parsable and if so,
                 # use it as the base time for the modifier source time
-                t, flag2 = self.parse('%s %s' % (chunk1, unit), sourceTime)
-                chunk1 = ''
+                self.modifierFlag = False
 
-                log.debug('flag2 = %s t = %s' % (flag2, t))
+                log.debug('check for modifications to source time [%s] [%s]' %
+                          (chunk1, unit))
 
-                if flag2 != 0:
-                    sourceTime = t
+                unit = unit.strip()
+                if unit:
+                    with self._mergeFlags():
+                        t, flag2 = self.parse(unit, sourceTime)
 
+                    log.debug('flag2 = %s t = %s' % (flag2, t))
+                    if flag2 != 0:
+                        sourceTime = t
+
+                chunk1 = chunk1.strip()
+
+                if chunk1:
+                    try:
+                        m = list(self.ptc.CRE_NUMBER.finditer(chunk1))[-1]
+                    except IndexError:
+                        pass
+                    else:
+                        qty = None
+                        logging.debug('CRE_NUMBER matched')
+                        qty = self._quantityToInt(m.group()) * offset
+                        chunk1 = '%s%s%s' % (chunk1[:m.start()],
+                                             qty, chunk1[m.end():])
+                    with self._mergeFlags():
+                        t, flag3 = self.parse(chunk1, sourceTime)
+
+                    chunk1 = ''
+
+                    log.debug('flag3 = %s t = %s' % (flag3, t))
+                    if flag3 != 0:
+                        sourceTime = t
+
+                flag = True
                 sources = self.ptc.buildSources(sourceTime)
 
                 log.debug('looking for %s in %s' % (modifier, sources))
@@ -964,92 +994,6 @@ class Calendar:
                   (chunk1, chunk2, sourceTime))
 
         return '%s %s' % (chunk1, chunk2), sourceTime
-
-    def _evalModifier2(self, modifier, chunk1, chunk2, sourceTime):
-        """
-        Evaluate the C{modifier} string and following text (passed in
-        as C{chunk1} and C{chunk2}) and if they match any known modifiers
-        calculate the delta and apply it to C{sourceTime}.
-
-        @type  modifier:   string
-        @param modifier:   modifier text to apply to C{sourceTime}
-        @type  chunk1:     string
-        @param chunk1:     first text chunk that followed modifier (if any)
-        @type  chunk2:     string
-        @param chunk2:     second text chunk that followed modifier (if any)
-        @type  sourceTime: struct_time
-        @param sourceTime: C{struct_time} value to use as the base
-
-        @rtype:  tuple
-        @return: tuple of: remaining text and the modified sourceTime
-        """
-
-        offset = self.ptc.Modifiers[modifier]
-
-        self.modifier2Flag = False
-        log.debug("modifier2 [%s] chunk1 [%s] chunk2 [%s] sourceTime %s" %
-                  (modifier, chunk1, chunk2, sourceTime))
-
-        # If the string after the negative modifier starts with digits,
-        # then it is likely that the string is similar to ' before 3 days'
-        # or 'evening prior to 3 days'.
-        # In this case, the total time is calculated by subtracting '3 days'
-        # from the current date.
-        # So, we have to identify the quantity and negate it before parsing
-        # the string.
-        # This is not required for strings not starting with digits since the
-        # string is enough to calculate the sourceTime
-        if chunk2 != '':
-
-            currDOWParseStyle = self.ptc.DOWParseStyle
-            if offset < 0:
-                chunk2 = chunk2.strip()
-                m = self.ptc.CRE_NUMBER.match(chunk2)
-                qty = None
-                if m is not None:
-                    logging.debug('Modifier2: CRE_NUMBER matched')
-                    qty = self._quantityToInt(m.group()) * offset
-                    chunk2 = chunk2[m.end():]
-                else:
-                    m = self.ptc.CRE_UNITS_ONLY.match(chunk2)
-                    if m is not None:
-                        logging.debug('Modifier2: CRE_UNITS_ONLY matched')
-                        qty = offset
-                if qty is None:
-                    # enforce selection of the previous period
-                    # driven by DOWParseStyle and CurrentDOWParseStyle
-                    # FIXME: this is not threadsafe!
-                    self.ptc.DOWParseStyle = -1
-                else:
-                    chunk2 = '%d %s' % (qty, chunk2)
-            with self._mergeFlags():
-                sourceTime, flag1 = self.parse(chunk2, sourceTime)
-            # restore DOWParseStyle setting
-            self.DOWParseStyle = currDOWParseStyle
-            flag1 = (flag1 == 0)
-            flag2 = False
-        else:
-            flag1 = False
-
-        if chunk1 != '':
-            if offset < 0:
-                m = self.ptc.CRE_NUMBER.search(chunk1.strip())
-                if m is not None:
-                    qty = self._quantityToInt(m.group()) * -1
-                    chunk1 = chunk1[m.end():]
-                    chunk1 = '%d%s' % (qty, chunk1)
-
-            with self._mergeFlags():
-                sourceTime2, flag2 = self.parse(chunk1, sourceTime)
-        else:
-            return sourceTime, (flag1 and flag2)
-
-        # if chunk1 is not a datetime and chunk2 is then do not use datetime
-        # value returned by parsing chunk1
-        if not (flag1 is False and flag2 == 0):
-            sourceTime = sourceTime2
-
-        return sourceTime, (flag1 and flag2)
 
     def _evalString(self, datetimeString, sourceTime=None):
         """
@@ -1416,7 +1360,7 @@ class Calendar:
             log.debug('parse (top of loop): [%s][%s]' % (s, parseStr))
 
             if parseStr == '':
-                # Modifier like next\prev..
+                # Modifier like next/prev/from/after/prior..
                 m = self.ptc.CRE_MODIFIER.search(s)
                 if m is not None:
                     self.modifierFlag = True
@@ -1429,23 +1373,8 @@ class Calendar:
                     else:
                         parseStr = s
 
-            log.debug('parse 1 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
-
-            if parseStr == '':
-                # Modifier like from\after\prior..
-                m = self.ptc.CRE_MODIFIER2.search(s)
-                if m is not None:
-                    self.modifier2Flag = True
-                    if (m.group('modifier') != s):
-                        # capture remaining string
-                        parseStr = m.group('modifier')
-                        chunk1 = s[:m.start('modifier')].strip()
-                        chunk2 = s[m.end('modifier'):].strip()
-                        flag = True
-                    else:
-                        parseStr = s
-
-            log.debug('parse 2 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+            log.debug('parse (modifier) [%s][%s][%s]' %
+                      (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # Quantity + Units
@@ -1471,7 +1400,8 @@ class Calendar:
                         else:
                             parseStr = s
 
-            log.debug('parse 3 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+            log.debug('parse (units) [%s][%s][%s]' %
+                      (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # Quantity + Units
@@ -1498,7 +1428,8 @@ class Calendar:
                         else:
                             parseStr = s
 
-            log.debug('parse 4 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+            log.debug('parse (qunits) [%s][%s][%s]' %
+                      (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 valid_date = False
@@ -1553,7 +1484,8 @@ class Calendar:
                     else:
                         parseStr = s
 
-            log.debug('parse 5 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+            log.debug('parse (date3) [%s][%s][%s]' %
+                      (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # Standard date format
@@ -1571,7 +1503,7 @@ class Calendar:
                     else:
                         parseStr = s
 
-            log.debug('parse 6 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+            log.debug('parse (date) [%s][%s][%s]' % (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # Natural language day strings
@@ -1589,7 +1521,7 @@ class Calendar:
                     else:
                         parseStr = s
 
-            log.debug('parse 7 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+            log.debug('parse (day) [%s][%s][%s]' % (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # Weekday
@@ -1609,7 +1541,8 @@ class Calendar:
                         else:
                             parseStr = s
 
-            log.debug('parse 8 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+            log.debug('parse (weekday) [%s][%s][%s]' %
+                      (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # Natural language time strings
@@ -1627,7 +1560,7 @@ class Calendar:
                     else:
                         parseStr = s
 
-            log.debug('parse 9 [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+            log.debug('parse (time) [%s][%s][%s]' % (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # HH:MM(:SS) am/pm time strings
@@ -1655,7 +1588,8 @@ class Calendar:
                     s = '%s %s' % (chunk1, chunk2)
                     flag = True
 
-            log.debug('parse A [%s][%s][%s]' % (parseStr, chunk1, chunk2))
+            log.debug('parse (meridian) [%s][%s][%s]' %
+                      (parseStr, chunk1, chunk2))
 
             if parseStr == '':
                 # HH:MM(:SS) time strings
@@ -1678,6 +1612,9 @@ class Calendar:
                     s = '%s %s' % (chunk1, chunk2)
                     flag = True
 
+            log.debug('parse (hms) [%s][%s][%s]' %
+                      (parseStr, chunk1, chunk2))
+
             # if string does not match any regex, empty string to
             # come out of the while loop
             if not flag:
@@ -1691,9 +1628,9 @@ class Calendar:
                       'time %s, timeStr %s, meridian %s' %
                       (self.weekdyFlag, self.dateStdFlag, self.dateStrFlag,
                        self.timeStdFlag, self.timeStrFlag, self.meridianFlag))
-            log.debug('dayStr %s, modifier %s, modifier2 %s, '
+            log.debug('dayStr %s, modifier %s, '
                       'units %s, qunits %s' %
-                      (self.dayStrFlag, self.modifierFlag, self.modifier2Flag,
+                      (self.dayStrFlag, self.modifierFlag,
                        self.unitsFlag, self.qunitsFlag))
 
             # evaluate the matched string
@@ -1716,13 +1653,6 @@ class Calendar:
                         else:
                             log.debug('return 2')
                             return (totalTime2, self.dateFlag + self.timeFlag)
-
-                elif self.modifier2Flag is True:
-                    totalTime, invalidFlag = self._evalModifier2(
-                        parseStr, chunk1, chunk2, totalTime)
-                    if invalidFlag is True:
-                        self.dateFlag = 0
-                        self.timeFlag = 0
 
                 else:
                     totalTime = self._evalString(parseStr, totalTime)
@@ -1853,17 +1783,6 @@ class Calendar:
                     leftmost_match[2] = m.group('modifier')
                     leftmost_match[3] = 0
                     leftmost_match[4] = 'modifier'
-
-            # Modifier like from\after\prior..
-            m = self.ptc.CRE_MODIFIER2.search(inputString[startpos:])
-            if m is not None:
-                if leftmost_match[1] == 0 or \
-                        leftmost_match[0] > m.start('modifier') + startpos:
-                    leftmost_match[0] = m.start('modifier') + startpos
-                    leftmost_match[1] = m.end('modifier') + startpos
-                    leftmost_match[2] = m.group('modifier')
-                    leftmost_match[3] = 0
-                    leftmost_match[4] = 'modifier2'
 
             # Quantity + Units
             m = self.ptc.CRE_UNITS.search(inputString[startpos:])
@@ -2024,8 +1943,6 @@ class Calendar:
         if len(matches) > 1:
             combined = ''
             from_match_index = 0
-            # modifier1 = matches[0][4] == 'modifier'
-            # modifier2 = matches[0][4] == 'modifier2'
             date = matches[0][3] == 1
             time = matches[0][3] == 2
             units = matches[0][3] == 3
@@ -2054,17 +1971,11 @@ class Calendar:
                             combined))
                     # not in proximity, reset starting from current
                     from_match_index = i
-                    # modifier1 = matches[i][4] == 'modifier'
-                    # modifier2 = matches[i][4] == 'modifier2'
                     date = matches[i][3] == 1
                     time = matches[i][3] == 2
                     units = matches[i][3] == 3
                     continue
                 else:
-                    # if matches[i][4] == 'modifier':
-                    #     modifier1 = True
-                    # if matches[i][4] == 'modifier2':
-                    #     modifier2 = True
                     if matches[i][3] == 1:
                         date = True
                     if matches[i][3] == 2:
@@ -2286,39 +2197,8 @@ class Constants(object):
             units.sort(key=len, reverse=True)  # longest first
             self.locale.re_values['units'] = re_join(units,
                                                      r"(?<![a-z'-])%s\b")
-
-            l = []
-            lbefore = []
-            lafter = []
-            for s in self.locale.Modifiers:
-                l.append(s)
-                if self.locale.Modifiers[s] < 0:
-                    lbefore.append(s)
-                elif self.locale.Modifiers[s] > 0:
-                    lafter.append(s)
-            self.locale.re_values['modifiers'] = re_join(l)
-            self.locale.re_values['modifiers-before'] = re_join(lbefore)
-            self.locale.re_values['modifiers-after'] = re_join(lafter)
-
-            # TODO: analyze all the modifiers to figure out which ones truly
-            # belong where. while it is obvious looking at the code that
-            # _evalModifier2 should be handling 'after', it remains to be
-            # researched which ones belong where and how to make it
-            # locale-independent
-            lmodifiers = []
-            lmodifiers2 = []
-            for s in self.locale.Modifiers:
-                if self.locale.Modifiers[s] < 0 or s in ('after', 'from'):
-                    lmodifiers2.append(s)
-                elif self.locale.Modifiers[s] > 0:
-                    lmodifiers.append(s)
-            self.locale.re_values['modifiers-one'] = re_join(lmodifiers)
-            self.locale.re_values['modifiers-two'] = re_join(lmodifiers2)
-
-            l = []
-            for s in self.locale.re_sources:
-                l.append(s)
-            self.locale.re_values['sources'] = re_join(l)
+            self.locale.re_values['modifiers'] = re_join(self.locale.Modifiers)
+            self.locale.re_values['sources'] = re_join(self.locale.re_sources)
 
             # build weekday offsets - yes, it assumes the Weekday and
             # shortWeekday lists are in the same order and Mon..Sun
@@ -2449,17 +2329,9 @@ class Constants(object):
                                  )
                              )'''.format(**self.locale.re_values)
 
-        self.RE_MODIFIER = r'''(\s|^)
-                                (?P<modifier>
-                                    ({modifiers-one})
-                                )'''.format(**self.locale.re_values)
-
-        self.RE_MODIFIER2 = (r'''(\s|^)
-                                 (?P<modifier>
-                                     ({modifiers-two})
-                                 )
-                                 (?=\s|$|[^\w])'''
-                             .format(**self.locale.re_values))
+        self.RE_MODIFIER = r'''(?P<modifier>
+                                   ({modifiers})
+                               )'''.format(**self.locale.re_values)
 
         self.RE_TIMEHMS = r'''(\s?|^)
                               (?P<hours>\d\d?)
@@ -2595,7 +2467,6 @@ class Constants(object):
                            'CRE_UNITS_ONLY': self.RE_UNITS_ONLY,
                            'CRE_QUNITS':    self.RE_QUNITS,
                            'CRE_MODIFIER':  self.RE_MODIFIER,
-                           'CRE_MODIFIER2': self.RE_MODIFIER2,
                            'CRE_TIMEHMS':   self.RE_TIMEHMS,
                            'CRE_TIMEHMS2':  self.RE_TIMEHMS2,
                            'CRE_DATE':      self.RE_DATE,
