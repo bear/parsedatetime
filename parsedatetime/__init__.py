@@ -542,33 +542,17 @@ class Calendar:
             s = s.replace(self.ptc.rangeSep, ' %s ' % self.ptc.rangeSep)
             s = s.replace('  ', ' ')
 
-        m = self.ptc.CRE_TIMERNG1.search(s)
-        if m is not None:
-            rangeFlag = 1
-        else:
-            m = self.ptc.CRE_TIMERNG2.search(s)
+        for cre, rflag in [(self.ptc.CRE_TIMERNG1, 1),
+                           (self.ptc.CRE_TIMERNG2, 2),
+                           (self.ptc.CRE_TIMERNG4, 7),
+                           (self.ptc.CRE_TIMERNG3, 3),
+                           (self.ptc.CRE_DATERNG1, 4),
+                           (self.ptc.CRE_DATERNG2, 5),
+                           (self.ptc.CRE_DATERNG3, 6)]:
+            m = cre.search(s)
             if m is not None:
-                rangeFlag = 2
-            else:
-                m = self.ptc.CRE_TIMERNG4.search(s)
-                if m is not None:
-                    rangeFlag = 7
-                else:
-                    m = self.ptc.CRE_TIMERNG3.search(s)
-                    if m is not None:
-                        rangeFlag = 3
-                    else:
-                        m = self.ptc.CRE_DATERNG1.search(s)
-                        if m is not None:
-                            rangeFlag = 4
-                        else:
-                            m = self.ptc.CRE_DATERNG2.search(s)
-                            if m is not None:
-                                rangeFlag = 5
-                            else:
-                                m = self.ptc.CRE_DATERNG3.search(s)
-                                if m is not None:
-                                    rangeFlag = 6
+                rangeFlag = rflag
+                break
 
         log.debug('evalRanges: rangeFlag = %s [%s]' % (rangeFlag, s))
 
@@ -579,7 +563,6 @@ class Calendar:
                 chunk1 = s[:m.start()]
                 chunk2 = s[m.end():]
                 s = '%s %s' % (chunk1, chunk2)
-                flag = 1
 
                 sourceTime, flag = self.parse(s, sourceTime)
 
@@ -588,23 +571,15 @@ class Calendar:
             else:
                 parseStr = s
 
-        if rangeFlag == 1:
+        if rangeFlag in (1, 2):
             m = re.search(self.ptc.rangeSep, parseStr)
             startTime, sflag = self.parse(parseStr[:m.start()], sourceTime)
             endTime, eflag = self.parse(parseStr[m.start() + 1:], sourceTime)
 
             if eflag != 0 and sflag != 0:
-                return (startTime, endTime, 2)
+                return startTime, endTime, 2
 
-        elif rangeFlag == 2:
-            m = re.search(self.ptc.rangeSep, parseStr)
-            startTime, sflag = self.parse(parseStr[:m.start()], sourceTime)
-            endTime, eflag = self.parse(parseStr[m.start() + 1:], sourceTime)
-
-            if eflag != 0 and sflag != 0:
-                return (startTime, endTime, 2)
-
-        elif rangeFlag == 3 or rangeFlag == 7:
+        elif rangeFlag in (3, 7):
             m = re.search(self.ptc.rangeSep, parseStr)
             # capturing the meridian from the end time
             if self.ptc.usesMeridian:
@@ -706,55 +681,30 @@ class Calendar:
         @rtype:  integer
         @return: calculated day-of-week
         """
-        if offset == 1:
-            # modifier is indicating future week eg: "next".
-            # DOW is calculated as DOW of next week
-            diff = 7 - wd + wkdy
+        diffBase = wkdy - wd
+        origOffset = offset
 
-        elif offset == -1:
-            # modifier is indicating past week eg: "last","previous"
-            # DOW is calculated as DOW of previous week
-            diff = wkdy - wd - 7
-
-        elif offset == 0:
-            # modifier is indiacting current week eg: "this"
-            # DOW is calculated as DOW of this week
-            diff = wkdy - wd
-
-        elif offset == 2:
+        if offset == 2:
             # no modifier is present.
             # i.e. string to be parsed is just DOW
-            if style == 1:
-                # next occurance of the DOW is calculated
-                if currentDayStyle is True:
-                    if wkdy >= wd:
-                        diff = wkdy - wd
-                    else:
-                        diff = 7 - wd + wkdy
-                else:
-                    if wkdy > wd:
-                        diff = wkdy - wd
-                    else:
-                        diff = 7 - wd + wkdy
-
-            elif style == -1:
-                # last occurance of the DOW is calculated
-                if currentDayStyle is True:
-                    if wkdy <= wd:
-                        diff = wkdy - wd
-                    else:
-                        diff = wkdy - wd - 7
-                else:
-                    if wkdy < wd:
-                        diff = wkdy - wd
-                    else:
-                        diff = wkdy - wd - 7
+            if wkdy * style > wd * style or \
+                    currentDayStyle and wkdy == wd:
+                # wkdy located in current week
+                offset = 0
+            elif style in (-1, 1):
+                # wkdy located in last (-1) or next (1) week
+                offset = style
             else:
-                # occurance of the DOW in the current week is calculated
-                diff = wkdy - wd
+                # invalid style, or should raise error?
+                offset = 0
 
-        log.debug("wd %s, wkdy %s, offset %d, style %d" %
-                  (wd, wkdy, offset, style))
+        # offset = -1 means last week
+        # offset = 0 means current week
+        # offset = 1 means next week
+        diff = diffBase + 7 * offset
+
+        log.debug("wd %s, wkdy %s, offset %d, style %d, currentDayStyle %d" %
+                  (wd, wkdy, origOffset, style, currentDayStyle))
 
         return diff
 
