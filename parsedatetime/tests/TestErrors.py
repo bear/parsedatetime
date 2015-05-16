@@ -64,9 +64,7 @@ class test(unittest.TestCase):
         self.assertTrue(_compareResults(self.cal.parse('money', start), (start, 0)))
         # ensure short weekday names do not cause false positives at the end of a word - th (thursday)
         self.assertTrue(_compareResults(self.cal.parse('month', start), (start, 0)))
-
-        # This test actually parses into *something* for some locales, so need to check the error flag
-        self.assertTrue(_compareResultsErrorFlag(self.cal.parse('30/030/01/071/07', start), (start, 1)))
+        self.assertTrue(_compareResultsErrorFlag(self.cal.parse('30/030/01/071/07', start), (start, 0)))
 
 
 if __name__ == "__main__":

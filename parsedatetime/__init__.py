@@ -2207,8 +2207,7 @@ class Constants(object):
             swds = _getLocaleDataAdjusted(self.locale.shortWeekdays)
             wds = _getLocaleDataAdjusted(self.locale.Weekdays)
 
-            re_join = lambda g, t=r'\b%s\b': '|'.join(t % re.escape(i)
-                                                      for i in g)
+            re_join = lambda g: '|'.join(re.escape(i) for i in g)
 
             # escape any regex special characters that may be found
             self.locale.re_values['months'] = re_join(mths)
@@ -2218,13 +2217,12 @@ class Constants(object):
             self.locale.re_values['dayoffsets'] = \
                 re_join(self.locale.dayOffsets)
             self.locale.re_values['numbers'] = \
-                re_join(self.locale.numbers, '%s')
+                re_join(self.locale.numbers)
 
             units = [unit for units in self.locale.units.values()
                      for unit in units]  # flatten
             units.sort(key=len, reverse=True)  # longest first
-            self.locale.re_values['units'] = re_join(units,
-                                                     r"(?<![a-z'-])%s\b")
+            self.locale.re_values['units'] = re_join(units)
             self.locale.re_values['modifiers'] = re_join(self.locale.Modifiers)
             self.locale.re_values['sources'] = re_join(self.locale.re_sources)
 
@@ -2270,7 +2268,7 @@ class Constants(object):
                                         (\s)?
                                     )
                                     (?P<mthname>
-                                        ({months}|{shortmonths})
+                                        \b({months}|{shortmonths})\b
                                     )\s?
                                     (?P<year>\d\d
                                         (\d\d)?
@@ -2286,24 +2284,19 @@ class Constants(object):
         # including fixing the bug of matching a 4-digit year as ddyy
         # when the day is absent from the string
         self.RE_DATE3 = r'''(?P<date>
-                                (
-                                    (
-                                        (^|\s)
-                                        (?P<mthname>
-                                            ({months}|{shortmonths})(?![a-zA-Z_])
-                                        )
-                                    ){{1}}
+                                (?:
+                                    (?:^|\s)
+                                    (?P<mthname>
+                                        (?:{months}|{shortmonths})\b
+                                    )
                                     |
-                                    (
-                                        (^|\s)
-                                        (?P<day>([1-9]|[0-2]\d|3[0-1])(?!(\d|pm|am)))
-                                        (?P<suffix>{daysuffix})?
-                                    ){{1}}
+                                    (?:^|\s)
+                                    (?P<day>(?:[1-9]|[012]\d|3[01])
+                                    (?!(?:\d|pm|am)))
+                                    (?P<suffix>{daysuffix})?
                                     |
-                                    (
-                                        ,?\s?
-                                        (?P<year>\d\d(\d\d)?)
-                                    ){{1}}
+                                    (?:,\s|\s)
+                                    (?P<year>\d\d(?:\d\d)?)
                                 ){{1,3}}
                             )'''.format(**self.locale.re_values)
 
@@ -2313,7 +2306,7 @@ class Constants(object):
                             (?P<month>
                                 (
                                     (?P<mthname>
-                                        ({months}|{shortmonths})
+                                        \b({months}|{shortmonths})\b
                                     )
                                     (\s?
                                         (?P<year>(\d{{4}}))
@@ -2322,66 +2315,55 @@ class Constants(object):
                             )
                             (?=\s|$|[^\w])'''.format(**self.locale.re_values)
 
-        self.RE_WEEKDAY = r'''(\s|^)
+        self.RE_WEEKDAY = r'''\b
                               (?P<weekday>
-                                  ({days}|{shortdays})
+                                  {days}|{shortdays}
                               )
-                              (?=\s|$|[^\w])'''.format(**self.locale.re_values)
+                              \b'''.format(**self.locale.re_values)
 
-        self.RE_NUMBER = r'({numbers}|\d+)'.format(**self.locale.re_values)
+        self.RE_NUMBER = (r'(\b{numbers}\b|\d+)'
+                          .format(**self.locale.re_values))
 
         self.RE_SPECIAL = (r'(?P<special>^[{specials}]+)\s+'
                            .format(**self.locale.re_values))
 
-        self.RE_UNITS_ONLY = r'''(\b{units})'''.format(**self.locale.re_values)
+        self.RE_UNITS_ONLY = (r'''\b({units})\b'''
+                              .format(**self.locale.re_values))
 
         self.RE_UNITS = r'''(?P<qty>
-                                (-?
-                                    (\b
-                                        ({numbers})\b|\d+
-                                    )\s*
-                                    (?P<units>
-                                        (\b{units})
-                                    )
-                                )
+                                -?
+                                (\b({numbers})\b|\d+)\s*
+                                (?P<units>{units})\b
                             )'''.format(**self.locale.re_values)
 
         self.RE_QUNITS = r'''(?P<qty>
-                                 (-?
-                                     (\b
-                                         ({numbers}s)\b|\d+
-                                     )\s?
-                                     \b
-                                     (?P<qunits>{qunits})\b
-                                     (\s?|,|$)
-                                 )
+                                 -?
+                                 (\b({numbers}s)\b|\d+)\s?
+                                 (?P<qunits>{qunits})\b
                              )'''.format(**self.locale.re_values)
 
-        self.RE_MODIFIER = r'''(?P<modifier>
-                                   ({modifiers})
-                               )'''.format(**self.locale.re_values)
+        self.RE_MODIFIER = r'''\b(?P<modifier>
+                                   {modifiers}
+                               )\b'''.format(**self.locale.re_values)
 
-        self.RE_TIMEHMS = r'''(\s?|^)
+        self.RE_TIMEHMS = r'''
                               (?P<hours>\d\d?)
                               (?P<tsep>{timeseperator}|)
                               (?P<minutes>\d\d)
                               (?:(?P=tsep)
                                   (?P<seconds>\d\d
-                                      (?:[.,]\d+)?
+                                      (?:[\.,]\d+)?
                                   )
                               )?'''.format(**self.locale.re_values)
 
-        self.RE_TIMEHMS2 = r'''(?P<hours>
-                                   (\d\d?)
-                               )
+        self.RE_TIMEHMS2 = r'''
+                               (?P<hours>\d\d?)
                                (
                                    (?P<tsep>{timeseperator}|)
-                                   (?P<minutes>
-                                       (\d\d?)
-                                   )
+                                   (?P<minutes>\d\d?)
                                    (?:(?P=tsep)
                                        (?P<seconds>\d\d?
-                                           (?:[.,]\d+)?
+                                           (?:[\.,]\d+)?
                                        )
                                    )?
                                )?'''.format(**self.locale.re_values)
@@ -2401,31 +2383,31 @@ class Constants(object):
             self.RE_TIMEHMS2 += (r'\s?(?P<meridian>({meridian})\b)'
                                  .format(**self.locale.re_values))
 
-        dateSeps = ''.join(re.escape(s) for s in self.locale.dateSep) + '.'
+        dateSeps = ''.join(re.escape(s) for s in self.locale.dateSep) + '\.'
 
-        self.RE_DATE = r'''(\s?|^)
-                           (?P<date>(\d\d?[{0}]\d\d?([{0}](\d\d)+)?))
-                           (?=\s?|$|[^\w])'''.format(dateSeps)
+        self.RE_DATE = r'''\b
+                           (?P<date>\d\d?[{0}]\d\d?(?:[{0}]\d\d(?:\d\d)?)?)
+                           \b'''.format(dateSeps)
 
         self.RE_DATE2 = r'[{0}]'.format(dateSeps)
 
         assert 'dayoffsets' in self.locale.re_values
 
-        self.RE_DAY = r'''(\s|^)
+        self.RE_DAY = r'''\b
                           (?P<day>
-                              ({dayoffsets})
+                              {dayoffsets}
                           )
-                          (?=\s|$|[^\w])'''.format(**self.locale.re_values)
+                          \b'''.format(**self.locale.re_values)
 
         self.RE_DAY2 = r'''(?P<day>\d\d?)
                            (?P<suffix>{daysuffix})?
                        '''.format(**self.locale.re_values)
 
-        self.RE_TIME = r'''(\s?|^)
+        self.RE_TIME = r'''\b
                            (?P<time>
-                               ({sources})
+                               {sources}
                            )
-                           (?=\s?|$|[^\w])'''.format(**self.locale.re_values)
+                           \b'''.format(**self.locale.re_values)
 
         self.RE_REMAINING = r'\s+'
 
@@ -2450,7 +2432,7 @@ class Constants(object):
         self.RE_RDATE3 = r'''(
                                 (
                                     (
-                                        ({months})
+                                        \b({months})\b
                                     )\s?
                                     (
                                         (\d\d?)
