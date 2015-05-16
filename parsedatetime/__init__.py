@@ -940,7 +940,7 @@ class Calendar:
                 debug and log.debug('CRE_TIME matched')
                 self.modifierFlag = False
                 (yr, mth, dy, hr, mn, sec, wd, yd, isdst), _ = \
-                    self._parse(unit)
+                    self._parse(unit, None)
 
                 start = datetime.datetime(yr, mth, dy, hr, mn, sec)
                 target = start + datetime.timedelta(days=offset)
