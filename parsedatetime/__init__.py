@@ -132,6 +132,7 @@ def _extract_time(m):
     minutes = int(m.group('minutes'))
     seconds = m.group('seconds')
     if seconds:
+        seconds = seconds.replace(',', '.').split('.', 1)[0]
         seconds = int(seconds)
     else:
         seconds = 0
