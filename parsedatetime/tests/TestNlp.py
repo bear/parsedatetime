@@ -52,23 +52,25 @@ class test(unittest.TestCase):
         start  = datetime.datetime(2013, 8, 1, 21, 25, 0).timetuple()
         target = ((datetime.datetime(2013, 8, 5, 20, 0), 3, 17, 37, 'At 8PM on August 5th'),
                   (datetime.datetime(2013, 8, 9, 21, 0), 3, 72, 90, 'next Friday at 9PM'),
-                  (datetime.datetime(2013, 8, 1, 21, 30, 0), 2, 120, 132, 'in 5 minutes'))
+                  (datetime.datetime(2013, 8, 1, 21, 30, 0), 2, 120, 132, 'in 5 minutes'),
+                  (datetime.datetime(2013, 8, 8, 9, 0), 1, 173, 182, 'next week'))
 
         # positive testing
         self.assertTrue(_compareResults(self.cal.nlp("I'm so excited!! At 8PM on August 5th i'm going to fly to Florida"
                                                      ". Then next Friday at 9PM i'm going to Dog n Bone! And in 5 "
-                                                     "minutes I'm going to eat some food!", start), target))
+                                                     "minutes I'm going to eat some food! Talk to you next week.", start), target))
 
         target = datetime.datetime(self.yr, self.mth, self.dy, 17, 0, 0).timetuple()
 
         # negative testing - no matches should return None
-        self.assertTrue(_compareResults(self.cal.nlp("I'm so excited!! So many things that are going to happen!!", start), None))
+        self.assertTrue(_compareResults(self.cal.nlp("Next, I'm so excited!! So many things that are going to happen every week!!", start), None))
 
         # quotes should not interfere with datetime language recognition
         target = self.cal.nlp("I'm so excited!! At '8PM on August 5th' i'm going to fly to Florida"
                                                      ". Then 'next Friday at 9PM' i'm going to Dog n Bone! And in '5 "
-                                                     "minutes' I'm going to eat some food!", start)
+                                                     "minutes' I'm going to eat some food! Talk to you \"next week\"", start)
 
         self.assertTrue(target[0][4] == "At '8PM on August 5th")
         self.assertTrue(target[1][4] == "next Friday at 9PM")
         self.assertTrue(target[2][4] == "in '5 minutes")
+        self.assertTrue(target[3][4] == "next week")
