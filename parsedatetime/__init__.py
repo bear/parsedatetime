@@ -1814,6 +1814,22 @@ class Calendar:
                     leftmost_match[3] = 0
                     leftmost_match[4] = 'modifier'
 
+            # Units only; must be preceded by a modifier
+            if len(matches) > 0 and matches[-1][3] == 0:
+                m = self.ptc.CRE_UNITS_ONLY.search(inputString[startpos:])
+                # Ensure that any match is immediately proceded by the
+                # modifier. "Next is the word 'month'" should not parse as a
+                # date while "next month" should
+                if m is not None and inputString[startpos:startpos+m.start()].strip() == '':
+                    debug and log.debug('CRE_UNITS_ONLY matched [%s]' % m.group())
+                    if leftmost_match[1] == 0 or \
+                            leftmost_match[0] > m.start() + startpos:
+                        leftmost_match[0] = m.start() + startpos
+                        leftmost_match[1] = m.end() + startpos
+                        leftmost_match[2] = m.group()
+                        leftmost_match[3] = 3
+                        leftmost_match[4] = 'unitsOnly'
+
             # Quantity + Units
             m = self.ptc.CRE_UNITS.search(inputString[startpos:])
             if m is not None:
@@ -1988,7 +2004,7 @@ class Calendar:
                     # TODO: make sure the combination of
                     # formats (modifier, dateStd, etc) makes logical sense
                     # before parsing together
-                    if date or time:
+                    if date or time or units:
                         combined = orig_inputstring[matches[from_match_index]
                                                     [0]:matches[i - 1][1]]
                         parsed_datetime, flags = self.parse(combined,
