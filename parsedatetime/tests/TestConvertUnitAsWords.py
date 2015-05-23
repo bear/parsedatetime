@@ -5,7 +5,6 @@ Tests the _convertUnitAsWords method.
 import unittest
 import parsedatetime as pdt
 
-
 class test(unittest.TestCase):
     def setUp(self):
         self.cal   = pdt.Calendar()
@@ -23,7 +22,7 @@ class test(unittest.TestCase):
 
     def testConversions(self):
         for pair in self.tests:
-            self.assertTrue(self.cal._convertUnitAsWords(pair[0]) == pair[1])
+            self.assertEqual(self.cal._convertUnitAsWords(pair[0]), pair[1])
 
 if __name__ == "__main__":
     unittest.main()

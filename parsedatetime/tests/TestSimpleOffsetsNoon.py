@@ -6,21 +6,11 @@ Test parsing of 'simple' offsets
 import unittest, time, datetime
 import parsedatetime as pdt
 
-
-  # a special compare function is used to allow us to ignore the seconds as
-  # the running of the test could cross a minute boundary
-def _compareResults(result, check):
-    target, t_flag = result
-    value,  v_flag = check
-
-    t_yr, t_mth, t_dy, t_hr, t_min, _, _, _, _ = target
-    v_yr, v_mth, v_dy, v_hr, v_min, _, _, _, _ = value
-
-    return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
-            (t_hr == v_hr) and (t_min == v_min)) and (t_flag == v_flag)
-
-
 class test(unittest.TestCase):
+
+    @pdt.tests.assertEqualWithComparator
+    def assertExpectedResult(self, result, check, **kwargs):
+        return pdt.tests.compareResultByTimeTuplesAndFlags(result, check, **kwargs)
 
     def setUp(self):
         self.cal = pdt.Calendar()
@@ -33,13 +23,13 @@ class test(unittest.TestCase):
         start  = s.timetuple()
         target = t.timetuple()
 
-        self.assertTrue(_compareResults(self.cal.parse('5 hours after 12pm',     start), (target, 2)))
-        self.assertTrue(_compareResults(self.cal.parse('five hours after 12pm',  start), (target, 2)))
-        #self.assertTrue(_compareResults(self.cal.parse('5 hours after 12 pm',    start), (target, 2)))
-        #self.assertTrue(_compareResults(self.cal.parse('5 hours after 12:00pm',  start), (target, 2)))
-        #self.assertTrue(_compareResults(self.cal.parse('5 hours after 12:00 pm', start), (target, 2)))
-        #self.assertTrue(_compareResults(self.cal.parse('5 hours after noon',     start), (target, 2)))
-        #self.assertTrue(_compareResults(self.cal.parse('5 hours from noon',      start), (target, 2)))
+        self.assertExpectedResult(self.cal.parse('5 hours after 12pm',     start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('five hours after 12pm',  start), (target, 2))
+        #self.assertExpectedResult(self.cal.parse('5 hours after 12 pm',    start), (target, 2))
+        #self.assertExpectedResult(self.cal.parse('5 hours after 12:00pm',  start), (target, 2))
+        #self.assertExpectedResult(self.cal.parse('5 hours after 12:00 pm', start), (target, 2))
+        #self.assertExpectedResult(self.cal.parse('5 hours after noon',     start), (target, 2))
+        #self.assertExpectedResult(self.cal.parse('5 hours from noon',      start), (target, 2))
 
     def testOffsetBeforeNoon(self):
         s = datetime.datetime.now()
@@ -48,12 +38,12 @@ class test(unittest.TestCase):
         start  = s.timetuple()
         target = t.timetuple()
 
-        #self.assertTrue(_compareResults(self.cal.parse('5 hours before noon',     start), (target, 2)))
-        self.assertTrue(_compareResults(self.cal.parse('5 hours before 12pm',     start), (target, 2)))
-        self.assertTrue(_compareResults(self.cal.parse('five hours before 12pm',  start), (target, 2)))
-        #self.assertTrue(_compareResults(self.cal.parse('5 hours before 12 pm',    start), (target, 2)))
-        #self.assertTrue(_compareResults(self.cal.parse('5 hours before 12:00pm',  start), (target, 2)))
-        #self.assertTrue(_compareResults(self.cal.parse('5 hours before 12:00 pm', start), (target, 2)))
+        #self.assertExpectedResult(self.cal.parse('5 hours before noon',     start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('5 hours before 12pm',     start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('five hours before 12pm',  start), (target, 2))
+        #self.assertExpectedResult(self.cal.parse('5 hours before 12 pm',    start), (target, 2))
+        #self.assertExpectedResult(self.cal.parse('5 hours before 12:00pm',  start), (target, 2))
+        #self.assertExpectedResult(self.cal.parse('5 hours before 12:00 pm', start), (target, 2))
 
 
 if __name__ == "__main__":

@@ -7,23 +7,11 @@ ptc.StartTimeFromSourceTime flag set to True
 import unittest, time, datetime
 import parsedatetime as pdt
 
-  # a special compare function is used to allow us to ignore the seconds as
-  # the running of the test could cross a minute boundary
-def _compareResults(result, check, dateOnly=False, debug=False):
-    target, t_flag = result
-    value,  v_flag = check
-
-    t_yr, t_mth, t_dy, t_hr, t_min, _, _, _, _ = target
-    v_yr, v_mth, v_dy, v_hr, v_min, _, _, _, _ = value
-
-    if dateOnly:
-        return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy)) and (t_flag == v_flag)
-    else:
-        return ((t_yr == v_yr) and (t_mth == v_mth) and (t_dy == v_dy) and
-                (t_hr == v_hr) and (t_min == v_min)) and (t_flag == v_flag)
-
-
 class test(unittest.TestCase):
+
+    @pdt.tests.assertEqualWithComparator
+    def assertExpectedResult(self, result, check, **kwargs):
+        return pdt.tests.compareResultByTimeTuplesAndFlags(result, check, **kwargs)
 
     def setUp(self):
         self.cal = pdt.Calendar()
@@ -50,8 +38,8 @@ class test(unittest.TestCase):
         start  = s.timetuple()
         target = t.timetuple()
 
-        self.assertTrue(_compareResults(self.cal.parse('eom',         start), (target, 2)))
-        self.assertTrue(_compareResults(self.cal.parse('meeting eom', start), (target, 2)))
+        self.assertExpectedResult(self.cal.parse('eom',         start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('meeting eom', start), (target, 2))
 
         s = datetime.datetime.now()
 
@@ -63,5 +51,5 @@ class test(unittest.TestCase):
         start  = s.timetuple()
         target = t.timetuple()
 
-        self.assertTrue(_compareResults(self.cal.parse('eoy',         start), (target, 2)))
-        self.assertTrue(_compareResults(self.cal.parse('meeting eoy', start), (target, 2)))
+        self.assertExpectedResult(self.cal.parse('eoy',         start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('meeting eoy', start), (target, 2))
