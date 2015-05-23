@@ -2340,7 +2340,7 @@ class Constants(object):
                               )
                               \b'''.format(**self.locale.re_values)
 
-        self.RE_NUMBER = (r'(\b{numbers}\b|\d+)'
+        self.RE_NUMBER = (r'(\b(?:{numbers})\b|\d+)'
                           .format(**self.locale.re_values))
 
         self.RE_SPECIAL = (r'(?P<special>^[{specials}]+)\s+'
