@@ -2365,7 +2365,7 @@ class Constants(object):
                                    {modifiers}
                                )\b'''.format(**self.locale.re_values)
 
-        self.RE_TIMEHMS = r'''(\s|-|^)
+        self.RE_TIMEHMS = r'''([\s(\["'-]|^)
                               (?P<hours>\d\d?)
                               (?P<tsep>{timeseperator}|)
                               (?P<minutes>\d\d)
@@ -2375,7 +2375,7 @@ class Constants(object):
                                   )
                               )?\b'''.format(**self.locale.re_values)
 
-        self.RE_TIMEHMS2 = r'''(\s|-|^)
+        self.RE_TIMEHMS2 = r'''([\s(\["'-]|^)
                                (?P<hours>\d\d?)
                                (?:
                                    (?P<tsep>{timeseperator}|)
