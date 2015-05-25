@@ -139,6 +139,8 @@ class pdtLocale_base(object):
 
         self.small = {'zero': 0,
                       'one': 1,
+                      'a': 1,
+                      'an': 1,
                       'two': 2,
                       'three': 3,
                       'four': 4,
