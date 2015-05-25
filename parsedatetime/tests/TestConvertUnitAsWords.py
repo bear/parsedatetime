@@ -12,12 +12,14 @@ class test(unittest.TestCase):
                       ('zero', 0),
                       ('eleven', 11),
                       ('forty two', 42),
+                      ('a hundred', 100),
                       ('four hundred and fifteen', 415),
                       ('twelve thousand twenty', 12020),
                       ('nine hundred and ninety nine', 999),
                       ('three quintillion four billion', 3000000004000000000),
                       ('forty three thousand, nine hundred and ninety nine', 43999),
-                      ('one hundred thirty three billion four hundred thousand three hundred fourteen', 133000400314)
+                      ('one hundred thirty three billion four hundred thousand three hundred fourteen', 133000400314),
+                      ('an octillion', 1000000000000000000000000000)
                       )
 
     def testConversions(self):

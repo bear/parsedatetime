@@ -89,6 +89,8 @@ class test(unittest.TestCase):
         self.assertExpectedResult(self.cal.parse('1 week from now',     start), (target, 3))
         self.assertExpectedResult(self.cal.parse('in one week',         start), (target, 1))
         self.assertExpectedResult(self.cal.parse('one week from now',   start), (target, 3))
+        self.assertExpectedResult(self.cal.parse('in a week',           start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('a week from now',     start), (target, 3))
         self.assertExpectedResult(self.cal.parse('in 7 days',           start), (target, 1))
         self.assertExpectedResult(self.cal.parse('7 days from now',     start), (target, 3))
         self.assertExpectedResult(self.cal.parse('in seven days',       start), (target, 1))
@@ -122,11 +124,15 @@ class test(unittest.TestCase):
                          _tr((target, 3)))
         self.assertEqual(_tr(self.cal.parse('one week before now', start)),
                          _tr((target, 3)))
+        self.assertEqual(_tr(self.cal.parse('a week before now', start)),
+                         _tr((target, 3)))
         self.assertEqual(_tr(self.cal.parse('7 days before now', start)),
                          _tr((target, 3)))
         self.assertEqual(_tr(self.cal.parse('seven days before now', start)),
                          _tr((target, 3)))
         self.assertEqual(_tr(self.cal.parse('1 week ago', start)),
+                         _tr((target, 1)))
+        self.assertEqual(_tr(self.cal.parse('a week ago', start)),
                          _tr((target, 1)))
         self.assertEqual(_tr(self.cal.parse('last week', start), trunc_hours=True),
                          _tr((target, 1), trunc_hours=True))
