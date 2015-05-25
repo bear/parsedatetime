@@ -85,7 +85,7 @@ class test(unittest.TestCase):
 
         self.assertExpectedResult(self.cal.parse('730',  start), (target, 2))
         self.assertExpectedResult(self.cal.parse('0730', start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('730am', start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('0730am', start), (target, 2))
 
         target = datetime.datetime(self.yr, self.mth, self.dy, 17, 30, 0).timetuple()
 
