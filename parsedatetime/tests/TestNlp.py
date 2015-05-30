@@ -64,6 +64,8 @@ class test(unittest.TestCase):
 
         # negative testing - no matches should return None
         self.assertExpectedResult(self.cal.nlp("Next, I'm so excited!! So many things that are going to happen every week!!", start), None)
+        self.assertExpectedResult(self.cal.nlp("$300", start), None)
+        self.assertExpectedResult(self.cal.nlp("300ml", start), None)
 
         # quotes should not interfere with datetime language recognition
         target = self.cal.nlp("I'm so excited!! At '8PM on August 5th' i'm going to fly to Florida"

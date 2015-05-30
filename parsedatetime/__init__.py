@@ -2365,7 +2365,7 @@ class Constants(object):
                                    {modifiers}
                                )\b'''.format(**self.locale.re_values)
 
-        self.RE_TIMEHMS = r'''
+        self.RE_TIMEHMS = r'''([\s(\["'-]|^)
                               (?P<hours>\d\d?)
                               (?P<tsep>{timeseperator}|)
                               (?P<minutes>\d\d)
@@ -2373,9 +2373,9 @@ class Constants(object):
                                   (?P<seconds>\d\d
                                       (?:[\.,]\d+)?
                                   )
-                              )?'''.format(**self.locale.re_values)
+                              )?\b'''.format(**self.locale.re_values)
 
-        self.RE_TIMEHMS2 = r'''
+        self.RE_TIMEHMS2 = r'''([\s(\["'-]|^)
                                (?P<hours>\d\d?)
                                (?:
                                    (?P<tsep>{timeseperator}|)
@@ -2401,6 +2401,8 @@ class Constants(object):
         if 'meridian' in self.locale.re_values:
             self.RE_TIMEHMS2 += (r'\s?(?P<meridian>{meridian})\b'
                                  .format(**self.locale.re_values))
+        else:
+            self.RE_TIMEHMS2 += r'\b'
 
         dateSeps = ''.join(re.escape(s) for s in self.locale.dateSep) + '\.'
 

@@ -63,6 +63,7 @@ class test(unittest.TestCase):
         self.assertExpectedResult(self.cal.parse('11P.M.',        start), (target, 2))
         self.assertExpectedResult(self.cal.parse('11p.m.',        start), (target, 2))
         self.assertExpectedResult(self.cal.parse('11 p.m.',       start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('"11 p.m."',     start), (target, 2))
 
         target = datetime.datetime(self.yr, self.mth, self.dy, 11, 0, 0).timetuple()
 
@@ -80,16 +81,22 @@ class test(unittest.TestCase):
         self.assertExpectedResult(self.cal.parse('11A.M.',        start), (target, 2))
         self.assertExpectedResult(self.cal.parse('11a.m.',        start), (target, 2))
         self.assertExpectedResult(self.cal.parse('11 a.m.',       start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('(11 a.m.)',     start), (target, 2))
 
         target = datetime.datetime(self.yr, self.mth, self.dy, 7, 30, 0).timetuple()
 
         self.assertExpectedResult(self.cal.parse('730',  start), (target, 2))
         self.assertExpectedResult(self.cal.parse('0730', start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('0730am', start), (target, 2))
 
         target = datetime.datetime(self.yr, self.mth, self.dy, 17, 30, 0).timetuple()
 
         self.assertExpectedResult(self.cal.parse('1730',   start), (target, 2))
         self.assertExpectedResult(self.cal.parse('173000', start), (target, 2))
+
+        # Should not parse as a time due to prefix
+        self.assertExpectedResult(self.cal.parse('$300', start), (start, 0))
+        self.assertExpectedResult(self.cal.parse('300ml', start), (start, 0))
 
     def testDates(self):
         start  = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
