@@ -2388,7 +2388,8 @@ class Constants(object):
                                    )?
                                )?'''.format(**self.locale.re_values)
 
-        self.RE_NLP_PREFIX = r'''(?P<nlp_prefix>
+        # 1, 2, and 3 here refer to the type of match date, time, or units
+        self.RE_NLP_PREFIX = r'''\b(?P<nlp_prefix>
                                   (on)
                                   (\s)+1
                                   |

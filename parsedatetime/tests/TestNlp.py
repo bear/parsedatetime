@@ -76,3 +76,20 @@ class test(unittest.TestCase):
         self.assertEqual(target[1][4], "next Friday at 9PM")
         self.assertEqual(target[2][4], "in '5 minutes")
         self.assertEqual(target[3][4], "next week")
+
+    def testPrefixes(self):
+        # nlp has special handling for on/in/at prefixes
+        start  = datetime.datetime(2013, 8, 1, 21, 25, 0).timetuple()
+        
+        target = self.cal.nlp("Buy a balloon on Monday", start)
+        self.assertEqual(target[0][4], "on Monday")
+        
+        target = self.cal.nlp("Buy a balloon at noon", start)
+        self.assertEqual(target[0][4], "at noon")
+        
+        target = self.cal.nlp("Buy a balloon in a month", start)
+        self.assertEqual(target[0][4], "in a month")
+        
+        # Should no longer pull "on" off the end of balloon
+        target = self.cal.nlp("Buy a balloon Monday", start)
+        self.assertEqual(target[0][4], "Monday")
