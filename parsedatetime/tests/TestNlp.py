@@ -44,7 +44,7 @@ class test(unittest.TestCase):
         self.cal = pdt.Calendar()
         self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
 
-    def testNlp(self):
+    def testLongPhrase(self):
         # note: these tests do not need to be as dynamic as the others because this is still based
         #       on the parse() function, so all tests of the actual processing of the datetime
         #       value returned are applicable to this. Here we are concerned with ensuring the
@@ -62,12 +62,9 @@ class test(unittest.TestCase):
 
         target = datetime.datetime(self.yr, self.mth, self.dy, 17, 0, 0).timetuple()
 
-        # negative testing - no matches should return None
-        self.assertExpectedResult(self.cal.nlp("Next, I'm so excited!! So many things that are going to happen every week!!", start), None)
-        self.assertExpectedResult(self.cal.nlp("$300", start), None)
-        self.assertExpectedResult(self.cal.nlp("300ml", start), None)
-
+    def testQuotes(self):
         # quotes should not interfere with datetime language recognition
+        start  = datetime.datetime(2013, 8, 1, 21, 25, 0).timetuple()
         target = self.cal.nlp("I'm so excited!! At '8PM on August 5th' i'm going to fly to Florida"
                                                      ". Then 'next Friday at 9PM' i'm going to Dog n Bone! And in '5 "
                                                      "minutes' I'm going to eat some food! Talk to you \"next week\"", start)
@@ -93,3 +90,10 @@ class test(unittest.TestCase):
         # Should no longer pull "on" off the end of balloon
         target = self.cal.nlp("Buy a balloon Monday", start)
         self.assertEqual(target[0][4], "Monday")
+
+    def testFalsePositives(self):
+        # negative testing - no matches should return None
+        start  = datetime.datetime(2013, 8, 1, 21, 25, 0).timetuple()
+        self.assertExpectedResult(self.cal.nlp("Next, I'm so excited!! So many things that are going to happen every week!!", start), None)
+        self.assertExpectedResult(self.cal.nlp("$300", start), None)
+        self.assertExpectedResult(self.cal.nlp("300ml", start), None)
