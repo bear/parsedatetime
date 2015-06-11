@@ -967,7 +967,7 @@ class Calendar:
                             if u in self.ptc.Months or u in self.ptc.shortMonths:
                                 yr, mth, dy, hr, mn, sec, wd, yd, isdst = t
                                 start = datetime.datetime(yr, mth, dy, hr, mn, sec)
-                                t = self.inc(start, year=1).timetuple()
+                                t = self.inc(start, year=offset).timetuple()
                             elif u in self.ptc.Weekdays:
                                 t = t + datetime.timedelta(weeks=offset)
 
