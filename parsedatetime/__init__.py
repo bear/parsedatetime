@@ -2049,13 +2049,14 @@ class Calendar:
             if matches[0][3] == 0:  # not enough info to parse
                 return None
             else:
+                combined = orig_inputstring[matches[0][0]:matches[0][1]]
                 parsed_datetime, flags = self.parse(matches[0][2], sourceTime)
                 proximity_matches.append((
                     datetime.datetime(*parsed_datetime[:6]),
                     flags,
                     matches[0][0],
                     matches[0][1],
-                    matches[0][2]))
+                    combined))
 
         return tuple(proximity_matches)
 
