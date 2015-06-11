@@ -959,11 +959,22 @@ class Calendar:
                 unit = unit.strip()
                 if unit:
                     with self._mergeFlags():
-                        t, flag2 = self._parse(unit, sourceTime)
+                        s = '%s %s' % (unit, chunk2)
+                        t, flag2 = self._parse(s, sourceTime)
+
+                        if flag2 == 1: # working with dates
+                            u = unit.lower()
+                            if u in self.ptc.Months or u in self.ptc.shortMonths:
+                                yr, mth, dy, hr, mn, sec, wd, yd, isdst = t
+                                start = datetime.datetime(yr, mth, dy, hr, mn, sec)
+                                t = self.inc(start, year=1).timetuple()
+                            elif u in self.ptc.Weekdays:
+                                t = t + datetime.timedelta(weeks=offset)
 
                     debug and log.debug('flag2 = %s t = %s', flag2, t)
                     if flag2 != 0:
                         sourceTime = t
+                        chunk2 = ''
 
                 chunk1 = chunk1.strip()
 

@@ -5,6 +5,7 @@ Test parsing of 'simple' offsets
 
 import time
 import datetime
+import calendar
 import unittest
 import parsedatetime as pdt
 
@@ -136,6 +137,18 @@ class test(unittest.TestCase):
                          _tr((target, 1)))
         self.assertEqual(_tr(self.cal.parse('last week', start), trunc_hours=True),
                          _tr((target, 1), trunc_hours=True))
+
+    def testNextMonth(self):
+        s = datetime.datetime(self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) + datetime.timedelta(days=1)
+        t = self.cal.inc(s, year=1)
+
+        start = s.timetuple()
+        target = t.timetuple()
+
+        phrase = 'next %s %s' % (calendar.month_name[t.month], t.day)
+
+        self.assertEqual(_tr(self.cal.parse(phrase, start)), 
+                         _tr((target, 1)))
 
     def testSpecials(self):
         s = datetime.datetime.now()
