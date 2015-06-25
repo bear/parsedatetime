@@ -1,3 +1,30 @@
+25 Jun 2015 - bear
+    released v1.5
+
+    Issue #99 Which year is implied when given just a month and day? Next and last? question
+    Issue #96 Word boundary issues for specials (on, at, in) in nlp
+    Issue #94 inconsistent application of sourceTime in Calendar.parseDT
+    Issue #87 nlp() doesn't recognize some "next ..." expressions
+    Issue #84 Afternoon? bug
+    Issue #82 'last week' and 'next week' are broken
+    Issue #81 parse returns default time of 0900 with dates like 'next friday' despite passed struct_time bug
+    Issue #78 Link for Travis in README is wrong
+    Issue #72 Enable travis
+    Issue #71 Calendar() class can not be initialized 1.4 (it's fine)
+    Issue #66 Unexpected struct_time flag with Calendar.parse on HTML <a href> string
+    Issue #65 NLP false positives
+    Issue #63 Supporting multiple shortweekday abbreviations
+    Issue #61 Short weekday abbreviations bug
+    Issue #56 Parse words to numbers (thirteen => 13)
+    Issue #54 testMonths fails
+
+    commit 107c7e4655 fix for issue 95 - parsing 'next june 15'
+    commit 2c0c8ec778 Fixed faulty test, "730am" parses as "73:0 am" which is a bug for a later day.
+    commit 6f244e891d Fix "ones" parsing as "1s." Require a word boundary between spelled numbers and units.
+    commit 035818edef Fix "1 day ago" parsing like "1d 1y ago" where "a" within the word "day" is interpreted as 1.
+    commit 45002e6eec Fixes "next week" and similar modifier + unit pairs in nlp()
+    commit 47d2e1d527 Fixed "last week"
+
 11 Jul 2014 - bear
     bump version to v1.5
     released v1.4

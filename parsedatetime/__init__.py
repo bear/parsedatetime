@@ -3,7 +3,7 @@
 #
 # vim: sw=2 ts=2 sts=2
 #
-# Copyright 2004-2014 Mike Taylor
+# Copyright 2004-2015 Mike Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
