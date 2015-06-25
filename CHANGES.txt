@@ -1,4 +1,6 @@
 25 Jun 2015 - bear
+    Issue #73 add Makefile
+
     bump version to v1.6
     released v1.5
 
