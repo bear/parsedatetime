@@ -18,9 +18,7 @@ setup(name='parsedatetime',
         license='Apache License 2.0',
         packages=find_packages(exclude=['tests*']),
         platforms=['Any'],
-        long_description=(read('README.rst') + '\n\n' +
-                          read('AUTHORS.txt') + '\n\n' +
-                          read('CHANGES.txt')),
+        long_description=(read('README.rst')),
         classifiers=['Development Status :: 5 - Production/Stable',
                      'Intended Audience :: Developers',
                      'License :: OSI Approved :: Apache Software License',
