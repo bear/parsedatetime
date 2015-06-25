@@ -1,4 +1,5 @@
 25 Jun 2015 - bear
+    bump version to v1.6
     released v1.5
 
     Issue #99 Which year is implied when given just a month and day? Next and last? question

@@ -28,7 +28,7 @@ from __future__ import with_statement
 __author__ = 'Mike Taylor (bear@bear.im)'
 __copyright__ = 'Copyright (c) 2004 Mike Taylor'
 __license__ = 'Apache v2.0'
-__version__ = '1.5'
+__version__ = '1.6'
 __contributors__ = ['Darshana Chhajed',
                     'Michael Lim (lim.ck.michael@gmail.com)',
                     'Bernd Zeimetz (bzed@debian.org)']
