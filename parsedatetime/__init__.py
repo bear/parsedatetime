@@ -2256,6 +2256,10 @@ class Constants(object):
             self.locale.re_values['modifiers'] = re_join(self.locale.Modifiers)
             self.locale.re_values['sources'] = re_join(self.locale.re_sources)
 
+            # For distinguishing numeric dates from times, look for timeSep
+            # and meridian, if specified in the locale
+            self.locale.re_values['timecomponents'] = re_join(self.locale.timeSep + self.locale.meridian)
+
             # build weekday offsets - yes, it assumes the Weekday and
             # shortWeekday lists are in the same order and Mon..Sun
             # (Python style)
@@ -2322,11 +2326,12 @@ class Constants(object):
                                     |
                                     (?:^|\s)
                                     (?P<day>[1-9]|[012]\d|3[01])
-                                    (?!\d|pm|am)
-                                    (?P<suffix>{daysuffix}|)
+                                    (?P<suffix>{daysuffix}|)\b
+                                    (?!\s*(?:{timecomponents}))
                                     |
-                                    (?:,\s|\s)
-                                    (?P<year>\d\d(?:\d\d|))
+                                    ,?\s
+                                    (?P<year>\d\d(?:\d\d|))\b
+                                    (?!\s*(?:{timecomponents}))
                                 ){{1,3}}
                                 (?(mthname)|$-^)
                             )'''.format(**self.locale.re_values)
