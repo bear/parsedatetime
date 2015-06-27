@@ -57,10 +57,10 @@ class test(unittest.TestCase):
         else:
             target = datetime.datetime(self.yr, 8, 5, 12, 0, 0).timetuple()
 
-        self.assertExpectedResult(self.cal.parse('August 5th 12:00', start), (target, 3))
-        self.assertExpectedResult(self.cal.parse('August 5th 12pm',  start), (target, 3))
-        self.assertExpectedResult(self.cal.parse('August 5th 12:00pm', start), (target, 3))
-        self.assertExpectedResult(self.cal.parse('August 5th 12 pm',  start), (target, 3))
+        self.assertExpectedResult(self.cal.parse('August 5th 12:00',    start), (target, 3))
+        self.assertExpectedResult(self.cal.parse('August 5th 12pm',     start), (target, 3))
+        self.assertExpectedResult(self.cal.parse('August 5th 12:00pm',  start), (target, 3))
+        self.assertExpectedResult(self.cal.parse('August 5th 12 pm',    start), (target, 3))
         self.assertExpectedResult(self.cal.parse('August 5th 12:00 pm', start), (target, 3))
 
         if self.mth > 8 or (self.mth == 8 and self.dy > 5):
@@ -68,7 +68,7 @@ class test(unittest.TestCase):
         else:
             target = datetime.datetime(self.yr, 8, 22, 3, 26, 0).timetuple()
 
-        self.assertExpectedResult(self.cal.parse('August 22nd 3:26', start), (target, 3))
+        self.assertExpectedResult(self.cal.parse('August 22nd 3:26',    start), (target, 3))
         self.assertExpectedResult(self.cal.parse('August 22nd 3:26am',  start), (target, 3))
         self.assertExpectedResult(self.cal.parse('August 22nd 3:26 am', start), (target, 3))
 

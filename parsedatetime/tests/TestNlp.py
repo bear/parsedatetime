@@ -95,5 +95,5 @@ class test(unittest.TestCase):
         # negative testing - no matches should return None
         start  = datetime.datetime(2013, 8, 1, 21, 25, 0).timetuple()
         self.assertExpectedResult(self.cal.nlp("Next, I'm so excited!! So many things that are going to happen every week!!", start), None)
-        self.assertExpectedResult(self.cal.nlp("$300", start), None)
+        self.assertExpectedResult(self.cal.nlp("$300",  start), None)
         self.assertExpectedResult(self.cal.nlp("300ml", start), None)

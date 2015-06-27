@@ -67,14 +67,14 @@ class test(unittest.TestCase):
 
         target = datetime.datetime(self.yr, self.mth, self.dy, 11, 0, 0).timetuple()
 
-        self.assertExpectedResult(self.cal.parse('11:00:00 AM', start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('11:00 AM',    start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('11 AM',       start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('11AM',        start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('1100',        start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('11:00',       start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('11a',         start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('11am',        start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('11:00:00 AM',   start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('11:00 AM',      start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('11 AM',         start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('11AM',          start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('1100',          start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('11:00',         start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('11a',           start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('11am',          start), (target, 2))
         self.assertExpectedResult(self.cal.parse('11:00:00 A.M.', start), (target, 2))
         self.assertExpectedResult(self.cal.parse('11:00 A.M.',    start), (target, 2))
         self.assertExpectedResult(self.cal.parse('11 A.M.',       start), (target, 2))
@@ -274,32 +274,32 @@ class test(unittest.TestCase):
         start =  datetime.datetime(2014, 10, 25, self.hr, self.mn, self.sec).timetuple()
 
         target = datetime.datetime(2014, 10, 26, self.hr, self.mn, self.sec).timetuple()
-        self.assertExpectedResult(self.cal.parse('sunday',          start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('sun',          start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('sunday',    start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('sun',       start), (target, 1))
 
         target = datetime.datetime(2014, 10, 27, self.hr, self.mn, self.sec).timetuple()
-        self.assertExpectedResult(self.cal.parse('Monday',          start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('mon',          start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('Monday',    start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('mon',       start), (target, 1))
 
         target = datetime.datetime(2014, 10, 28, self.hr, self.mn, self.sec).timetuple()
-        self.assertExpectedResult(self.cal.parse('tuesday',          start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('tues',          start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('tuesday',   start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('tues',      start), (target, 1))
 
         target = datetime.datetime(2014, 10, 29, self.hr, self.mn, self.sec).timetuple()
-        self.assertExpectedResult(self.cal.parse('wednesday',          start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('wed',          start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('wednesday', start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('wed',       start), (target, 1))
 
         target = datetime.datetime(2014, 10, 30, self.hr, self.mn, self.sec).timetuple()
-        self.assertExpectedResult(self.cal.parse('thursday',          start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('thu',          start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('thursday',  start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('thu',       start), (target, 1))
 
         target = datetime.datetime(2014, 10, 31, self.hr, self.mn, self.sec).timetuple()
-        self.assertExpectedResult(self.cal.parse('friday',          start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('fri',          start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('friday',    start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('fri',       start), (target, 1))
 
         target = datetime.datetime(2014, 11, 1, self.hr, self.mn, self.sec).timetuple()
-        self.assertExpectedResult(self.cal.parse('saturday',          start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('sat',          start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('saturday',  start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('sat',       start), (target, 1))
 
     def testWordBoundaries(self):
         # Ensure that keywords appearing at the start of a word are not parsed

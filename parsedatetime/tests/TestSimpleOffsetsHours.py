@@ -44,13 +44,13 @@ class test(unittest.TestCase):
         target = t.timetuple()
 
         self.assertExpectedResult(self.cal.parse('an hour from now', start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('in an hour', start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('an hour', start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('an hr', start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('an h', start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('in an hour',       start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('an hour',          start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('an hr',            start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('an h',             start), (target, 2))
 
         # No match, should require a word boundary
-        self.assertExpectedResult(self.cal.parse('anhour', start), (start, 0))
+        self.assertExpectedResult(self.cal.parse('anhour',       start), (start, 0))
         self.assertExpectedResult(self.cal.parse('an hamburger', start), (start, 0))
 
     def testHoursBeforeNow(self):
@@ -72,8 +72,8 @@ class test(unittest.TestCase):
         target = t.timetuple()
 
         self.assertExpectedResult(self.cal.parse('an hour before now', start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('an hr before now', start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('an h before now', start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('an hr before now',   start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('an h before now',    start), (target, 2))
 
 
 if __name__ == "__main__":
