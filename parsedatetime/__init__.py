@@ -2424,7 +2424,7 @@ class Constants(object):
 
         dateSeps = ''.join(re.escape(s) for s in self.locale.dateSep) + '\.'
 
-        self.RE_DATE = r'''\b
+        self.RE_DATE = r'''([\s(\["'-]|^)
                            (?P<date>\d\d?[{0}]\d\d?(?:[{0}]\d\d(?:\d\d)?)?)
                            \b'''.format(dateSeps)
 

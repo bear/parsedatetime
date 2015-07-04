@@ -125,6 +125,12 @@ class test(unittest.TestCase):
         self.assertExpectedResult(self.cal.parse('August 25', start), (target, 1))
         self.assertExpectedResult(self.cal.parse('Aug 25',    start), (target, 1))
         self.assertExpectedResult(self.cal.parse('Aug. 25',   start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('"8.25"',    start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('(8.25)',    start), (target, 1))
+
+	# Should not parse as dates
+        self.assertExpectedResult(self.cal.parse('$1.23',  start), (start, 0))
+        self.assertExpectedResult(self.cal.parse('$12.34', start), (start, 0))
 
         # added test to ensure 4-digit year is recognized in the absence of day
         target = datetime.datetime(2013, 8, 1,  self.hr, self.mn, self.sec).timetuple()
