@@ -362,30 +362,23 @@ class Calendar:
                 realunit = key
                 break
 
-        debug and log.debug('units %s --> realunit %s', units, realunit)
+        debug and log.debug('units %s --> realunit %s (qty=%s)',
+                            units, realunit, qty)
 
-        if realunit == 'years':
-            target = self.inc(start, year=qty)
-            self.dateFlag = 1
-        elif realunit == 'months':
-            target = self.inc(start, month=qty)
-            self.dateFlag = 1
+        try:
+            if realunit in ('years', 'months'):
+                target = self.inc(start, **{realunit[:-1]: qty})
+            elif realunit in ('days', 'hours', 'minutes', 'seconds', 'weeks'):
+                delta = datetime.timedelta(**{realunit: qty})
+                target = start + delta
+        except OverflowError:
+            # OverflowError is raise when target.year larger than 9999
+            pass
         else:
-            if realunit == 'days':
-                target = start + datetime.timedelta(days=qty)
+            if realunit in ('years', 'months', 'days', 'weeks'):
                 self.dateFlag = 1
-            elif realunit == 'hours':
-                target = start + datetime.timedelta(hours=qty)
+            else:
                 self.timeFlag = 2
-            elif realunit == 'minutes':
-                target = start + datetime.timedelta(minutes=qty)
-                self.timeFlag = 2
-            elif realunit == 'seconds':
-                target = start + datetime.timedelta(seconds=qty)
-                self.timeFlag = 2
-            elif realunit == 'weeks':
-                target = start + datetime.timedelta(weeks=qty)
-                self.dateFlag = 1
 
         return target.timetuple()
 
@@ -962,11 +955,13 @@ class Calendar:
                         s = '%s %s' % (unit, chunk2)
                         t, flag2 = self._parse(s, sourceTime)
 
-                        if flag2 == 1: # working with dates
+                        if flag2 == 1:  # working with dates
                             u = unit.lower()
-                            if u in self.ptc.Months or u in self.ptc.shortMonths:
+                            if u in self.ptc.Months or \
+                                    u in self.ptc.shortMonths:
                                 yr, mth, dy, hr, mn, sec, wd, yd, isdst = t
-                                start = datetime.datetime(yr, mth, dy, hr, mn, sec)
+                                start = datetime.datetime(
+                                    yr, mth, dy, hr, mn, sec)
                                 t = self.inc(start, year=offset).timetuple()
                             elif u in self.ptc.Weekdays:
                                 t = t + datetime.timedelta(weeks=offset)
@@ -1769,8 +1764,10 @@ class Calendar:
             if dy > self.ptc.daysInMonth(mth, yr):
                 dy = self.ptc.daysInMonth(mth, yr)
 
-        d = source.replace(year=yr, month=mth, day=dy)
+        if yr > datetime.MAXYEAR or yr < datetime.MINYEAR:
+            raise OverflowError('year is out of range')
 
+        d = source.replace(year=yr, month=mth, day=dy)
         return source + (d - source)
 
     def nlp(self, inputString, sourceTime=None):
@@ -1966,8 +1963,10 @@ class Calendar:
                 # Ensure that any match is immediately proceded by the
                 # modifier. "Next is the word 'month'" should not parse as a
                 # date while "next month" should
-                if m is not None and inputString[startpos:startpos+m.start()].strip() == '':
-                    debug and log.debug('CRE_UNITS_ONLY matched [%s]' % m.group())
+                if m is not None and \
+                        inputString[startpos:startpos+m.start()].strip() == '':
+                    debug and log.debug('CRE_UNITS_ONLY matched [%s]',
+                                        m.group())
                     if leftmost_match[1] == 0 or \
                             leftmost_match[0] > m.start() + startpos:
                         leftmost_match[0] = m.start() + startpos
@@ -2258,7 +2257,8 @@ class Constants(object):
 
             # For distinguishing numeric dates from times, look for timeSep
             # and meridian, if specified in the locale
-            self.locale.re_values['timecomponents'] = re_join(self.locale.timeSep + self.locale.meridian)
+            self.locale.re_values['timecomponents'] = \
+                re_join(self.locale.timeSep + self.locale.meridian)
 
             # build weekday offsets - yes, it assumes the Weekday and
             # shortWeekday lists are in the same order and Mon..Sun

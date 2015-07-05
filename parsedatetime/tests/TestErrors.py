@@ -49,6 +49,10 @@ class test(unittest.TestCase):
         # ensure short weekday names do not cause false positives at the end of a word - th (thursday)
         self.assertExpectedResult(self.cal.parse('month', start), (start, 0))
         self.assertExpectedErrorFlag(self.cal.parse('30/030/01/071/07', start), (start, 0))
+        # overflow due to Python's datetime
+        self.assertExpectedResult(self.cal.parse('12345 y', start), (start, 0))
+        self.assertExpectedResult(self.cal.parse('654321 w', start), (start, 0))
+        self.assertExpectedResult(self.cal.parse('3700000 d', start), (start, 0))
 
 
 if __name__ == "__main__":
