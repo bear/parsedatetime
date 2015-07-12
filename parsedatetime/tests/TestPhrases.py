@@ -3,7 +3,9 @@
 Test parsing of strings that are phrases
 """
 
-import unittest, time, datetime
+import time
+import datetime
+import unittest
 import parsedatetime as pdt
 
 class test(unittest.TestCase):
@@ -96,8 +98,8 @@ class test(unittest.TestCase):
         start  = s.timetuple()
         target = t.timetuple()
 
-        self.assertExpectedResult(self.cal.parse('eom',         start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('meeting eom', start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('eom',         start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('meeting eom', start), (target, 1))
 
         s = datetime.datetime.now()
 
@@ -108,8 +110,8 @@ class test(unittest.TestCase):
         start  = s.timetuple()
         target = t.timetuple()
 
-        self.assertExpectedResult(self.cal.parse('eoy',         start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('meeting eoy', start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('eoy',         start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('meeting eoy', start), (target, 1))
 
     def testLastPhrases(self):
         for day in (11, 12, 13, 14, 15, 16, 17):

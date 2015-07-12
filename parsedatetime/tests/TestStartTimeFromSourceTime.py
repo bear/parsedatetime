@@ -4,8 +4,11 @@ Test parsing of strings that are phrases with the
 ptc.StartTimeFromSourceTime flag set to True
 """
 
-import unittest, time, datetime
+import time
+import datetime
+import unittest
 import parsedatetime as pdt
+
 
 class test(unittest.TestCase):
 
@@ -21,9 +24,9 @@ class test(unittest.TestCase):
     def testEndOfPhrases(self):
         s = datetime.datetime.now()
 
-          # find out what month we are currently on
-          # set the day to 1 and then go back a day
-          # to get the end of the current month
+        # find out what month we are currently on
+        # set the day to 1 and then go back a day
+        # to get the end of the current month
         (yr, mth, dy, hr, mn, sec, _, _, _) = s.timetuple()
 
         m    = mth
@@ -38,8 +41,8 @@ class test(unittest.TestCase):
         start  = s.timetuple()
         target = t.timetuple()
 
-        self.assertExpectedResult(self.cal.parse('eom',         start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('meeting eom', start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('eom',         start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('meeting eom', start), (target, 1))
 
         s = datetime.datetime.now()
 
@@ -51,5 +54,5 @@ class test(unittest.TestCase):
         start  = s.timetuple()
         target = t.timetuple()
 
-        self.assertExpectedResult(self.cal.parse('eoy',         start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('meeting eoy', start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('eoy',         start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('meeting eoy', start), (target, 1))
