@@ -141,6 +141,15 @@ def _extract_time(m):
     return hours, minutes, seconds
 
 
+def _pop_time_accuracy(m, ctx):
+    if m.group('hours'):
+        ctx.updateAccuracy(ctx.ACU_HOUR)
+    if m.group('minutes'):
+        ctx.updateAccuracy(ctx.ACU_MIN)
+    if m.group('seconds'):
+        ctx.updateAccuracy(ctx.ACU_SEC)
+
+
 # Copied from feedparser.py
 # Universal Feedparser
 # Copyright (c) 2002-2006, Mark Pilgrim, All rights reserved.
@@ -374,10 +383,7 @@ class Calendar(object):
             # OverflowError is raise when target.year larger than 9999
             pass
         else:
-            if realunit in ('years', 'months', 'days', 'weeks'):
-                ctx.hasDate = True
-            else:
-                ctx.hasTime = True
+            ctx.updateAccuracy(realunit)
 
         return target.timetuple()
 
@@ -407,6 +413,7 @@ class Calendar(object):
         v1 = -1
         v2 = -1
         v3 = -1
+        accuracy = []
 
         s = dateString
         m = self.ptc.CRE_DATE2.search(s)
@@ -434,6 +441,9 @@ class Calendar(object):
             c = dp_order[i]
             if n >= 0:
                 d[c] = n
+                accuracy.append({'m': pdtContext.ACU_MONTH,
+                                 'd': pdtContext.ACU_DAY,
+                                 'y': pdtContext.ACU_YEAR}[c])
 
         # if the year is not specified and the date has already
         # passed, increment the year
@@ -459,7 +469,7 @@ class Calendar(object):
             if mth > 0 and mth <= 12 and dy > 0 and \
                     dy <= daysInCurrentMonth:
                 sourceTime = (yr, mth, dy, hr, mn, sec, wd, yd, isdst)
-                ctx.hasDate = True
+                ctx.updateAccuracy(*accuracy)
             else:
                 # return current time if date string is invalid
                 sourceTime = time.localtime()
@@ -489,6 +499,7 @@ class Calendar(object):
 
         currentMth = mth
         currentDy = dy
+        accuracy = []
 
         debug and log.debug('parseDateText currentMth %s currentDy %s',
                             mth, dy)
@@ -497,14 +508,17 @@ class Calendar(object):
         m = self.ptc.CRE_DATE3.search(s)
         mth = m.group('mthname')
         mth = self.ptc.MonthOffsets[mth]
+        accuracy.append('month')
 
         if m.group('day') is not None:
             dy = int(m.group('day'))
+            accuracy.append('day')
         else:
             dy = 1
 
         if m.group('year') is not None:
             yr = int(m.group('year'))
+            accuracy.append('year')
 
             # birthday epoch constraint
             if yr < self.ptc.BirthdayEpoch:
@@ -520,7 +534,7 @@ class Calendar(object):
         with self.context() as ctx:
             if dy > 0 and dy <= self.ptc.daysInMonth(mth, yr):
                 sourceTime = (yr, mth, dy, hr, mn, sec, wd, yd, isdst)
-                ctx.hasDate = True
+                ctx.updateAccuracy(*accuracy)
             else:
                 # Return current time if date string is invalid
                 sourceTime = time.localtime()
@@ -812,8 +826,7 @@ class Calendar(object):
                                           startMinute, startSecond)
                 target = self.inc(start, month=offset)
                 sourceTime = target.timetuple()
-
-            ctx.hasDate = True
+            ctx.updateAccuracy(ctx.ACU_MONTH)
 
         elif unit in self.ptc.units['weeks']:
             if offset == 0:
@@ -830,13 +843,12 @@ class Calendar(object):
                                           startMinute, startSecond)
                 target = start + offset * datetime.timedelta(weeks=1)
                 sourceTime = target.timetuple()
-
-            ctx.hasDate = True
+            ctx.updateAccuracy(ctx.ACU_WEEK)
 
         elif unit in self.ptc.units['days']:
             if offset == 0:
                 sourceTime = (yr, mth, dy, 17, 0, 0, wd, yd, isdst)
-                ctx.hasTime = True
+                ctx.updateAccuracy(ctx.ACU_HALFDAY)
             elif offset == 2:
                 start = datetime.datetime(yr, mth, dy, hr, mn, sec)
                 target = start + datetime.timedelta(days=1)
@@ -846,8 +858,7 @@ class Calendar(object):
                                           startMinute, startSecond)
                 target = start + datetime.timedelta(days=offset)
                 sourceTime = target.timetuple()
-
-            ctx.hasDate = True
+            ctx.updateAccuracy(ctx.ACU_DAY)
 
         elif unit in self.ptc.units['hours']:
             if offset == 0:
@@ -856,8 +867,7 @@ class Calendar(object):
                 start = datetime.datetime(yr, mth, dy, hr, 0, 0)
                 target = start + datetime.timedelta(hours=offset)
                 sourceTime = target.timetuple()
-
-            ctx.hasTime = True
+            ctx.updateAccuracy(ctx.ACU_HOUR)
 
         elif unit in self.ptc.units['years']:
             if offset == 0:
@@ -867,21 +877,20 @@ class Calendar(object):
             else:
                 sourceTime = (yr + offset, 1, 1, startHour, startMinute,
                               startSecond, wd, yd, isdst)
-
-            ctx.hasDate = True
+            ctx.updateAccuracy(ctx.ACU_YEAR)
 
         elif modifier == 'eom':
             dy = self.ptc.daysInMonth(mth, yr)
             sourceTime = (yr, mth, dy, startHour, startMinute,
                           startSecond, wd, yd, isdst)
-            ctx.hasDate = True
+            ctx.updateAccuracy(ctx.ACU_DAY)
 
         elif modifier == 'eoy':
             mth = 12
             dy = self.ptc.daysInMonth(mth, yr)
             sourceTime = (yr, mth, dy, startHour, startMinute,
                           startSecond, wd, yd, isdst)
-            ctx.hasDate = True
+            ctx.updateAccuracy(ctx.ACU_MONTH)
 
         elif self.ptc.CRE_WEEKDAY.match(unit):
             m = self.ptc.CRE_WEEKDAY.match(unit)
@@ -889,13 +898,14 @@ class Calendar(object):
             wkdy = m.group()
 
             if modifier == 'eod':
-                ctx.hasTime = True
+                ctx.updateAccuracy(ctx.ACU_HOUR)
                 # Calculate the upcoming weekday
                 sourceTime, subctx = self.parse(wkdy, sourceTime,
                                                 VERSION_CONTEXT_STYLE)
                 sTime = self.ptc.getSource(modifier, sourceTime)
                 if sTime is not None:
                     sourceTime = sTime
+                    ctx.updateAccuracy(ctx.ACU_HALFDAY)
             else:
                 wkdy = self.ptc.WeekdayOffsets[wkdy]
                 diff = self._CalculateDOWDelta(
@@ -905,7 +915,7 @@ class Calendar(object):
                                           startMinute, startSecond)
                 target = start + datetime.timedelta(days=diff)
                 sourceTime = target.timetuple()
-            ctx.hasDate = True
+            ctx.updateAccuracy(ctx.ACU_DAY)
 
         elif self.ptc.CRE_TIME.match(unit):
             m = self.ptc.CRE_TIME.match(unit)
@@ -974,7 +984,7 @@ class Calendar(object):
             if sTime is not None:
                 debug and log.debug('modifier found in sources')
                 sourceTime = sTime
-                ctx.hasTime = True
+                ctx.updateAccuracy(ctx.ACU_HALFDAY)
 
         debug and log.debug('returning chunk = "%s %s" and sourceTime = %s',
                             chunk1, chunk2, sourceTime)
@@ -1012,10 +1022,10 @@ class Calendar(object):
 
             if sourceTime is not None:
                 (yr, mth, dy, hr, mn, sec, wd, yd, isdst, _) = sourceTime
-                ctx.hasDate = True
+                ctx.updateAccuracy(ctx.ACU_YEAR, ctx.ACU_MONTH, ctx.ACU_DAY)
 
-                if (hr != 0) and (mn != 0) and (sec != 0):
-                    self.hasTime = True
+                if hr != 0 and mn != 0 and sec != 0:
+                    ctx.updateAccuracy(ctx.ACU_HOUR, ctx.ACU_MIN, ctx.ACU_SEC)
 
                 sourceTime = (yr, mth, dy, hr, mn, sec, wd, yd, isdst)
 
@@ -1024,7 +1034,8 @@ class Calendar(object):
             sourceTime = _parse_date_w3dtf(s)
 
             if sourceTime is not None:
-                ctx.hasDate = ctx.hasTime = True
+                ctx.updateAccuracy(ctx.ACU_YEAR, ctx.ACU_MONTH, ctx.ACU_DAY,
+                                   ctx.ACU_HOUR, ctx.ACU_MIN, ctx.ACU_SEC)
 
         if sourceTime is None:
             sourceTime = time.localtime()
@@ -1112,7 +1123,7 @@ class Calendar(object):
             startMinute = 0
             startSecond = 0
 
-        self.currentContext.hasDate = True
+        self.currentContext.updateAccuracy(pdtContext.ACU_DAY)
         start = datetime.datetime(yr, mth, dy, startHour,
                                   startMinute, startSecond)
         target = start + datetime.timedelta(days=offset)
@@ -1140,7 +1151,7 @@ class Calendar(object):
                                           self.ptc.DOWParseStyle,
                                           self.ptc.CurrentDOWParseStyle)
 
-        self.currentContext.hasDate = True
+        self.currentContext.updateAccuracy(pdtContext.ACU_DAY)
         target = start + datetime.timedelta(days=qty)
         return target.timetuple()
 
@@ -1151,14 +1162,16 @@ class Calendar(object):
         s = datetimeString.strip()
         sourceTime = self._evalDT(datetimeString, sourceTime)
 
-        # Given string is a natural language time string like
-        # lunch, midnight, etc
-        if s not in self.ptc.re_values['now']:
+        if s in self.ptc.re_values['now']:
+            self.currentContext.updateAccuracy(pdtContext.ACU_NOW)
+        else:
+            # Given string is a natural language time string like
+            # lunch, midnight, etc
             sTime = self.ptc.getSource(s, sourceTime)
             if sTime:
                 sourceTime = sTime
+            self.currentContext.updateAccuracy(pdtContext.ACU_HALFDAY)
 
-        self.currentContext.hasTime = True
         return sourceTime
 
     def _evalMeridian(self, datetimeString, sourceTime):
@@ -1197,7 +1210,7 @@ class Calendar(object):
         # time validation
         if hr < 24 and mn < 60 and sec < 60:
             sourceTime = (yr, mth, dy, hr, mn, sec, wd, yd, isdst)
-            self.currentContext.hasTime = True
+            _pop_time_accuracy(m, self.currentContext)
 
         return sourceTime
 
@@ -1220,7 +1233,7 @@ class Calendar(object):
         # time validation
         if hr < 24 and mn < 60 and sec < 60:
             sourceTime = (yr, mth, dy, hr, mn, sec, wd, yd, isdst)
-            self.currentContext.hasTime = True
+            _pop_time_accuracy(m, self.currentContext)
 
         return sourceTime
 
