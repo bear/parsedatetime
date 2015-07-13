@@ -142,6 +142,8 @@ def _extract_time(m):
 
 
 def _pop_time_accuracy(m, ctx):
+    if not m:
+        return
     if m.group('hours'):
         ctx.updateAccuracy(ctx.ACU_HOUR)
     if m.group('minutes'):
