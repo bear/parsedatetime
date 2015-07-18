@@ -425,9 +425,12 @@ class Calendar:
         v = [v1, v2, v3]
         d = {'m': mth, 'd': dy, 'y': yr}
 
+        # yyyy/mm/dd format
+        dp_order = self.ptc.dp_order if v1 <= 31 else ['y', 'm', 'd']
+
         for i in range(0, 3):
             n = v[i]
-            c = self.ptc.dp_order[i]
+            c = dp_order[i]
             if n >= 0:
                 d[c] = n
 
@@ -2425,7 +2428,11 @@ class Constants(object):
         dateSeps = ''.join(re.escape(s) for s in self.locale.dateSep) + '\.'
 
         self.RE_DATE = r'''([\s(\["'-]|^)
-                           (?P<date>\d\d?[{0}]\d\d?(?:[{0}]\d\d(?:\d\d)?)?)
+                           (?P<date>
+                                \d\d?[{0}]\d\d?(?:[{0}]\d\d(?:\d\d)?)?
+                                |
+                                \d{{4}}[{0}]\d\d?[{0}]\d\d?
+                            )
                            \b'''.format(dateSeps)
 
         self.RE_DATE2 = r'[{0}]'.format(dateSeps)
