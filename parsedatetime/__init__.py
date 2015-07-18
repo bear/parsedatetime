@@ -2425,7 +2425,8 @@ class Constants(object):
         else:
             self.RE_TIMEHMS2 += r'\b'
 
-        dateSeps = ''.join(re.escape(s) for s in self.locale.dateSep) + '\.'
+        # Always support common . and - separators
+        dateSeps = ''.join(re.escape(s) for s in self.locale.dateSep + ['-', '.'])
 
         self.RE_DATE = r'''([\s(\["'-]|^)
                            (?P<date>
