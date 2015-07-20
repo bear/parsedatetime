@@ -104,6 +104,9 @@ class test(unittest.TestCase):
 
         self.assertExpectedResult(self.cal.parse('08/25/2006',      start), (target, 1))
         self.assertExpectedResult(self.cal.parse('08.25.2006',      start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('2006/08/25',      start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('2006/8/25',       start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('2006-08-25',      start), (target, 1))
         self.assertExpectedResult(self.cal.parse('8/25/06',         start), (target, 1))
         self.assertExpectedResult(self.cal.parse('August 25, 2006', start), (target, 1))
         self.assertExpectedResult(self.cal.parse('Aug 25, 2006',    start), (target, 1))
