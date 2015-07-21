@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+"""
+parsedatetime/context.py
+
+Context related classes
+
+"""
 
 from threading import local
 

@@ -23,7 +23,7 @@ Parse human-readable date/time text.
 
 Requires Python 2.6 or later
 """
-from __future__ import with_statement
+from __future__ import with_statement, absolute_import
 
 __author__ = 'Mike Taylor (bear@bear.im)'
 __copyright__ = 'Copyright (c) 2004 Mike Taylor'
@@ -35,12 +35,14 @@ __contributors__ = ['Darshana Chhajed',
 
 import re
 import time
+import warnings
 import datetime
 import calendar
 import contextlib
 import email.utils
 
 from .context import pdtContext, pdtContextStack
+from .warns import pdt20DeprecationWarning
 
 try:
     from itertools import imap
@@ -277,6 +279,12 @@ class Calendar(object):
             self.ptc = constants
 
         self.version = version
+        if version == VERSION_FLAG_STYLE:
+            warnings.warn(
+                'Flag style will be deprecated in parsedatetime 2.0. '
+                'Instead use the context style by instantiating `Calendar()` '
+                'with argument `version=parsedatetime.VERSION_CONTEXT_STYLE`.',
+                pdt20DeprecationWarning)
         self._ctxStack = pdtContextStack()
 
     @contextlib.contextmanager
@@ -2572,7 +2580,8 @@ class Constants(object):
             self.RE_TIMEHMS2 += r'\b'
 
         # Always support common . and - separators
-        dateSeps = ''.join(re.escape(s) for s in self.locale.dateSep + ['-', '.'])
+        dateSeps = ''.join(re.escape(s)
+                           for s in self.locale.dateSep + ['-', '.'])
 
         self.RE_DATE = r'''([\s(\["'-]|^)
                            (?P<date>
