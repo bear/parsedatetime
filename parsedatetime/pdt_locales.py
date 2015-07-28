@@ -110,6 +110,7 @@ class pdtLocale_base(object):
                            'next':      1,
                            'previous': -1,
                            'end of':    0,
+                           'this':      0,
                            'eod':       1,
                            'eom':       1,
                            'eoy':       1,
