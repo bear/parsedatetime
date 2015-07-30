@@ -458,7 +458,7 @@ class Calendar(object):
         # if the year is not specified and the date has already
         # passed, increment the year
         if v3 == -1 and ((mth > d['m']) or (mth == d['m'] and dy > d['d'])):
-            yr = d['y'] + 1
+            yr = d['y'] + self.ptc.YearParseStyle
         else:
             yr = d['y']
 

@@ -344,6 +344,15 @@ class test(unittest.TestCase):
             phrase = '1 %sfoo' % keyword
             self.assertExpectedResult(self.cal.parse(phrase, start), (target, 0))
 
+    def testYearParseStyle(self):
+        config = pdt.Constants()
+        config.YearParseStyle = 0
+        calendar = pdt.Calendar(config)
+        start = datetime.datetime(self.yr, self.mth, self.dy,
+                                  self.hr, self.mn, self.sec).timetuple()
+        target = datetime.datetime(self.yr, 7, 28,
+                                   self.hr, self.mn, self.sec).timetuple()
+        self.assertExpectedResult(calendar.parse('7/28', start), (target, 1))
 
     # def testMonths(self):
     #
