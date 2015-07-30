@@ -41,6 +41,12 @@ class test(unittest.TestCase):
 
         self.assertEqual(self.cal.parse('night', version=1)[1], 2)
 
+    def testThreadRun(self):
+        from threading import Thread
+        t = Thread(target=lambda: self.cal.evalRanges('4p-6p'))
+        # should not throw out AttributeError
+        t.start()
+
 
 if __name__ == "__main__":
     unittest.main()

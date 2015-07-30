@@ -18,25 +18,30 @@ class pdtContextStack(object):
 
     def __init__(self):
         self.__local = local()
-        self.__local.stack = []
+
+    @property
+    def __stack(self):
+        if not hasattr(self.__local, 'stack'):
+            self.__local.stack = []
+        return self.__local.stack
 
     def push(self, ctx):
-        self.__local.stack.append(ctx)
+        self.__stack.append(ctx)
 
     def pop(self):
         try:
-            return self.__local.stack.pop()
+            return self.__stack.pop()
         except IndexError:
             return None
 
     def last(self):
         try:
-            return self.__local.stack[-1]
+            return self.__stack[-1]
         except IndexError:
             raise RuntimeError('context stack is empty')
 
     def isEmpty(self):
-        return not self.__local.stack
+        return not self.__stack
 
 
 class pdtContext(object):
