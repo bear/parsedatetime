@@ -50,6 +50,14 @@ An example of how to use parsedatetime::
 
     cal.parse("tomorrow")
 
+To get it to a Python ``datetime`` object::
+
+    from datetime import datetime
+    from time import mktime
+
+    time_struct, parse_status = cal.parse("tomorrow")
+    datetime.fromtimestamp(mktime(time_struct))
+
 More detailed examples can be found in the examples directory.
 
 =============
