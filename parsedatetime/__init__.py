@@ -358,7 +358,7 @@ class Calendar(object):
         else:
             quantity = quantity.strip()
 
-        qty = self._quantityToInt(quantity)
+        qty = self._quantityToReal(quantity)
 
         if modifier in self.ptc.Modifiers:
             qty = qty * self.ptc.Modifiers[modifier]
@@ -741,29 +741,29 @@ class Calendar(object):
 
         return diff
 
-    def _quantityToInt(self, quantity):
+    def _quantityToReal(self, quantity):
         """
-        Convert a quantity, either spelled-out or numeric, to an integer
+        Convert a quantity, either spelled-out or numeric, to a float
 
         @type    quantity: string
-        @param   quantity: quantity to parse to int
+        @param   quantity: quantity to parse to float
         @rtype:  int
-        @return: the quantity as an integer, defaulting to 0
+        @return: the quantity as an float, defaulting to 0.0
         """
         if not quantity:
-            return 1
+            return 1.0
 
         try:
-            return int(quantity)
+            return float(quantity.replace(',', '.'))
         except ValueError:
             pass
 
         try:
-            return self.ptc.numbers[quantity]
+            return float(self.ptc.numbers[quantity])
         except KeyError:
             pass
 
-        return 0
+        return 0.0
 
     def _evalModifier(self, modifier, chunk1, chunk2, sourceTime):
         """
@@ -978,7 +978,7 @@ class Calendar(object):
                 else:
                     qty = None
                     debug and log.debug('CRE_NUMBER matched')
-                    qty = self._quantityToInt(m.group()) * offset
+                    qty = self._quantityToReal(m.group()) * offset
                     chunk1 = '%s%s%s' % (chunk1[:m.start()],
                                          qty, chunk1[m.end():])
                 t, subctx = self.parse(chunk1, sourceTime,
@@ -1866,9 +1866,9 @@ class Calendar(object):
 
         @type  source: struct_time
         @param source: C{struct_time} value to increment
-        @type  month:  integer
+        @type  month:  float or integer
         @param month:  optional number of months to increment
-        @type  year:   integer
+        @type  year:   float or integer
         @param year:   optional number of years to increment
 
         @rtype:  datetime
@@ -1878,47 +1878,50 @@ class Calendar(object):
         mth = source.month
         dy = source.day
 
-        if year:
-            try:
-                yi = int(year)
-            except ValueError:
-                yi = 0
+        try:
+            month = float(month)
+        except (TypeError, ValueError):
+            month = 0
 
-            yr += yi
+        try:
+            year = float(year)
+        except (TypeError, ValueError):
+            year = 0
+        finally:
+            month += year * 12
+            year = 0
 
+        subMi = 0.0
+        maxDay = 0
         if month:
-            try:
-                mi = int(month)
-            except ValueError:
-                mi = 0
+            mi = int(month)
+            subMi = month - mi
 
-            m = abs(mi)
-            y = m // 12     # how many years are in month increment
-            m = m % 12      # get remaining months
+            y = int(mi / 12.0)
+            m = mi - y * 12
 
-            if mi < 0:
-                y *= -1        # otherwise negative mi will give future dates
-                mth = mth - m  # sub months from start month
-                if mth < 1:    # cross start-of-year?
-                    y -= 1       # yes - decrement year
-                    mth += 12          # and fix month
-            else:
-                mth = mth + m  # add months to start month
-                if mth > 12:   # cross end-of-year?
-                    y += 1       # yes - increment year
-                    mth -= 12          # and fix month
+            mth = mth + m
+            if mth < 1:     # cross start-of-year?
+                y -= 1      # yes - decrement year
+                mth += 12   # and fix month
+            elif mth > 12:  # cross end-of-year?
+                y += 1      # yes - increment year
+                mth -= 12   # and fix month
 
             yr += y
 
             # if the day ends up past the last day of
             # the new month, set it to the last day
-            if dy > self.ptc.daysInMonth(mth, yr):
-                dy = self.ptc.daysInMonth(mth, yr)
+            maxDay = self.ptc.daysInMonth(mth, yr)
+            if dy > maxDay:
+                dy = maxDay
 
         if yr > datetime.MAXYEAR or yr < datetime.MINYEAR:
             raise OverflowError('year is out of range')
 
         d = source.replace(year=yr, month=mth, day=dy)
+        if subMi:
+            d += datetime.timedelta(days=subMi * maxDay)
         return source + (d - source)
 
     def nlp(self, inputString, sourceTime=None, version=None):
@@ -2404,6 +2407,8 @@ class Constants(object):
                 re_join(self.locale.dayOffsets)
             self.locale.re_values['numbers'] = \
                 re_join(self.locale.numbers)
+            self.locale.re_values['decimal_mark'] = \
+                re.escape(self.locale.decimal_mark)
 
             units = [unit for units in self.locale.units.values()
                      for unit in units]  # flatten
@@ -2514,7 +2519,7 @@ class Constants(object):
                               )
                               \b'''.format(**self.locale.re_values)
 
-        self.RE_NUMBER = (r'(\b(?:{numbers})\b|\d+)'
+        self.RE_NUMBER = (r'(\b(?:{numbers})\b|\d+(?:{decimal_mark}\d+|))'
                           .format(**self.locale.re_values))
 
         self.RE_SPECIAL = (r'(?P<special>^[{specials}]+)\s+'
@@ -2525,13 +2530,13 @@ class Constants(object):
 
         self.RE_UNITS = r'''\b(?P<qty>
                                 -?
-                                (?:\d+|(?:{numbers})\b)\s*
+                                (?:\d+(?:{decimal_mark}\d+|)|(?:{numbers})\b)\s*
                                 (?P<units>{units})
                             )\b'''.format(**self.locale.re_values)
 
         self.RE_QUNITS = r'''\b(?P<qty>
                                  -?
-                                 (?:\d+|(?:{numbers})s)\s?
+                                 (?:\d+(?:{decimal_mark}\d+|)|(?:{numbers})s)\s?
                                  (?P<qunits>{qunits})
                              )\b'''.format(**self.locale.re_values)
 

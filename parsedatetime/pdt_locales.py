@@ -26,7 +26,8 @@ class pdtLocale_base(object):
         'dateFormats', 'dateSep', 'dayOffsets', 'dp_order',
         'localeID', 'meridian', 'Modifiers', 're_sources', 're_values',
         'shortMonths', 'shortWeekdays', 'timeFormats', 'timeSep', 'units',
-        'uses24', 'usesMeridian', 'numbers', 'small', 'magnitude', 'ignore'])
+        'uses24', 'usesMeridian', 'numbers', 'decimal_mark', 'small',
+        'magnitude', 'ignore'])
 
     def __init__(self):
         self.localeID      = None   # don't use a unicode string
@@ -77,6 +78,7 @@ class pdtLocale_base(object):
                          'thirteen': 13, 'fourteen': 14, 'fifteen': 15, 'sixteen': 16,
                          'seventeen': 17, 'eighteen': 18, 'nineteen': 19,
                          'twenty': 20 }
+        self.decimal_mark = '.'
 
 
           # this will be added to re_values later
@@ -345,6 +347,7 @@ class pdtLocale_es(pdtLocale_base):
         self.dateSep      = [ '/' ]
         self.usesMeridian = False
         self.uses24       = True
+        self.decimal_mark = ','
 
         self.Weekdays      = [ 'lunes', 'martes', 'mi\xe9rcoles',
                                'jueves', 'viernes', 's\xe1bado', 'domingo',
@@ -387,6 +390,7 @@ class pdtLocale_ptBR(pdtLocale_base):
         self.dateSep      = [ '/' ]
         self.usesMeridian = False
         self.uses24       = True
+        self.decimal_mark = ','
 
         self.Weekdays      = [ 'segunda-feira', 'ter\xe7a-feira', 'quarta-feira',
                                'quinta-feira', 'sexta-feira', 's\xe1bado', 'domingo',
@@ -437,6 +441,7 @@ class pdtLocale_de(pdtLocale_base):
         self.meridian      = [ ]
         self.usesMeridian  = False
         self.uses24        = True
+        self.decimal_mark = ','
 
         self.Weekdays      = [ 'montag', 'dienstag', 'mittwoch',
                                'donnerstag', 'freitag', 'samstag', 'sonntag',
@@ -542,6 +547,7 @@ class pdtLocale_nl(pdtLocale_base):
         self.meridian      = [ ]
         self.usesMeridian  = False
         self.uses24        = True
+        self.decimal_mark = ','
 
         self.Weekdays      = [ 'maandag', 'dinsdag', 'woensdag',
                                'donderdag', 'vrijdag', 'zaterdag', 'zondag',
