@@ -58,6 +58,16 @@ To get it to a Python ``datetime`` object::
     time_struct, parse_status = cal.parse("tomorrow")
     datetime.fromtimestamp(mktime(time_struct))
 
+Parse datetime with timezone support (using pytz package)::
+
+    import parsedatetime
+    import pytz
+    from pytz import timezone
+
+    cal = parsedatetime.Calendar()
+
+    datetime_obj, _ = cal.parseDT(datetimeString="tomorrow", tzinfo=timezone("US/Pacific"))
+
 More detailed examples can be found in the examples directory.
 
 =============
