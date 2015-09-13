@@ -2451,7 +2451,7 @@ class Constants(object):
         _initSymbols(self)
 
         # TODO: add code to parse the date formats and build the regexes up
-        # from sub-parts, find all hard-coded uses of date/time seperators
+        # from sub-parts, find all hard-coded uses of date/time separators
 
         # not being used in code, but kept in case others are manually
         # utilizing this regex for their own purposes
@@ -2546,7 +2546,7 @@ class Constants(object):
 
         self.RE_TIMEHMS = r'''([\s(\["'-]|^)
                               (?P<hours>\d\d?)
-                              (?P<tsep>{timeseperator}|)
+                              (?P<tsep>{timeseparator}|)
                               (?P<minutes>\d\d)
                               (?:(?P=tsep)
                                   (?P<seconds>\d\d
@@ -2557,7 +2557,7 @@ class Constants(object):
         self.RE_TIMEHMS2 = r'''([\s(\["'-]|^)
                                (?P<hours>\d\d?)
                                (?:
-                                   (?P<tsep>{timeseperator}|)
+                                   (?P<tsep>{timeseparator}|)
                                    (?P<minutes>\d\d?)
                                    (?:(?P=tsep)
                                        (?P<seconds>\d\d?
@@ -2620,15 +2620,15 @@ class Constants(object):
 
         # Regex for date/time ranges
         self.RE_RTIMEHMS = r'''(\s?|^)
-                               (\d\d?){timeseperator}
+                               (\d\d?){timeseparator}
                                (\d\d)
-                               ({timeseperator}(\d\d))?
+                               ({timeseparator}(\d\d))?
                                (\s?|$)'''.format(**self.locale.re_values)
 
         self.RE_RTIMEHMS2 = (r'''(\s?|^)
                                  (\d\d?)
-                                 ({timeseperator}(\d\d?))?
-                                 ({timeseperator}(\d\d?))?'''
+                                 ({timeseparator}(\d\d?))?
+                                 ({timeseparator}(\d\d?))?'''
                              .format(**self.locale.re_values))
 
         if 'meridian' in self.locale.re_values:
@@ -2650,30 +2650,30 @@ class Constants(object):
                             )'''.format(**self.locale.re_values)
 
         # "06/07/06 - 08/09/06"
-        self.DATERNG1 = (r'{0}\s?{rangeseperator}\s?{0}'
+        self.DATERNG1 = (r'{0}\s?{rangeseparator}\s?{0}'
                          .format(self.RE_RDATE, **self.locale.re_values))
 
         # "march 31 - june 1st, 2006"
-        self.DATERNG2 = (r'{0}\s?{rangeseperator}\s?{0}'
+        self.DATERNG2 = (r'{0}\s?{rangeseparator}\s?{0}'
                          .format(self.RE_RDATE3, **self.locale.re_values))
 
         # "march 1rd -13th"
-        self.DATERNG3 = (r'{0}\s?{rangeseperator}\s?(\d\d?)\s?(rd|st|nd|th)?'
+        self.DATERNG3 = (r'{0}\s?{rangeseparator}\s?(\d\d?)\s?(rd|st|nd|th)?'
                          .format(self.RE_RDATE3, **self.locale.re_values))
 
         # "4:00:55 pm - 5:90:44 am", '4p-5p'
-        self.TIMERNG1 = (r'{0}\s?{rangeseperator}\s?{0}'
+        self.TIMERNG1 = (r'{0}\s?{rangeseparator}\s?{0}'
                          .format(self.RE_RTIMEHMS2, **self.locale.re_values))
 
-        self.TIMERNG2 = (r'{0}\s?{rangeseperator}\s?{0}'
+        self.TIMERNG2 = (r'{0}\s?{rangeseparator}\s?{0}'
                          .format(self.RE_RTIMEHMS, **self.locale.re_values))
 
         # "4-5pm "
-        self.TIMERNG3 = (r'\d\d?\s?{rangeseperator}\s?{0}'
+        self.TIMERNG3 = (r'\d\d?\s?{rangeseparator}\s?{0}'
                          .format(self.RE_RTIMEHMS2, **self.locale.re_values))
 
         # "4:30-5pm "
-        self.TIMERNG4 = (r'{0}\s?{rangeseperator}\s?{1}'
+        self.TIMERNG4 = (r'{0}\s?{rangeseparator}\s?{1}'
                          .format(self.RE_RTIMEHMS, self.RE_RTIMEHMS2,
                                  **self.locale.re_values))
 
