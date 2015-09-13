@@ -93,8 +93,8 @@ class pdtLocale_base(object):
 
           # text constants to be used by later regular expressions
         self.re_values     = { 'specials':       'in|on|of|at',
-                               'timeseperator':  ':',
-                               'rangeseperator': '-',
+                               'timeseparator':  ':',
+                               'rangeseparator': '-',
                                'daysuffix':      'rd|st|nd|th',
                                'meridian':       'am|pm|a.m.|p.m.|a|p',
                                'qunits':         'h|m|s|d|w|y',
@@ -248,7 +248,7 @@ class pdtLocale_icu(pdtLocale_base):
             pm = ''
             ts = ''
 
-              # ICU doesn't seem to provide directly the date or time seperator
+              # ICU doesn't seem to provide directly the date or time separator
               # so we have to figure it out
             o = self.icu_tf['short']
             s = self.timeFormats['short']
@@ -482,8 +482,8 @@ class pdtLocale_de(pdtLocale_base):
         self.units['years']   = [ 'jahr', 'jahre',    'j' ]
 
         self.re_values['specials']       = 'am|dem|der|im|in|den|zum'
-        self.re_values['timeseperator']  = ':'
-        self.re_values['rangeseperator'] = '-'
+        self.re_values['timeseparator']  = ':'
+        self.re_values['rangeseparator'] = '-'
         self.re_values['daysuffix']      = ''
         self.re_values['qunits']         = 'h|m|s|t|w|m|j'
         self.re_values['now']            = [ 'jetzt' ]
@@ -588,8 +588,8 @@ class pdtLocale_nl(pdtLocale_base):
         self.units['years']   = [ 'jaar', 'jaren',    'j' ]
 
         self.re_values['specials']       = 'om'
-        self.re_values['timeseperator']  = ':'
-        self.re_values['rangeseperator'] = '-'
+        self.re_values['timeseparator']  = ':'
+        self.re_values['rangeseparator'] = '-'
         self.re_values['daysuffix']      = ' |de'
         self.re_values['qunits']         = 'h|m|s|d|w|m|j'
         self.re_values['now']            = [ 'nu' ]
