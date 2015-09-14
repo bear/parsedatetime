@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Test parsing of simple date and times using the Russian locale
 """
