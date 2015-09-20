@@ -86,10 +86,10 @@ class test(unittest.TestCase):
         self.assertEqual(self.cal.parse('23:05')[0][3], 23)
         self.assertEqual(self.cal.parse('23:05')[0][4], 5)
 
-    def testConjugate(self):
-        target = datetime.datetime(2006, 9, 25, 23, 5).timetuple()
-        self.assertExpectedResult(self.cal.parse('25 сентября 2006 23:05'), (target, 3))
-        #self.assertExpectedResult(self.cal.parse('25 сентябрь 2006 23:05'), (target, 3))
+    # def testConjugate(self):
+    #     target = datetime.datetime(2006, 9, 25, 23, 5).timetuple()
+    #     self.assertExpectedResult(self.cal.parse('25 сентября 2006 23:05'), (target, 3))
+    #     #self.assertExpectedResult(self.cal.parse('25 сентябрь 2006 23:05'), (target, 3))
 
 
 
