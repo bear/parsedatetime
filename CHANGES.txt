@@ -1,3 +1,23 @@
+20 Sep 2015 - bear
+    bump version to v2.0 because of the fix for Issue #120
+
+    Issue #120 the pdt_locales/en_AU.py file uses en_A for the localID instead of en_AU 
+    Issue #114 Dates in the format 'YYYY-MM-DD HH:MM' give the incorrect month and day
+    Issue #112 Document getting a time from parsedatetime into a standard Python structure
+    Issue #110 AttributeError when running in the context of an HTTP request
+    Issue #109 YearParseStyle is ignored for dates in MM/DD style
+    Issue #107 yyyy/mm/dd date format
+    Issue #105 "this week" is not parsed
+    Issue #103 get UTC times from parseDT - trouble with at 9:30 clock times being interpreted directly in UTC
+    Issue #100 Fractional deltas result in incoherent results.
+
+    PR #118 ADD: improve russian locale
+    PR #117 ADD: Russian Locale
+    PR #116 Fix spelling of "separator". 
+    PR #115 Update README.rst 
+    PR #113 Add datetime example to readme. 
+    PR #111 Allowed real number appear in text like "5.5 days ago" 
+
 25 Jun 2015 - bear
     Issue #73 add Makefile
 
