@@ -13,6 +13,10 @@ Omer Katz           https://github.com/thedrow
 Rob Curtis          https://github.com/Rob1080
 Michael Maltese     https://github.com/michaelmaltese
 Dan Steeves         https://github.com/dansteeves68
+Alexander Sapronov  https://github.com/WarmongeR1
+Bernardo Sulzbach   https://github.com/mafagafogigante
+Zed                 https://github.com/zed
+
 https://github.com/fake-name
 https://github.com/rl-0x0
 https://github.com/dirkjankrijnders
