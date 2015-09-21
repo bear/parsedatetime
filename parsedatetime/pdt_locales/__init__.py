@@ -19,7 +19,7 @@ def lcase(x):
 from .base import pdtLocale_base, pdtLocale_icu
 
 from .de_DE import *
-from .en_A import *
+from .en_AU import *
 from .en_US import *
 from .es import *
 from .nl_NL import *
