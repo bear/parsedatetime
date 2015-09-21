@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import unittest
 import time
 import datetime
-
+import sys
 import parsedatetime as pdt
 
 
@@ -79,17 +79,19 @@ class test(unittest.TestCase):
         self.assertExpectedResult(self.cal.parse('25.08', start), (target, 1))
 
     def testDatesLang(self):
-        target = datetime.datetime(2006, 8, 25, 23, 5).timetuple()
-        self.assertExpectedResult(self.cal.parse('25 августа 2006 23:05'), (target, 3))
-        target = datetime.datetime(2006, 8, 25, self.hr, self.mn, self.sec).timetuple()
-        self.assertExpectedResult(self.cal.parse('25 августа 2006'), (target, 1))
+        if sys.version_info >= (3, 0):
+            target = datetime.datetime(2006, 8, 25, 23, 5).timetuple()
+            self.assertExpectedResult(self.cal.parse('25 августа 2006 23:05'), (target, 3))
+            target = datetime.datetime(2006, 8, 25, self.hr, self.mn, self.sec).timetuple()
+            self.assertExpectedResult(self.cal.parse('25 августа 2006'), (target, 1))
         self.assertEqual(self.cal.parse('23:05')[0][3], 23)
         self.assertEqual(self.cal.parse('23:05')[0][4], 5)
 
-    # def testConjugate(self):
-    #     target = datetime.datetime(2006, 9, 25, 23, 5).timetuple()
-    #     self.assertExpectedResult(self.cal.parse('25 сентября 2006 23:05'), (target, 3))
-    #     #self.assertExpectedResult(self.cal.parse('25 сентябрь 2006 23:05'), (target, 3))
+    def testConjugate(self):
+        if sys.version_info >= (3, 0):
+            target = datetime.datetime(2006, 9, 25, 23, 5).timetuple()
+            self.assertExpectedResult(self.cal.parse('25 сентября 2006 23:05'), (target, 3))
+            # self.assertExpectedResult(self.cal.parse('25 сентябрь 2006 23:05'), (target, 3))
 
 
 
