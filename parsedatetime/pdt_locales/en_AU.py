@@ -13,7 +13,7 @@ class pdtLocale_au(pdtLocale_base):
     def __init__(self):
         super( pdtLocale_au, self ).__init__()
 
-        self.localeID = 'en_A'   # don't use a unicode string
+        self.localeID = 'en_AU'   # don't use a unicode string
         self.dateSep  = [ '-', '/' ]
         self.uses24   = False
 
