@@ -23,7 +23,7 @@ clean:
 	find . -name '*~' -exec rm -f {} \;
 
 lint:
-	flake8 twitter > violations.flake8.txt
+	flake8 parsedatetime > violations.flake8.txt
 
 test:
 	python run_tests.py
