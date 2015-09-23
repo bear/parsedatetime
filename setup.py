@@ -20,6 +20,7 @@ setup(
     license='Apache License 2.0',
     packages=find_packages(exclude=['tests*']),
     platforms=['Any'],
+    install_requires=['PyYAML'],
     long_description=(read('README.rst')),
     test_suite='nose.collector',
     classifiers=[
