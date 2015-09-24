@@ -255,7 +255,7 @@ VERSION_FLAG_STYLE = 1
 VERSION_CONTEXT_STYLE = 2
 
 
-class Calendar(object):
+class Calendar:
     """
     A collection of routines to input, parse and manipulate date and times.
     The text can either be 'normal' date values or it can be human readable.
@@ -271,9 +271,6 @@ class Calendar(object):
         @param version:   Default style version of current Calendar instance.
                           Valid value can be 1 (L{VERSION_FLAG_STYLE}) or
                           2 (L{VERSION_CONTEXT_STYLE}). See L{parse()}.
-
-        @rtype:  object
-        @return: L{Calendar} instance
         """
         # if a constants reference is not included, use default
         if constants is None:
