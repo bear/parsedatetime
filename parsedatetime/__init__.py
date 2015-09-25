@@ -271,8 +271,8 @@ class Calendar(object):
         @param version:   Default style version of current Calendar instance.
                           Valid value can be 1 (L{VERSION_FLAG_STYLE}) or
                           2 (L{VERSION_CONTEXT_STYLE}). See L{parse()}.
-						  
-		@rtype:  Calendar
+  
+        @rtype:  Calendar
         """
         # if a constants reference is not included, use default
         if constants is None:
