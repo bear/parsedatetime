@@ -5,39 +5,22 @@ pdt_locales
 
 All of the included locale classes shipped with pdt.
 """
-import os
 
-try:
-    import PyICU as pyicu
-except:
-    pyicu = None
+from __future__ import absolute_import
+import os
 
 import yaml
 
+from .icu import get_icu
 
-def lcase(x):
-    return x.lower()
-
-
-from .base import pdtLocale_base, pdtLocale_icu
-
-from .de_DE import *
-from .en_AU import *
-from .en_US import *
-from .es import *
-from .nl_NL import *
-from .pt_BR import *
-from .ru_RU import *
-
-pdtLocales = [
+locale_extension = '.yaml'
+locales = [
     'icu',
-    'en_US',
-    'en_AU',
-    'es_ES',
-    'de_DE',
-    'nl_NL',
-    'ru_RU',
 ]
+
+locales.extend(
+    map(lambda x: x.split(locale_extension)[0],
+        filter(lambda x: locale_extension in x, os.listdir(os.path.dirname(__file__)))))
 
 
 def load_yaml(path):
@@ -59,15 +42,20 @@ def _get_yaml_path(locale):
     return os.path.join(os.path.dirname(__file__), '%s.yaml' % locale)
 
 
-def load_locale(locale):
+def load_locale(locale, icu=False):
     """
     Return data of locale
     :param locale:
     :return:
     """
-    assert locale in pdtLocales, "The locale '%s' is not supported" % locale
-    _data_base = load_yaml(_get_yaml_path('base'))
-    return _data_base.update(**load_yaml(_get_yaml_path(locale)))
+    assert locale in locales, "The locale '%s' is not supported" % locale
+    result = load_yaml(_get_yaml_path('base'))
+    if icu:
+        result.update(**get_icu(locale))
+    else:
+        result.update(**load_yaml(_get_yaml_path(locale)))
+    return result
 
-
-load_locale('ru_RU')
+# _ = load_locale('en_US', icu=True)
+# print(_)
+# print(pdtLocale_icu('en_US').icu)
