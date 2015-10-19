@@ -4,36 +4,27 @@ import unittest
 import time
 import datetime
 import parsedatetime as pdt
+from parsedatetime.pdt_locales import get_icu
 
 from . import utils
 
 
-class pdtLocale_en(pdt.pdt_locales.pdtLocale_icu):
+pdtLocale_en = get_icu('en_US')
+pdtLocale_en.Weekdays = [
+    'monday', 'tuesday', 'wednesday',
+    'thursday', 'friday', 'saturday', 'sunday']
 
-    """Update en locale to include a bunch of different abbreviations"""
+pdtLocale_en.shortWeekdays = [
+    'mon|mond', 'tue|tues', 'wed|wedn',
+    'thu|thur|thurs', 'fri|frid', 'sat|sa', 'sun|su']
 
-    def __init__(self):
-        super(pdtLocale_en, self).__init__(localeID='en_us')
+pdtLocale_en.Months = [
+    'january', 'february', 'march', 'april', 'may', 'june',
+    'july', 'august', 'september', 'october', 'november', 'december']
 
-        self.Weekdays = [
-            'monday', 'tuesday', 'wednesday',
-            'thursday', 'friday', 'saturday', 'sunday']
-
-        self.shortWeekdays = [
-            'mon|mond', 'tue|tues', 'wed|wedn',
-            'thu|thur|thurs', 'fri|frid', 'sat|sa', 'sun|su']
-
-        self.Months = [
-            'january', 'february', 'march',
-                       'april', 'may', 'june',
-                       'july', 'august', 'september',
-                               'october', 'november', 'december']
-
-        self.shortMonths = [
-            'jan|janu', 'feb|febr', 'mar|marc',
-            'apr|apri', 'may', 'jun|june',
-            'jul', 'aug|augu', 'sep|sept',
-            'oct|octo', 'nov|novem', 'dec|decem']
+pdtLocale_en.shortMonths = [
+    'jan|janu', 'feb|febr', 'mar|marc', 'apr|apri', 'may', 'jun|june',
+    'jul', 'aug|augu', 'sep|sept', 'oct|octo', 'nov|novem', 'dec|decem']
 
 
 class test(unittest.TestCase):
