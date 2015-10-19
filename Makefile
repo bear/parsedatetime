@@ -26,7 +26,7 @@ lint:
 	flake8 parsedatetime > violations.flake8.txt
 
 test:
-	python run_tests.py
+	nosetests
 
 build: clean
 	python setup.py sdist upload

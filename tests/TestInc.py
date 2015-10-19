@@ -1,48 +1,61 @@
-
+# -*- coding: utf-8 -*-
 """
 Test Calendar.Inc() routine
 """
+from __future__ import unicode_literals
 
-import unittest, time, datetime
+import time
+import datetime
+import unittest
 import parsedatetime as pdt
+from . import utils
+
 
 class test(unittest.TestCase):
 
-    @pdt.tests.assertEqualWithComparator
+    @utils.assertEqualWithComparator
     def assertExpectedResult(self, result, check, **kwargs):
-        return pdt.tests.compareResultByTimeTuplesAndFlags((result, 1), (check, 1), **kwargs)
+        return utils.compareResultByTimeTuplesAndFlags((result, 1),
+                                                       (check, 1), **kwargs)
 
     def setUp(self):
         self.cal = pdt.Calendar()
-        self.yr, self.mth, self.dy, self.hr, self.mn, self.sec, self.wd, self.yd, self.isdst = time.localtime()
+        (self.yr, self.mth, self.dy, self.hr,
+         self.mn, self.sec, self.wd, self.yd, self.isdst) = time.localtime()
 
     def testIncMonths(self):
         s = datetime.datetime(2006, 1, 1, 12, 0, 0)
         t = datetime.datetime(2006, 2, 1, 12, 0, 0)
-        self.assertExpectedResult(self.cal.inc(s, month=1).timetuple(), t.timetuple())
+        self.assertExpectedResult(
+            self.cal.inc(s, month=1).timetuple(), t.timetuple())
 
         s = datetime.datetime(2006, 12, 1, 12, 0, 0)
-        t = datetime.datetime(2007,  1, 1, 12, 0, 0)
-        self.assertExpectedResult(self.cal.inc(s, month=1).timetuple(), t.timetuple())
+        t = datetime.datetime(2007, 1, 1, 12, 0, 0)
+        self.assertExpectedResult(
+            self.cal.inc(s, month=1).timetuple(), t.timetuple())
 
         # leap year, Feb 1
         s = datetime.datetime(2008, 2, 1, 12, 0, 0)
         t = datetime.datetime(2008, 3, 1, 12, 0, 0)
-        self.assertExpectedResult(self.cal.inc(s, month=1).timetuple(), t.timetuple())
+        self.assertExpectedResult(
+            self.cal.inc(s, month=1).timetuple(), t.timetuple())
 
         # leap year, Feb 29
         s = datetime.datetime(2008, 2, 29, 12, 0, 0)
         t = datetime.datetime(2008, 3, 29, 12, 0, 0)
-        self.assertExpectedResult(self.cal.inc(s, month=1).timetuple(), t.timetuple())
+        self.assertExpectedResult(
+            self.cal.inc(s, month=1).timetuple(), t.timetuple())
 
-        s = datetime.datetime(2006,  1, 1, 12, 0, 0)
+        s = datetime.datetime(2006, 1, 1, 12, 0, 0)
         t = datetime.datetime(2005, 12, 1, 12, 0, 0)
-        self.assertExpectedResult(self.cal.inc(s, month=-1).timetuple(), t.timetuple())
+        self.assertExpectedResult(
+            self.cal.inc(s, month=-1).timetuple(), t.timetuple())
 
         # End of month Jan 31 to Feb - Febuary only has 28 days
         s = datetime.datetime(2006, 1, 31, 12, 0, 0)
         t = datetime.datetime(2006, 2, 28, 12, 0, 0)
-        self.assertExpectedResult(self.cal.inc(s, month=1).timetuple(), t.timetuple())
+        self.assertExpectedResult(
+            self.cal.inc(s, month=1).timetuple(), t.timetuple())
 
         # walk thru months and make sure month increment doesn't set the day
         # to be past the last day of the new month
@@ -56,32 +69,39 @@ class test(unittest.TestCase):
 
             t = datetime.datetime(2006, m + 1, d, 12, 0, 0)
 
-            self.assertExpectedResult(self.cal.inc(s, month=1).timetuple(), t.timetuple())
+            self.assertExpectedResult(
+                self.cal.inc(s, month=1).timetuple(), t.timetuple())
 
     def testIncYears(self):
         s = datetime.datetime(2006, 1, 1, 12, 0, 0)
         t = datetime.datetime(2007, 1, 1, 12, 0, 0)
-        self.assertExpectedResult(self.cal.inc(s, year=1).timetuple(), t.timetuple())
+        self.assertExpectedResult(
+            self.cal.inc(s, year=1).timetuple(), t.timetuple())
 
         s = datetime.datetime(2006, 1, 1, 12, 0, 0)
         t = datetime.datetime(2008, 1, 1, 12, 0, 0)
-        self.assertExpectedResult(self.cal.inc(s, year=2).timetuple(), t.timetuple())
+        self.assertExpectedResult(
+            self.cal.inc(s, year=2).timetuple(), t.timetuple())
 
         s = datetime.datetime(2006, 12, 31, 12, 0, 0)
         t = datetime.datetime(2007, 12, 31, 12, 0, 0)
-        self.assertExpectedResult(self.cal.inc(s, year=1).timetuple(), t.timetuple())
+        self.assertExpectedResult(
+            self.cal.inc(s, year=1).timetuple(), t.timetuple())
 
         s = datetime.datetime(2006, 12, 31, 12, 0, 0)
         t = datetime.datetime(2005, 12, 31, 12, 0, 0)
-        self.assertExpectedResult(self.cal.inc(s, year=-1).timetuple(), t.timetuple())
+        self.assertExpectedResult(
+            self.cal.inc(s, year=-1).timetuple(), t.timetuple())
 
         s = datetime.datetime(2008, 3, 1, 12, 0, 0)
         t = datetime.datetime(2009, 3, 1, 12, 0, 0)
-        self.assertExpectedResult(self.cal.inc(s, year=1).timetuple(), t.timetuple())
+        self.assertExpectedResult(
+            self.cal.inc(s, year=1).timetuple(), t.timetuple())
 
         s = datetime.datetime(2008, 3, 1, 12, 0, 0)
         t = datetime.datetime(2007, 3, 1, 12, 0, 0)
-        self.assertExpectedResult(self.cal.inc(s, year=-1).timetuple(), t.timetuple())
+        self.assertExpectedResult(
+            self.cal.inc(s, year=-1).timetuple(), t.timetuple())
 
 
 if __name__ == "__main__":

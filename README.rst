@@ -12,6 +12,10 @@ Python 2.7 or greater is required for parsedatetime version 1.0 or greater.
     :target: https://travis-ci.org/bear/parsedatetime
     :alt: Travis CI
 
+.. image:: http://codecov.io/github/bear/parsedatetime/coverage.svg?branch=master
+    :target: http://codecov.io/github/bear/parsedatetime
+    :alt: Codecov
+
 ==========
 Installing
 ==========
@@ -26,7 +30,7 @@ Running Tests
 
 From the source directory::
 
-    python run_tests.py parsedatetime
+    nosetests
 
 To run tests on several python versions, type ``tox``::
 
