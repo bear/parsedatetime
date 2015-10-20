@@ -1,40 +1,45 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os
+import re
+import codecs
 
 from setuptools import setup, find_packages
 
-__author__ = 'Mike Taylor (bear@bear.im)'
-__copyright__ = 'Copyright (c) 2004 Mike Taylor'
-__license__ = 'Apache v2.0'
-__version__ = '2.0'
-__contributors__ = ['Darshana Chhajed',
-                    'Michael Lim (lim.ck.michael@gmail.com)',
-                    'Bernd Zeimetz (bzed@debian.org)']
+cwd = os.path.abspath(os.path.dirname(__file__))
 
+def read(filename):
+    with codecs.open(os.path.join(cwd, filename), 'rb', 'utf-8') as h:
+        return h.read()
 
-def read(*paths):
-    """Build a file path from *paths* and return the contents."""
-    with open(os.path.join(*paths), 'r') as f:
-        return f.read()
+def extract_metaitem(meta):
+    # swiped from https://hynek.me 's attr package
+    meta_match = re.search(r"""^__{meta}__\s+=\s+['\"]([^'\"]*)['\"]""".format(meta=meta), 
+                           metadata, re.MULTILINE)
+    if meta_match:
+        return meta_match.group(1)
+    raise RuntimeError('Unable to find __{meta}__ string.'.format(meta=meta))
 
+def read(filename):
+    with codecs.open(os.path.join(cwd, filename), 'rb', 'utf-8') as h:
+        return h.read()
 
-def read_lines(path):
-    with open(path, 'r') as fio:
-        return fio.readlines()
-
+metadata = read(os.path.join(cwd, 'parsedatetime', '__init__.py'))
 
 setup(
     name='parsedatetime',
-    version=__version__,
-    author='Mike Taylor',
-    author_email='bear@bear.im',
-    url='http://github.com/bear/parsedatetime/',
-    download_url='https://pypi.python.org/pypi/parsedatetime/',
-    description='Parse human-readable date/time text.',
-    license='Apache License 2.0',
-    packages=find_packages(exclude=['tests*']),
+    version=extract_metaitem('version'),
+    author=extract_metaitem('author'),
+    author_email=extract_metaitem('email'),
+    url=extract_metaitem('url'),
+    download_url=extract_metaitem('download_url'),
+    description=extract_metaitem('description'),
+    license=extract_metaitem('license'),
+    packages=find_packages(exclude=['tests', 'docs']),
     platforms=['Any'],
-    install_requires=read_lines('requirements.txt'),
-    long_description=(read('README.rst')),
+    install_requires=read('requirements.txt').split('\n'),
+    long_description=read('README.rst'),
     test_suite='nose.collector',
     classifiers=[
         'Development Status :: 5 - Production/Stable',

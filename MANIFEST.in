@@ -1,3 +1,7 @@
 include *.rst
 include *.txt
+include Makefile
+recursive-include examples *.py
+recursive-include examples *.txt
+recursive-include tests *.py
 prune .DS_Store
