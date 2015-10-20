@@ -9,6 +9,7 @@ import time
 import datetime
 import unittest
 import parsedatetime as pdt
+from parsedatetime.pdt_locales import get_icu
 
 from . import utils
 
@@ -122,13 +123,8 @@ class test(unittest.TestCase):
             self.ptc.DOWParseStyle = o2
 
 
-class pdtLocale_fr(pdt.pdt_locales.pdtLocale_icu):
-
-    """French locale with french today/tomorrow/yesterday"""
-
-    def __init__(self):
-        super(pdtLocale_fr, self).__init__(localeID='fr_FR')
-        self.dayOffsets.update({"aujourd'hui": 0, 'demain': 1, 'hier': -1})
+pdtLocale_fr = get_icu('fr_FR')
+pdtLocale_fr.dayOffsets.update({"aujourd'hui": 0, 'demain': 1, 'hier': -1})
 
 
 class TestDayOffsets(test):
