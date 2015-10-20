@@ -1,54 +1,48 @@
-# -*- encoding: utf-8 -*-
-from parsedatetime.pdt_locales import pdtLocale_base
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+from .base import *  # noqa
 
-__all__ = [
-    'pdtLocale_ptBR',
+# don't use an unicode string
+localeID = 'pt_BR'
+dateSep = ['/']
+usesMeridian = False
+uses24 = True
+decimal_mark = ','
+
+Weekdays = [
+    'segunda-feira', 'terça-feira', 'quarta-feira',
+    'quinta-feira', 'sexta-feira', 'sábado', 'domingo',
 ]
+shortWeekdays = [
+    'seg', 'ter', 'qua', 'qui', 'sex', 'sáb', 'dom',
+]
+Months = [
+    'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho',
+    'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+]
+shortMonths = [
+    'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
+    'jul', 'ago', 'set', 'out', 'nov', 'dez'
+]
+dateFormats = {
+    'full': "EEEE, d' de 'MMMM' de 'yyyy",
+    'long': "d' de 'MMMM' de 'yyyy",
+    'medium': "dd-MM-yy",
+    'short': "dd/MM/yyyy",
+}
 
-class pdtLocale_ptBR(pdtLocale_base):
-    """
-    pt_BR Locale
+timeFormats = {
+    'full': "HH'H'mm' 'ss z",
+    'long': "HH:mm:ss z",
+    'medium': "HH:mm:ss",
+    'short': "HH:mm",
+}
 
-    """
-    def __init__(self):
-        super( pdtLocale_ptBR, self ).__init__()
+dp_order = ['d', 'm', 'y']
 
-        self.localeID     = 'pt_BR'   # don't use a unicode string
-        self.dateSep      = [ '/' ]
-        self.usesMeridian = False
-        self.uses24       = True
-        self.decimal_mark = ','
-
-        self.Weekdays      = [ 'segunda-feira', 'ter\xe7a-feira', 'quarta-feira',
-                               'quinta-feira', 'sexta-feira', 's\xe1bado', 'domingo',
-                             ]
-        self.shortWeekdays = [ 'seg', 'ter', 'qua',
-                               'qui', 'sex', 's\xe1b', 'dom',
-                             ]
-        self.Months        = [ 'janeiro', 'fevereiro', 'mar\xe7o',
-                               'abril', 'maio', 'junho',
-                               'julho', 'agosto', 'setembro',
-                               'outubro', 'novembro', 'dezembro'
-                             ]
-        self.shortMonths   = [ 'jan', 'fev', 'mar',
-                               'abr', 'mai', 'jun',
-                               'jul', 'ago', 'set',
-                               'out', 'nov', 'dez'
-                             ]
-        self.dateFormats['full']   = "EEEE, d' de 'MMMM' de 'yyyy"
-        self.dateFormats['long']   = "d' de 'MMMM' de 'yyyy"
-        self.dateFormats['medium'] = "dd-MM-yy"
-        self.dateFormats['short']  = "dd/MM/yyyy"
-
-        self.timeFormats['full']   = "HH'H'mm' 'ss z"
-        self.timeFormats['long']   = "HH:mm:ss z"
-        self.timeFormats['medium'] = "HH:mm:ss"
-        self.timeFormats['short']  = "HH:mm"
-
-        self.dp_order = [ 'd', 'm', 'y' ]
-
-        self.units['seconds'] = [ 'segundo', 'seg', 's']
-        self.units['minutes'] = [ 'minuto', 'min',  'm']
-        self.units['days']    = [ 'dia',  'dias',   'd']
-        self.units['months']  = [ 'm\xeas',     'meses']
-
+units = {
+    'seconds': ['segundo', 'seg', 's'],
+    'minutes': ['minuto', 'min', 'm'],
+    'days': ['dia', 'dias', 'd'],
+    'months': ['mês', 'meses'],
+}

@@ -1,19 +1,7 @@
-# -*- encoding: utf-8 -*-
-from parsedatetime.pdt_locales import pdtLocale_base
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+from .base import *  # noqa
 
-
-__all__ = [
-    'pdtLocale_en',
-]
-
-class pdtLocale_en(pdtLocale_base):
-    """
-    en_US Locale
-    """
-    def __init__(self):
-        super( pdtLocale_en, self ).__init__()
-
-        self.localeID = 'en_US'  # don't use a unicode string
-        self.uses24   = False
-
-
+# don't use an unicode string
+localeID = 'en_US'
+uses24 = False

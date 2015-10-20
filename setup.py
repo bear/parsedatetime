@@ -1,13 +1,26 @@
 import os
 
 from setuptools import setup, find_packages
-from parsedatetime import __version__
+
+__author__ = 'Mike Taylor (bear@bear.im)'
+__copyright__ = 'Copyright (c) 2004 Mike Taylor'
+__license__ = 'Apache v2.0'
+__version__ = '2.0'
+__contributors__ = ['Darshana Chhajed',
+                    'Michael Lim (lim.ck.michael@gmail.com)',
+                    'Bernd Zeimetz (bzed@debian.org)']
 
 
 def read(*paths):
     """Build a file path from *paths* and return the contents."""
     with open(os.path.join(*paths), 'r') as f:
         return f.read()
+
+
+def read_lines(path):
+    with open(path, 'r') as fio:
+        return fio.readlines()
+
 
 setup(
     name='parsedatetime',
@@ -20,6 +33,7 @@ setup(
     license='Apache License 2.0',
     packages=find_packages(exclude=['tests*']),
     platforms=['Any'],
+    install_requires=read_lines('requirements.txt'),
     long_description=(read('README.rst')),
     test_suite='nose.collector',
     classifiers=[

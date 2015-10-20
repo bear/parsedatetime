@@ -6,22 +6,25 @@ pdt_locales
 All of the included locale classes shipped with pdt.
 """
 
-try:
-    import PyICU as pyicu
-except:
-    pyicu = None
+from __future__ import absolute_import
+from .icu import get_icu
+
+locales = ['de_DE', 'en_AU', 'en_US', 'es', 'nl_NL', 'pt_BR', 'ru_RU']
+
+__locale_caches = {}
+
+__all__ = ['get_icu', 'load_locale']
 
 
-def lcase(x):
-    return x.lower()
-
-
-from .base import pdtLocale_base, pdtLocale_icu
-
-from .de_DE import *
-from .en_AU import *
-from .en_US import *
-from .es import *
-from .nl_NL import *
-from .pt_BR import *
-from .ru_RU import *
+def load_locale(locale, icu=False):
+    """
+    Return data of locale
+    :param locale:
+    :return:
+    """
+    if locale not in locales:
+        raise NotImplementedError("The locale '%s' is not supported" % locale)
+    if locale not in __locale_caches:
+        mod = __import__(__name__, fromlist=[locale], level=0)
+        __locale_caches[locale] = getattr(mod, locale)
+    return __locale_caches[locale]
