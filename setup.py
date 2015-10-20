@@ -38,8 +38,8 @@ setup(
     license=extract_metaitem('license'),
     packages=find_packages(exclude=['tests', 'docs']),
     platforms=['Any'],
-    install_requires=read_lines('requirements.txt'),
-    long_description=(read('README.rst')),
+    install_requires=read('requirements.txt').split('\n'),
+    long_description=read('README.rst'),
     test_suite='nose.collector',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
