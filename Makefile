@@ -22,6 +22,9 @@ clean:
 	find . -name '*.pyo' -exec rm -f {} \;
 	find . -name '*~' -exec rm -f {} \;
 
+docs:
+	epydoc --html --config epydoc.conf
+
 lint:
 	flake8 parsedatetime > violations.flake8.txt
 
