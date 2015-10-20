@@ -38,7 +38,7 @@ setup(
     license=extract_metaitem('license'),
     packages=find_packages(exclude=['tests', 'docs']),
     platforms=['Any'],
-    install_requires=[],
+    install_requires=read('requirements.txt').split('\n'),
     long_description=read('README.rst'),
     test_suite='nose.collector',
     classifiers=[
