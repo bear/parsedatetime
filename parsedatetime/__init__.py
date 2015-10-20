@@ -25,13 +25,14 @@ Requires Python 2.6 or later
 """
 from __future__ import with_statement, absolute_import
 
-__author__ = 'Mike Taylor (bear@bear.im)'
-__copyright__ = 'Copyright (c) 2004 Mike Taylor'
-__license__ = 'Apache v2.0'
+__author__ = 'Mike Taylor'
+__email__ = 'bear@bear.im'
+__copyright__ = 'Copyright (c) 2015 Mike Taylor'
+__license__ = 'Apache License 2.0'
 __version__ = '2.0'
-__contributors__ = ['Darshana Chhajed',
-                    'Michael Lim (lim.ck.michael@gmail.com)',
-                    'Bernd Zeimetz (bzed@debian.org)']
+__url__ = 'https://github.com/bear/parsedatetime'
+__download_url__ = 'https://pypi.python.org/pypi/parsedatetime'
+__description__ = 'Parse human-readable date/time text.'
 
 import re
 import time

@@ -1,24 +1,38 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os
+import re
+import codecs
 
 from setuptools import setup, find_packages
-from parsedatetime import __version__
 
+cwd = os.path.abspath(os.path.dirname(__file__))
 
-def read(*paths):
-    """Build a file path from *paths* and return the contents."""
-    with open(os.path.join(*paths), 'r') as f:
-        return f.read()
+def read(filename):
+    with codecs.open(os.path.join(cwd, filename), 'rb', 'utf-8') as h:
+        return h.read()
+
+metadata = read(os.path.join(cwd, 'parsedatetime', '__init__.py'))
+
+def extract_metaitem(meta):
+    # swiped from https://hynek.me 's attr package
+    meta_match = re.search(r"""^__{meta}__\s+=\s+['\"]([^'\"]*)['\"]""".format(meta=meta), 
+                           metadata, re.MULTILINE)
+    if meta_match:
+        return meta_match.group(1)
+    raise RuntimeError('Unable to find __{meta}__ string.'.format(meta=meta))
 
 setup(
     name='parsedatetime',
-    version=__version__,
-    author='Mike Taylor',
-    author_email='bear@bear.im',
-    url='http://github.com/bear/parsedatetime/',
-    download_url='https://pypi.python.org/pypi/parsedatetime/',
-    description='Parse human-readable date/time text.',
-    license='Apache License 2.0',
-    packages=find_packages(exclude=['tests*']),
+    version=extract_metaitem('version'),
+    author=extract_metaitem('author'),
+    author_email=extract_metaitem('email'),
+    url=extract_metaitem('url'),
+    download_url=extract_metaitem('download_url'),
+    description=extract_metaitem('description'),
+    license=extract_metaitem('license'),
+    packages=find_packages(exclude=['tests', 'docs']),
     platforms=['Any'],
     long_description=(read('README.rst')),
     test_suite='nose.collector',
