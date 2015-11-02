@@ -1427,9 +1427,6 @@ class Calendar(object):
                 # capture remaining string
                 mStart = m.start('date')
                 mEnd = m.end('date')
-                parseStr = m.group('date')
-                chunk1 = s[:mStart]
-                chunk2 = s[mEnd:]
 
                 # we need to check that anything following the parsed
                 # date is a time expression because it is often picked
@@ -1438,21 +1435,23 @@ class Calendar(object):
                 mm = self.ptc.CRE_TIMEHMS2.search(s)
                 # "February 24th 1PM" doesn't get caught
                 # "February 24th 12PM" does
-                if mm is not None and m.group('year') is not None:
+                mYear = m.group('year')
+                if mm is not None and mYear is not None:
                     fTime = True
                 else:
                     # "February 24th 12:00"
                     mm = self.ptc.CRE_TIMEHMS.search(s)
-                    if mm is not None and m.group('year') is None:
+                    if mm is not None and mYear is None:
                         fTime = True
                 if fTime:
-                    n = mm.end('hours') - mm.start('hours')
-                    sEnd = parseStr[-n:]
-                    sStart = mm.group('hours')
+                    hoursStart = mm.start('hours')
 
-                    if sStart == sEnd:
-                        parseStr = parseStr[:mEnd - n].strip()
-                        chunk2 = s[mEnd - n:]
+                    if hoursStart < m.end('year'):
+                        mEnd = hoursStart
+
+                parseStr = s[mStart:mEnd]
+                chunk1 = s[:mStart]
+                chunk2 = s[mEnd:]
 
                 s = '%s %s' % (chunk1, chunk2)
             else:
