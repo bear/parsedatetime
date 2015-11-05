@@ -241,9 +241,6 @@ def _parse_date_rfc822(dateString):
 #                          'PT': -800}
 # email.utils._timezones.update(_additional_timezones)
 
-VERSION_FLAG_STYLE = 1
-VERSION_CONTEXT_STYLE = 2
-
 
 class Calendar(object):
 
@@ -252,16 +249,12 @@ class Calendar(object):
     The text can either be 'normal' date values or it can be human readable.
     """
 
-    def __init__(self, constants=None, version=VERSION_FLAG_STYLE):
+    def __init__(self, constants=None):
         """
         Default constructor for the L{Calendar} class.
 
         @type  constants: object
         @param constants: Instance of the class L{Constants}
-        @type  version:   integer
-        @param version:   Default style version of current Calendar instance.
-                          Valid value can be 1 (L{VERSION_FLAG_STYLE}) or
-                          2 (L{VERSION_CONTEXT_STYLE}). See L{parse()}.
 
         @rtype:  object
         @return: L{Calendar} instance
@@ -272,13 +265,6 @@ class Calendar(object):
         else:
             self.ptc = constants
 
-        self.version = version
-        if version == VERSION_FLAG_STYLE:
-            warnings.warn(
-                'Flag style will be deprecated in parsedatetime 2.0. '
-                'Instead use the context style by instantiating `Calendar()` '
-                'with argument `version=parsedatetime.VERSION_CONTEXT_STYLE`.',
-                pdt20DeprecationWarning)
         self._ctxStack = pdtContextStack()
 
     @contextlib.contextmanager
@@ -593,8 +579,7 @@ class Calendar(object):
                 chunk2 = s[m.end():]
                 s = '%s %s' % (chunk1, chunk2)
 
-                sourceTime, ctx = self.parse(s, sourceTime,
-                                             VERSION_CONTEXT_STYLE)
+                sourceTime, ctx = self.parse(s, sourceTime)
 
                 if not ctx.hasDateOrTime:
                     sourceTime = None
@@ -672,10 +657,8 @@ class Calendar(object):
             startDT = endDT = time.localtime()
 
         if retFlag:
-            startDT, sctx = self.parse(startStr, sourceTime,
-                                       VERSION_CONTEXT_STYLE)
-            endDT, ectx = self.parse(endStr, sourceTime,
-                                     VERSION_CONTEXT_STYLE)
+            startDT, sctx = self.parse(startStr, sourceTime)
+            endDT, ectx = self.parse(endStr, sourceTime)
 
             if not sctx.hasDateOrTime or not ectx.hasDateOrTime:
                 retFlag = 0
@@ -904,8 +887,7 @@ class Calendar(object):
             if modifier == 'eod':
                 ctx.updateAccuracy(ctx.ACU_HOUR)
                 # Calculate the upcoming weekday
-                sourceTime, subctx = self.parse(wkdy, sourceTime,
-                                                VERSION_CONTEXT_STYLE)
+                sourceTime, subctx = self.parse(wkdy, sourceTime)
                 sTime = self.ptc.getSource(modifier, sourceTime)
                 if sTime is not None:
                     sourceTime = sTime
@@ -925,7 +907,7 @@ class Calendar(object):
             m = self.ptc.CRE_TIME.match(unit)
             debug and log.debug('CRE_TIME matched')
             (yr, mth, dy, hr, mn, sec, wd, yd, isdst), subctx = \
-                self.parse(unit, None, VERSION_CONTEXT_STYLE)
+                self.parse(unit, None)
 
             start = datetime.datetime(yr, mth, dy, hr, mn, sec)
             target = start + datetime.timedelta(days=offset)
@@ -942,7 +924,7 @@ class Calendar(object):
             unit = unit.strip()
             if unit:
                 s = '%s %s' % (unit, chunk2)
-                t, subctx = self.parse(s, sourceTime, VERSION_CONTEXT_STYLE)
+                t, subctx = self.parse(s, sourceTime)
 
                 if subctx.hasDate:  # working with dates
                     u = unit.lower()
@@ -975,9 +957,7 @@ class Calendar(object):
                     qty = self._quantityToReal(m.group()) * offset
                     chunk1 = '%s%s%s' % (chunk1[:m.start()],
                                          qty, chunk1[m.end():])
-                t, subctx = self.parse(chunk1, sourceTime,
-                                       VERSION_CONTEXT_STYLE)
-
+                t, subctx = self.parse(chunk1, sourceTime)
                 chunk1 = ''
 
                 if subctx.hasDateOrTime:
@@ -1706,8 +1686,7 @@ class Calendar(object):
 
         return s, sourceTime, bool(parseStr)
 
-    def parseDT(self, datetimeString, sourceTime=None,
-                tzinfo=None, version=None):
+    def parseDT(self, datetimeString, sourceTime=None, tzinfo=None):
         """
         C{datetimeString} is as C{.parse}, C{sourceTime} has the same semantic
         meaning as C{.parse}, but now also accepts datetime objects.  C{tzinfo}
@@ -1720,12 +1699,9 @@ class Calendar(object):
         @param sourceTime:     time value to use as the base
         @type  tzinfo:         tzinfo
         @param tzinfo:         Timezone to apply to generated datetime objs.
-        @type  version:        integer
-        @param version:        style version, default will use L{Calendar}
-                               parameter version value
 
         @rtype:  tuple
-        @return: tuple of: modified C{sourceTime} and the result flag/context
+        @return: tuple of: modified C{sourceTime} and the result context
 
         see .parse for return code details.
         """
@@ -1745,8 +1721,7 @@ class Calendar(object):
         # Punt
         time_struct, ret_code = self.parse(
             datetimeString,
-            sourceTime=sourceTime,
-            version=version)
+            sourceTime=sourceTime)
 
         # Comments from GHI indicate that it is desired to have the same return
         # signature on this method as that one it punts to, with the exception
@@ -1754,7 +1729,7 @@ class Calendar(object):
         dt = localize(datetime.datetime(*time_struct[:6]))
         return dt, ret_code
 
-    def parse(self, datetimeString, sourceTime=None, version=None):
+    def parse(self, datetimeString, sourceTime=None):
         """
         Splits the given C{datetimeString} into tokens, finds the regex
         patterns that match and then calculates a C{struct_time} value from
@@ -1763,30 +1738,16 @@ class Calendar(object):
         If C{sourceTime} is given then the C{struct_time} value will be
         calculated from that value, otherwise from the current date/time.
 
-        If the C{datetimeString} is parsed and date/time value found, then::
-
-            If C{version} equals to L{VERSION_FLAG_STYLE}, the second item of
-            the returned tuple will be a flag to let you know what kind of
-            C{struct_time} value is being returned::
-
-                0 = not parsed at all
-                1 = parsed as a C{date}
-                2 = parsed as a C{time}
-                3 = parsed as a C{datetime}
-
-            If C{version} equals to L{VERSION_CONTEXT_STYLE}, the second value
-            will be an instance of L{pdtContext}
+        If the C{datetimeString} is parsed and date/time value found, then
+        the second value will be an instance of L{pdtContext}
 
         @type  datetimeString: string
         @param datetimeString: date/time text to evaluate
         @type  sourceTime:     struct_time
         @param sourceTime:     C{struct_time} value to use as the base
-        @type  version:        integer
-        @param version:        style version, default will use L{Calendar}
-                               parameter version value
 
         @rtype:  tuple
-        @return: tuple of: modified C{sourceTime} and the result flag/context
+        @return: tuple of: modified C{sourceTime} and the result context
         """
         debug and log.debug('parse()')
 
@@ -1840,11 +1801,7 @@ class Calendar(object):
         if not isinstance(sourceTime, time.struct_time):
             sourceTime = time.struct_time(sourceTime)
 
-        version = self.version if version is None else version
-        if version == VERSION_CONTEXT_STYLE:
-            return sourceTime, ctx
-        else:
-            return sourceTime, ctx.dateTimeFlag
+        return sourceTime, ctx
 
     def inc(self, source, month=None, year=None):
         """
@@ -1915,7 +1872,7 @@ class Calendar(object):
             d += datetime.timedelta(days=subMi * maxDay)
         return source + (d - source)
 
-    def nlp(self, inputString, sourceTime=None, version=None):
+    def nlp(self, inputString, sourceTime=None):
         """Utilizes parse() after making judgements about what datetime
         information belongs together.
 
@@ -1927,9 +1884,6 @@ class Calendar(object):
         @param inputString: natural language text to evaluate
         @type  sourceTime:  struct_time
         @param sourceTime:  C{struct_time} value to use as the base
-        @type  version:     integer
-        @param version:     style version, default will use L{Calendar}
-                            parameter version value
 
         @rtype:  tuple or None
         @return: tuple of tuples in the format (parsed_datetime as
@@ -2167,8 +2121,7 @@ class Calendar(object):
                         combined = orig_inputstring[matches[from_match_index]
                                                     [0]:matches[i - 1][1]]
                         parsed_datetime, flags = self.parse(combined,
-                                                            sourceTime,
-                                                            version)
+                                                            sourceTime)
                         proximity_matches.append((
                             datetime.datetime(*parsed_datetime[:6]),
                             flags,
@@ -2194,8 +2147,7 @@ class Calendar(object):
             if date or time or units:
                 combined = orig_inputstring[matches[from_match_index][0]:
                                             matches[len(matches) - 1][1]]
-                parsed_datetime, flags = self.parse(combined, sourceTime,
-                                                    version)
+                parsed_datetime, flags = self.parse(combined, sourceTime)
                 proximity_matches.append((
                     datetime.datetime(*parsed_datetime[:6]),
                     flags,
@@ -2210,8 +2162,7 @@ class Calendar(object):
                 return None
             else:
                 combined = orig_inputstring[matches[0][0]:matches[0][1]]
-                parsed_datetime, flags = self.parse(matches[0][2], sourceTime,
-                                                    version)
+                parsed_datetime, flags = self.parse(matches[0][2], sourceTime)
                 proximity_matches.append((
                     datetime.datetime(*parsed_datetime[:6]),
                     flags,
