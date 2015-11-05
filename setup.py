@@ -13,6 +13,8 @@ def read(filename):
     with codecs.open(os.path.join(cwd, filename), 'rb', 'utf-8') as h:
         return h.read()
 
+metadata = read(os.path.join(cwd, 'parsedatetime', '__init__.py'))
+
 def extract_metaitem(meta):
     # swiped from https://hynek.me 's attr package
     meta_match = re.search(r"""^__{meta}__\s+=\s+['\"]([^'\"]*)['\"]""".format(meta=meta), 
@@ -20,12 +22,6 @@ def extract_metaitem(meta):
     if meta_match:
         return meta_match.group(1)
     raise RuntimeError('Unable to find __{meta}__ string.'.format(meta=meta))
-
-def read(filename):
-    with codecs.open(os.path.join(cwd, filename), 'rb', 'utf-8') as h:
-        return h.read()
-
-metadata = read(os.path.join(cwd, 'parsedatetime', '__init__.py'))
 
 setup(
     name='parsedatetime',
