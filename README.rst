@@ -37,10 +37,9 @@ To run tests on several python versions, type ``tox``::
   $ tox
   [... tox creates a virtualenv for every python version and runs tests inside of each]
   py27: commands succeeded
-  py33: commands succeeded
-  py34: commands succeeded
+  py35: commands succeeded
 
-This assumes that you have ``python2.7``, ``python3.4``, etc in ``PATH``.
+This assumes that you have ``python2.7``, ``python3.5``, etc in ``PATH``.
 
 ===================
 Using parsedatetime
