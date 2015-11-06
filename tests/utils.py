@@ -12,13 +12,14 @@ def assertEqualWithComparator(comparator):
     failure message.
     """
 
-    def decoratedComparator(self, result, check, **kwargs):
+    def decoratedComparator(self, result, check, errMsg=None, **kwargs):
+        errMsg = errMsg or 'Result does not match target value'
         equal = comparator(self, result, check, **kwargs)
-        failureMessage = ('Result does not match target value\n\n\t'
+        failureMessage = ('%s\n\n\t'
                           'Result:\n\t%s\n\n\tExpected:\n\t%s')
 
         if not equal:
-            self.fail(failureMessage % (result, check))
+            self.fail(failureMessage % (errMsg, result, check))
 
     return decoratedComparator
 

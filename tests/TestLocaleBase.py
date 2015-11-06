@@ -16,6 +16,7 @@ from . import utils
 pdtLocale_fr = get_icu('fr_FR')
 pdtLocale_fr.dayOffsets.update({"aujourd'hui": 0, 'demain': 1, 'hier': -1})
 
+
 @unittest.skipIf(not pdtLocale_fr, "French Locale not found")
 class test(unittest.TestCase):
 
@@ -84,9 +85,9 @@ class test(unittest.TestCase):
             self.assertExpectedResult(
                 self.cal.parse('25/8/06', start), (target, 1))
             self.assertExpectedResult(
-                self.cal.parse('ao\xfbt 25, 2006', start), (target, 1))
+                self.cal.parse('août 25, 2006', start), (target, 1))
             self.assertExpectedResult(
-                self.cal.parse('ao\xfbt 25 2006', start), (target, 1))
+                self.cal.parse('août 25 2006', start), (target, 1))
 
             if self.mth > 8 or (self.mth == 8 and self.dy > 25):
                 target = datetime.datetime(
@@ -124,6 +125,7 @@ class test(unittest.TestCase):
 
             self.ptc.CurrentDOWParseStyle = o1
             self.ptc.DOWParseStyle = o2
+
 
 @unittest.skipIf(not pdtLocale_fr, "French Locale not found")
 class TestDayOffsets(test):
