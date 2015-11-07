@@ -22,6 +22,18 @@ def icu_object(mapping):
     return type('_icu', (object,), mapping)
 
 
+def merge_weekdays(base_wd, icu_wd):
+    result = []
+    for left, right in zip(base_wd, icu_wd):
+        if left == right:
+            result.append(left)
+            continue
+        left = set(left.split('|'))
+        right = set(right.split('|'))
+        result.append('|'.join(left | right))
+    return result
+
+
 def get_icu(locale):
     from . import base
     result = dict([(key, getattr(base, key))
@@ -40,7 +52,7 @@ def get_icu(locale):
 
     # grab spelled out format of all numbers from 0 to 100
     rbnf = pyicu.RuleBasedNumberFormat(pyicu.URBNFRuleSetTag.SPELLOUT, icu)
-    result['numbers'] = dict([(rbnf.format(i), i) for i in range(0, 100)])
+    result['numbers'].update([(rbnf.format(i), i) for i in range(0, 100)])
 
     symbols = result['symbols'] = pyicu.DateFormatSymbols(icu)
 
@@ -50,8 +62,10 @@ def get_icu(locale):
     swd = [sw.lower() for sw in symbols.getShortWeekdays()[1:]]
 
     # store them in our list with Monday first (ICU puts Sunday first)
-    result['Weekdays'] = wd[1:] + wd[0:1]
-    result['shortWeekdays'] = swd[1:] + swd[0:1]
+    result['Weekdays'] = merge_weekdays(result['Weekdays'],
+                                        wd[1:] + wd[0:1])
+    result['shortWeekdays'] = merge_weekdays(result['shortWeekdays'],
+                                             swd[1:] + swd[0:1])
     result['Months'] = [m.lower() for m in symbols.getMonths()]
     result['shortMonths'] = [sm.lower() for sm in symbols.getShortMonths()]
     keys = ['full', 'long', 'medium', 'short']
@@ -107,7 +121,7 @@ def get_icu(locale):
         pm = s.replace('45', '').replace(ts, '').strip()
 
     result['timeSep'] = [ts]
-    result['meridian'] = [am, pm]
+    result['meridian'] = [am, pm] if am and pm else []
 
     o = result['icu_df']['short']
     s = o.format(datetime.datetime(2003, 10, 30, 11, 45))

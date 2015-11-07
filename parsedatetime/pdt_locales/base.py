@@ -25,7 +25,7 @@ Weekdays = [
 ]
 
 shortWeekdays = [
-    'mon', 'tues', 'wed', 'thu', 'fri', 'sat', 'sun',
+    'mon', 'tues|tue', 'wed', 'thu', 'fri', 'sat', 'sun',
 ]
 
 Months = [

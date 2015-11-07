@@ -4,6 +4,9 @@ python:
   - "2.7"
   - "3.5"
   - "pypy"
+env:
+  - WITHPYICU=yes
+  - WITHPYICU=no
 
 before_install:
   - pip install codecov
@@ -11,9 +14,10 @@ before_install:
 install:
   - travis_retry pip install .
   - pip install -r requirements.txt
+  - if [[ $WITHPYICU == 'yes' ]]; then pip install PyICU; fi
 
 script:
-  - nosetests
+  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' && $WITHPYICU == 'yes' ]]; then echo; else nosetests; fi
 
 after_success:
-  - codecov
+  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' && $WITHPYICU == 'yes' ]]; then echo; else codecov; fi

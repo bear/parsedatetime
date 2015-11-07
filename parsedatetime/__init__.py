@@ -2378,7 +2378,7 @@ class Constants(object):
                 """
                 adjusted = []
                 for d in localeData:
-                    if len(d.split('|')) > 0:
+                    if '|' in d:
                         adjusted += d.split("|")
                     else:
                         adjusted.append(d)
@@ -2421,9 +2421,8 @@ class Constants(object):
             def _buildOffsets(offsetDict, localeData, indexStart):
                 o = indexStart
                 for key in localeData:
-                    key_split = key.split('|')
-                    if len(key_split) > 0:
-                        for k in key_split:
+                    if '|' in key:
+                        for k in key.split('|'):
                             offsetDict[k] = o
                     else:
                         offsetDict[key] = o

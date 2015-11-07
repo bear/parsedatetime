@@ -498,10 +498,13 @@ class test(unittest.TestCase):
         keywords = []
         loc = self.cal.ptc.locale
 
+        def flattenWeekdays(wds):
+            return sum([wd.split('|') for wd in wds], [])
+
         # Test all known keywords for the locale
         keywords.extend(loc.meridian)
-        keywords.extend(loc.Weekdays)
-        keywords.extend(loc.shortWeekdays)
+        keywords.extend(flattenWeekdays(loc.Weekdays))
+        keywords.extend(flattenWeekdays(loc.shortWeekdays))
         keywords.extend(loc.Months)
         keywords.extend(loc.shortMonths)
         keywords.extend(loc.numbers.keys())
@@ -521,7 +524,8 @@ class test(unittest.TestCase):
         for keyword in keywords:
             phrase = '1 %sfoo' % keyword
             self.assertExpectedResult(
-                self.cal.parse(phrase, start), (target, 0))
+                self.cal.parse(phrase, start), (target, 0),
+                'Result does not match target value: %s' % repr(phrase))
 
     def testYearParseStyle(self):
         config = pdt.Constants()
