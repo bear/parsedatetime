@@ -4,9 +4,9 @@ Parse human-readable date/time strings.
 
 Python 2.7 or greater is required for parsedatetime version 1.0 or greater.
 
-.. image:: https://pypip.in/wheel/parsedatetime/badge.png
+.. image:: https://img.shields.io/pypi/v/parsedatetime.svg
     :target: https://pypi.python.org/pypi/parsedatetime/
-    :alt: Wheel Status
+    :alt: Downloads
 
 .. image:: https://travis-ci.org/bear/parsedatetime.svg?branch=master
     :target: https://travis-ci.org/bear/parsedatetime
