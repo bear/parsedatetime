@@ -32,13 +32,12 @@ class test(unittest.TestCase):
         # to get the end of the current month
         (yr, mth, dy, hr, mn, sec, _, _, _) = s.timetuple()
 
-        m = mth
+        s = datetime.datetime(yr, mth, dy, 13, 14, 15)
+
         mth += 1
         if mth > 12:
             mth = 1
             yr += 1
-
-        s = datetime.datetime(yr, m, dy, 13, 14, 15)
         t = datetime.datetime(
             yr, mth, 1, 13, 14, 15) + datetime.timedelta(days=-1)
 
