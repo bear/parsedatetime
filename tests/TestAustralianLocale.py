@@ -83,8 +83,6 @@ class test(unittest.TestCase):
         self.assertExpectedResult(
             self.cal.parse('25/08/2006', start), (target, 1))
         self.assertExpectedResult(
-            self.cal.parse('25.08.2006', start), (target, 1))
-        self.assertExpectedResult(
             self.cal.parse('25-8-06', start), (target, 1))
         self.assertExpectedResult(
             self.cal.parse('25/8/06', start), (target, 1))
@@ -98,7 +96,6 @@ class test(unittest.TestCase):
 
         self.assertExpectedResult(self.cal.parse('25-8', start), (target, 1))
         self.assertExpectedResult(self.cal.parse('25/8', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('25.8', start), (target, 1))
         self.assertExpectedResult(self.cal.parse('25-08', start), (target, 1))
         self.assertExpectedResult(self.cal.parse('25/08', start), (target, 1))
 
