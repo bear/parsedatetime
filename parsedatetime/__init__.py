@@ -2576,19 +2576,18 @@ class Constants(object):
         else:
             self.RE_TIMEHMS2 += r'\b'
 
-        # Always support common . and - separators
-        dateSeps = ''.join(re.escape(s)
-                           for s in self.locale.dateSep + ['-', '.'])
+        dateSeps = re.escape(''.join(self.locale.dateSep))
 
+        # Add - as a date separator only for yyyy-mm-dd format
         self.RE_DATE = r'''([\s(\["'-]|^)
                            (?P<date>
                                 \d\d?[{0}]\d\d?(?:[{0}]\d\d(?:\d\d)?)?
                                 |
-                                \d{{4}}[{0}]\d\d?[{0}]\d\d?
+                                \d{{4}}[{0}-]\d\d?[{0}-]\d\d?
                             )
                            \b'''.format(dateSeps)
 
-        self.RE_DATE2 = r'[{0}]'.format(dateSeps)
+        self.RE_DATE2 = r'[{0}-]'.format(dateSeps)
 
         assert 'dayoffsets' in self.locale.re_values
 
