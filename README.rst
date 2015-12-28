@@ -16,6 +16,10 @@ Python 2.7 or greater is required for parsedatetime version 1.0 or greater.
     :target: http://codecov.io/github/bear/parsedatetime
     :alt: Codecov
 
+.. image:: https://requires.io/github/bear/parsedatetime/requirements.svg?branch=master
+     :target: https://requires.io/github/bear/parsedatetime/requirements/?branch=master
+     :alt: Requirements Status
+
 ==========
 Installing
 ==========
