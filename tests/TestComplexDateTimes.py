@@ -38,8 +38,7 @@ class test(unittest.TestCase):
         self.assertExpectedResult(
             self.cal.parse('June 30th 12PM', start),
             (datetime(self.yr
-                      if (self.mth < 6 and
-                          self.dy < 30 and self.hr < 12)
+                      if datetime.now() < datetime(self.yr, 6, 30, 12)
                       else self.yr + 1,
                       6, 30, 12, 0, 0).timetuple(), 3))
         self.assertExpectedResult(
