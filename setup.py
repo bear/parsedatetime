@@ -17,7 +17,7 @@ metadata = read(os.path.join(cwd, 'parsedatetime', '__init__.py'))
 
 def extract_metaitem(meta):
     # swiped from https://hynek.me 's attr package
-    meta_match = re.search(r"""^__{meta}__\s+=\s+['\"]([^'\"]*)['\"]""".format(meta=meta), 
+    meta_match = re.search(r"""^__{meta}__\s+=\s+['\"]([^'\"]*)['\"]""".format(meta=meta),
                            metadata, re.MULTILINE)
     if meta_match:
         return meta_match.group(1)
@@ -35,7 +35,7 @@ setup(
     packages=find_packages(exclude=['tests', 'docs']),
     platforms=['Any'],
     install_requires=read('requirements.txt').split('\n'),
-    tests_require=('PyICU','nose'),
+    tests_require=('PyICU', 'nose'),
     long_description=read('README.rst'),
     test_suite='nose.collector',
     classifiers=[

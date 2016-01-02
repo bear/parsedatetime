@@ -1,9 +1,8 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # vim: sw=2 ts=2 sts=2
 #
-# Copyright 2004-2015 Mike Taylor
+# Copyright 2004-2016 Mike Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +26,7 @@ from __future__ import with_statement, absolute_import, unicode_literals
 
 __author__ = 'Mike Taylor'
 __email__ = 'bear@bear.im'
-__copyright__ = 'Copyright (c) 2015 Mike Taylor'
+__copyright__ = 'Copyright (c) 2016 Mike Taylor'
 __license__ = 'Apache License 2.0'
 __version__ = '2.0'
 __url__ = 'https://github.com/bear/parsedatetime'
