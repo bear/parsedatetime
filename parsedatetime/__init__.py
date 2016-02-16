@@ -910,6 +910,12 @@ class Calendar(object):
                     sourceTime = sTime
                     ctx.updateAccuracy(ctx.ACU_HALFDAY)
             else:
+                # unless one of these modifiers is being applied to the
+                # day-of-week, we want to start with target as the day
+                # in the current week.
+                if not modifier in ['next', 'last', 'prior', 'previous']:
+                    offset = 0
+
                 wkdy = self.ptc.WeekdayOffsets[wkdy]
                 diff = self._CalculateDOWDelta(
                     wd, wkdy, offset, self.ptc.DOWParseStyle,
