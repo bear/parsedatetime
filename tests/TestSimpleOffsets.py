@@ -46,7 +46,7 @@ class test(unittest.TestCase):
 
         self.assertExpectedResult(self.cal.parse('now', start), (target, 2))
 
-    def testWeeksFromDayOfWeek(self):
+    def testOffsetFromDayOfWeek(self):
         self.cal.ptc.StartTimeFromSourceTime = True
 
         s = datetime.datetime(2016, 2, 16) # a Tuesday
@@ -62,6 +62,23 @@ class test(unittest.TestCase):
 
         self.assertExpectedResult(
             self.cal.parse('one hour from Thursday', start), (targetPlusOffset, 3))
+
+    def testOffsetBeforeDayOfWeek(self):
+        self.cal.ptc.StartTimeFromSourceTime = True
+
+        s = datetime.datetime(2016, 2, 16) # a Tuesday
+        t = datetime.datetime(2016, 2, 18) # Thursday of the same week
+        tPlusOffset = t + datetime.timedelta(hours=-1)
+
+        start = s.timetuple()
+        target = t.timetuple()
+        targetPlusOffset = tPlusOffset.timetuple()
+
+        self.assertExpectedResult(
+            self.cal.parse('Thursday', start), (target, 1))
+
+        self.assertExpectedResult(
+            self.cal.parse('one hour before Thursday', start), (targetPlusOffset, 3))
 
     def testMinutesFromNow(self):
         s = datetime.datetime.now()
