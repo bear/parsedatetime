@@ -910,13 +910,31 @@ class Calendar(object):
                     sourceTime = sTime
                     ctx.updateAccuracy(ctx.ACU_HALFDAY)
             else:
+                # unless one of these modifiers is being applied to the
+                # day-of-week, we want to start with target as the day
+                # in the current week.
+                dowOffset = offset
+                if not modifier in ['next', 'last', 'prior', 'previous']:
+                    dowOffset = 0
+
                 wkdy = self.ptc.WeekdayOffsets[wkdy]
                 diff = self._CalculateDOWDelta(
-                    wd, wkdy, offset, self.ptc.DOWParseStyle,
+                    wd, wkdy, dowOffset, self.ptc.DOWParseStyle,
                     self.ptc.CurrentDOWParseStyle)
                 start = datetime.datetime(yr, mth, dy, startHour,
                                           startMinute, startSecond)
                 target = start + datetime.timedelta(days=diff)
+
+                if chunk1 != '':
+                    # consider "one day before thursday": we need to parse chunk1 ("one day")
+                    # and apply according to the offset ("before"), rather than allowing the
+                    # remaining parse step to apply "one day" without the offset direction.
+                    t, subctx = self.parse(chunk1, sourceTime, VERSION_CONTEXT_STYLE)
+                    if subctx.hasDateOrTime:
+                        delta = time.mktime(t) - time.mktime(sourceTime)
+                        target = start + datetime.timedelta(days=diff) + datetime.timedelta(seconds = delta * offset)
+                        chunk1 = ''
+
                 sourceTime = target.timetuple()
             ctx.updateAccuracy(ctx.ACU_DAY)
 
