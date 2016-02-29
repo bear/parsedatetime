@@ -1,3 +1,27 @@
+29 Feb 2015 - bear
+    v2.0 released
+
+    Issue #145 cal.parse('2015-11-18') returns November 19th 2015
+    Issue #143 What is the second value returned by `parse`?
+    Issue #141 Bad test case in TestComplexDateTimes
+    Issue #123 update supporting files for v2.0 release
+    Issue #124 Put locales into config-files (yaml)
+    Issue #125 Remove extra files
+    Issue #137 Year is parsed wrongly if the date is of format MMM DD, YYxx xx:SS bug
+    Issue #136 Why I see 2016 instead of 2015?
+    Issue #133 Bug: "2015-01-01" is parsed as the current date.
+    Issue #126 "Unresolved attribute reference 'parse' for class 'object'... " in Pycharm IDE. bug
+
+    PR #153 Fix/day of week offsets
+    PR #146 Test failure: eom is correct, but expectation is wrong
+    PR #142 Fixed all PyICU test failure
+    PR #138 bug(date3): rely on comparison of hour and year strings but not strict char position
+    PR #135 update manifest, clean up setup.py and move historical text files
+    PR #130 Refactoring of pdt_locales
+    PR #134 Uses `codecov` to generate coverage report
+    PR #128 Master
+    PR #127 Issue #126 - removed inheritance from object and removed return value…
+
 20 Sep 2015 - bear
     bump version to v2.0 because of the fix for Issue #120
 
