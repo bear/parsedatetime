@@ -914,7 +914,7 @@ class Calendar(object):
                 # day-of-week, we want to start with target as the day
                 # in the current week.
                 dowOffset = offset
-                if not modifier in ['next', 'last', 'prior', 'previous']:
+                if modifier not in ['next', 'last', 'prior', 'previous']:
                     dowOffset = 0
 
                 wkdy = self.ptc.WeekdayOffsets[wkdy]
@@ -932,7 +932,7 @@ class Calendar(object):
                     t, subctx = self.parse(chunk1, sourceTime, VERSION_CONTEXT_STYLE)
                     if subctx.hasDateOrTime:
                         delta = time.mktime(t) - time.mktime(sourceTime)
-                        target = start + datetime.timedelta(days=diff) + datetime.timedelta(seconds = delta * offset)
+                        target = start + datetime.timedelta(days=diff) + datetime.timedelta(seconds=delta * offset)
                         chunk1 = ''
 
                 sourceTime = target.timetuple()
