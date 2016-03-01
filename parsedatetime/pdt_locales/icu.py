@@ -85,8 +85,11 @@ def get_icu(locale):
         'short': createTimeInstance(pyicu.DateFormat.kShort, icu),
     }
 
-    result['dateFormats'] = {x: icu_df[x].toPattern() for x in keys}
-    result['timeFormats'] = {x: icu_tf[x].toPattern() for x in keys}
+    result['dateFormats'] = {}
+    result['timeFormats'] = {}
+    for x in keys:
+        result['dateFormats'][x] = icu_df[x].toPattern()
+        result['timeFormats'][x] = icu_tf[x].toPattern()
 
     am = pm = ts = ''
 
