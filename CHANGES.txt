@@ -1,6 +1,14 @@
-29 Feb 2015 - bear
+02 Mar 2016 - bear
+    v2.1 released
+
+    Issue #156 parsedatetime 2.0 doesn't work on py26
+
+    PR 157 unwrap dictionary comprehensions to allow for python 2.6 to work - Issue #156
+
+29 Feb 2016 - bear
     v2.0 released
 
+    Issue #155 Relative times containing years fail when computed from a leap day
     Issue #145 cal.parse('2015-11-18') returns November 19th 2015
     Issue #143 What is the second value returned by `parse`?
     Issue #141 Bad test case in TestComplexDateTimes
