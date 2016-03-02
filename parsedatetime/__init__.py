@@ -22,19 +22,12 @@ Parse human-readable date/time text.
 
 Requires Python 2.6 or later
 """
-from __future__ import with_statement, absolute_import, unicode_literals
 
-__author__ = 'Mike Taylor'
-__email__ = 'bear@bear.im'
-__copyright__ = 'Copyright (c) 2016 Mike Taylor'
-__license__ = 'Apache License 2.0'
-__version__ = '2.1'
-__url__ = 'https://github.com/bear/parsedatetime'
-__download_url__ = 'https://pypi.python.org/pypi/parsedatetime'
-__description__ = 'Parse human-readable date/time text.'
+from __future__ import with_statement, absolute_import, unicode_literals
 
 import re
 import time
+import logging
 import warnings
 import datetime
 import calendar
@@ -47,10 +40,18 @@ from .context import pdtContext, pdtContextStack
 from .warns import pdt20DeprecationWarning
 
 
+__author__ = 'Mike Taylor'
+__email__ = 'bear@bear.im'
+__copyright__ = 'Copyright (c) 2016 Mike Taylor'
+__license__ = 'Apache License 2.0'
+__version__ = '2.1'
+__url__ = 'https://github.com/bear/parsedatetime'
+__download_url__ = 'https://pypi.python.org/pypi/parsedatetime'
+__description__ = 'Parse human-readable date/time text.'
+
 # as a library, do *not* setup logging
 # see docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
 # Set default logging handler to avoid "No handler found" warnings.
-import logging
 
 try:  # Python 2.7+
     from logging import NullHandler
@@ -192,8 +193,8 @@ def __closure_parse_date_w3dtf():
     __tzd_re = r'(?P<tzd>[-+](?P<tzdhours>\d\d)(?::?(?P<tzdminutes>\d\d))|Z)'
     # __tzd_rx = re.compile(__tzd_re)
     __time_re = (r'(?P<hours>\d\d)(?P<tsep>:|)(?P<minutes>\d\d)'
-                 r'(?:(?P=tsep)(?P<seconds>\d\d(?:[.,]\d+)?))?'
-                 + __tzd_re)
+                 r'(?:(?P=tsep)(?P<seconds>\d\d(?:[.,]\d+)?))?' +
+                 __tzd_re)
     __datetime_re = '%s(?:T%s)?' % (__date_re, __time_re)
     __datetime_rx = re.compile(__datetime_re)
 
