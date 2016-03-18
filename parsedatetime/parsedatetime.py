@@ -1,2 +1,2 @@
 # Backward compatibility fix.
-from . import *
+from . import *         # noqa

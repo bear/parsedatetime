@@ -34,3 +34,9 @@ tests/htmlcov/
 # vim
 *.swp
 *.swo
+
+.cache
+.eggs
+htmlcov
+
+violations.flake8.txt

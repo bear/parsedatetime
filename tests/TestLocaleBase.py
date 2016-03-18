@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 import time
 import datetime
 import unittest
+import pytest
 import parsedatetime as pdt
 from parsedatetime.pdt_locales import get_icu
 
@@ -17,7 +18,7 @@ pdtLocale_fr = get_icu('fr_FR')
 pdtLocale_fr.dayOffsets.update({"aujourd'hui": 0, 'demain': 1, 'hier': -1})
 
 
-@unittest.skipIf(not pdtLocale_fr, "French Locale not found")
+@pytest.mark.skipif(not pdtLocale_fr, reason="French Locale not found")
 class test(unittest.TestCase):
 
     @utils.assertEqualWithComparator
@@ -127,7 +128,7 @@ class test(unittest.TestCase):
             self.ptc.DOWParseStyle = o2
 
 
-@unittest.skipIf(not pdtLocale_fr, "French Locale not found")
+@pytest.mark.skipif(not pdtLocale_fr, reason="French Locale not found")
 class TestDayOffsets(test):
     # test how Aujourd'hui/Demain/Hier are parsed
 

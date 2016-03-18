@@ -45,6 +45,17 @@ To run tests on several python versions, type ``tox``::
 
 This assumes that you have ``python2.7``, ``python3.5``, etc in ``PATH``.
 
+The tests depend on PyICU being installed. PyICU depends on icu4c which on OS X requires homebrew::
+
+    brew install icu4c
+
+*and* then will require that you pass in the ``LDFLAGS`` and ``CPPFLAGS`` that homebrew will display after the install::
+
+    LDFLAGS:  -L/usr/local/opt/icu4c/lib
+    CPPFLAGS: -I/usr/local/opt/icu4c/include
+
+The Makefile contains the OS X default values for them so you may need to tweak them.
+
 ===================
 Using parsedatetime
 ===================
