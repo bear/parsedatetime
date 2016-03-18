@@ -2402,12 +2402,13 @@ class Constants(object):
                         adjusted.append(d)
                 return adjusted
 
+            def re_join(g):
+                return '|'.join(re.escape(i) for i in g)
+
             mths = _getLocaleDataAdjusted(self.locale.Months)
             smths = _getLocaleDataAdjusted(self.locale.shortMonths)
             swds = _getLocaleDataAdjusted(self.locale.shortWeekdays)
             wds = _getLocaleDataAdjusted(self.locale.Weekdays)
-
-            re_join = lambda g: '|'.join(re.escape(i) for i in g)
 
             # escape any regex special characters that may be found
             self.locale.re_values['months'] = re_join(mths)
