@@ -43,7 +43,10 @@ To run tests on several python versions, type ``tox``::
   py27: commands succeeded
   py35: commands succeeded
 
-This assumes that you have ``python2.7``, ``python3.5``, etc in ``PATH``.
+This assumes that you have ``python2.7``, ``python3.5``, etc in ``PATH`` or if your using
+PyEnv then you need to run::
+
+    pyenv local 2.6.6 2.7.10 3.5.0
 
 The tests depend on PyICU being installed. PyICU depends on icu4c which on OS X requires homebrew::
 
