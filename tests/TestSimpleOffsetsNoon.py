@@ -40,10 +40,10 @@ class test(unittest.TestCase):
             self.cal.parse('5 hours after 12:00pm', start), (target, 2))
         self.assertExpectedResult(
             self.cal.parse('5 hours after 12:00 pm', start), (target, 2))
-        # self.assertExpectedResult(
-        #     self.cal.parse('5 hours after noon', start), (target, 2))
-        # self.assertExpectedResult(
-        #     self.cal.parse('5 hours from noon', start), (target, 2))
+        self.assertExpectedResult(
+            self.cal.parse('5 hours after noon', start), (target, 2))
+        self.assertExpectedResult(
+            self.cal.parse('5 hours from noon', start), (target, 2))
 
     def testOffsetBeforeNoon(self):
         s = datetime.datetime.now()
@@ -53,8 +53,8 @@ class test(unittest.TestCase):
         start = s.timetuple()
         target = t.timetuple()
 
-        # self.assertExpectedResult(
-        #     self.cal.parse('5 hours before noon', start), (target, 2))
+        self.assertExpectedResult(
+            self.cal.parse('5 hours before noon', start), (target, 2))
         self.assertExpectedResult(
             self.cal.parse('5 hours before 12pm', start), (target, 2))
         self.assertExpectedResult(
