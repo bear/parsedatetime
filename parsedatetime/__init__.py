@@ -939,7 +939,7 @@ class Calendar(object):
                 sourceTime = target.timetuple()
             ctx.updateAccuracy(ctx.ACU_DAY)
 
-        elif self.ptc.CRE_TIME.match(unit):
+        elif chunk1 == '' and chunk2 == '' and self.ptc.CRE_TIME.match(unit):
             m = self.ptc.CRE_TIME.match(unit)
             debug and log.debug('CRE_TIME matched')
             (yr, mth, dy, hr, mn, sec, wd, yd, isdst), subctx = \
