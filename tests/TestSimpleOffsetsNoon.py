@@ -66,6 +66,18 @@ class test(unittest.TestCase):
         self.assertExpectedResult(
             self.cal.parse('5 hours before 12:00 pm', start), (target, 2))
 
+    def testOffsetBeforeModifiedNoon(self):
+        # A contrived test of two modifiers applied to noon - offset by
+        # -5 from the following day (-5 + 24)
+        s = datetime.datetime.now()
+        t = (datetime.datetime(self.yr, self.mth, self.dy, 12, 0, 0) +
+             datetime.timedelta(hours=-5 + 24))
+
+        start = s.timetuple()
+        target = t.timetuple()
+
+        self.assertExpectedResult(
+            self.cal.parse('5 hours before next noon', start), (target, 2))
 
 if __name__ == "__main__":
     unittest.main()

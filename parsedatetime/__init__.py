@@ -939,6 +939,16 @@ class Calendar(object):
                 sourceTime = target.timetuple()
             ctx.updateAccuracy(ctx.ACU_DAY)
 
+        elif chunk1 == '' and chunk2 == '' and self.ptc.CRE_TIME.match(unit):
+            m = self.ptc.CRE_TIME.match(unit)
+            debug and log.debug('CRE_TIME matched')
+            (yr, mth, dy, hr, mn, sec, wd, yd, isdst), subctx = \
+                self.parse(unit, None, VERSION_CONTEXT_STYLE)
+
+            start = datetime.datetime(yr, mth, dy, hr, mn, sec)
+            target = start + datetime.timedelta(days=offset)
+            sourceTime = target.timetuple()
+
         else:
             # check if the remaining text is parsable and if so,
             # use it as the base time for the modifier source time
