@@ -74,10 +74,9 @@ An example of how to use parsedatetime::
 To get it to a Python ``datetime`` object::
 
     from datetime import datetime
-    from time import mktime
 
     time_struct, parse_status = cal.parse("tomorrow")
-    datetime.fromtimestamp(mktime(time_struct))
+    datetime(*time_struct[:6])
 
 Parse datetime with timezone support (using pytz package)::
 
