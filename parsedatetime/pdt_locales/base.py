@@ -35,7 +35,7 @@ Months = [
 
 shortMonths = [
     'jan', 'feb', 'mar', 'apr', 'may', 'jun',
-    'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
+    'jul', 'aug', 'sep|sept', 'oct', 'nov', 'dec',
 ]
 
 # use the same formats as ICU by default
