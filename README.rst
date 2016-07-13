@@ -20,6 +20,10 @@ Python 2.7 or greater is required for parsedatetime version 1.0 or greater.
      :target: https://requires.io/github/bear/parsedatetime/requirements/?branch=master
      :alt: Requirements Status
 
+.. image:: https://dependencyci.com/github/bear/parsedatetime/badge
+     :target: https://dependencyci.com/github/bear/parsedatetime
+     :alt: Dependency Status
+
 ==========
 Installing
 ==========
