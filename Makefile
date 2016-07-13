@@ -1,5 +1,15 @@
 .PHONY: docs test
 
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+    BREWPATH = $(shell brew --prefix)
+    PYICU_LD = -L${BREWPATH}/opt/icu4c/lib
+    PYICU_CPP = -I${BREWPATH}/opt/icu4c/include
+else
+    PYICU_LD = 
+    PYICU_CPP =
+endif
+
 help:
 	@echo "  env         install all production dependencies"
 	@echo "  dev         install all dev and production dependencies (virtualenv is assumed)"
@@ -14,13 +24,14 @@ env:
 
 dev: env
 	pip install -r requirements.testing.txt
-	LDFLAGS=-L/usr/local/opt/icu4c/lib CPPFLAGS=-I/usr/local/opt/icu4c/include \
+	@echo "on OS X use homebrew to install icu4c"
+	LDFLAGS=${PYICU_LD} CPPFLAGS=${PYICU_CPP} \
     pip install pyicu
 
 info:
-	python --version
-	pyenv --version
-	pip --version
+	@python --version
+	@pyenv --version
+	@pip --version
 
 clean:
 	rm -fr build
@@ -39,9 +50,12 @@ test: lint
 	python setup.py test
 
 coverage: clean
-	coverage run --source=parsedatetime setup.py test
-	coverage html
-	coverage report
+	@coverage run --source=parsedatetime setup.py test
+	@coverage html
+	@coverage report
+
+ci: info coverage
+	CODECOV_TOKEN=`cat .codecov-token` codecov
 
 build: clean
 	python setup.py check
