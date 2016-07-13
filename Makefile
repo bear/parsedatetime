@@ -26,7 +26,7 @@ dev: env
 	pip install -Ur requirements.testing.txt
 	@echo "on OS X use homebrew to install icu4c"
 	LDFLAGS=${PYICU_LD} CPPFLAGS=${PYICU_CPP} \
-    pip install pyicu
+    pip install -U pyicu
 
 info:
 	@python --version
