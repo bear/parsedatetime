@@ -20,10 +20,10 @@ help:
 	@echo "  upload      generate source and wheel dist files and upload them"
 
 env:
-	pip install -r requirements.txt
+	pip install -Ur requirements.txt
 
 dev: env
-	pip install -r requirements.testing.txt
+	pip install -Ur requirements.testing.txt
 	@echo "on OS X use homebrew to install icu4c"
 	LDFLAGS=${PYICU_LD} CPPFLAGS=${PYICU_CPP} \
     pip install pyicu
