@@ -13,4 +13,4 @@ test:
     - uname -a
     - lsb_release -a
   override:
-    - make coverage
+    - make ci

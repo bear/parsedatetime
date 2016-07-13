@@ -22,8 +22,11 @@ pip-log.txt
 
 # Unit test / coverage reports
 .coverage
+.codecov-token
 .tox
-tests/htmlcov/
+nosetests.xml
+htmlcov
+coverage.xml
 
 #Translations
 *.mo
@@ -37,6 +40,6 @@ tests/htmlcov/
 
 .cache
 .eggs
-htmlcov
 
 violations.flake8.txt
+.python-version
