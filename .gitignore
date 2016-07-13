@@ -40,6 +40,6 @@ coverage.xml
 
 .cache
 .eggs
-htmlcov
 
 violations.flake8.txt
+.python-version
