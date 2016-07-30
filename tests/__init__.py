@@ -1,4 +1,3 @@
-
 """
 Unit tests for parsedatetime
 
@@ -8,6 +7,8 @@ The tests can be run as a C{suite} by running::
 
 Requires Python 3.0 or later
 """
+import logging
+
 
 __author__ = 'Mike Taylor (bear@code-bear.com)'
 __copyright__ = 'Copyright (c) 2004 Mike Taylor'
@@ -17,7 +18,7 @@ __contributors__ = ['Darshana Chhajed',
                     'Michael Lim (lim.ck.michael@gmail.com)',
                     'Bernd Zeimetz (bzed@debian.org)',
                     ]
-import logging
+
 
 log = logging.getLogger('parsedatetime')
 echoHandler = logging.StreamHandler()

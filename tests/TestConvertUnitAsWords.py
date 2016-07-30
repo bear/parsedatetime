@@ -5,9 +5,10 @@ Tests the _convertUnitAsWords method.
 import unittest
 import parsedatetime as pdt
 
+
 class test(unittest.TestCase):
     def setUp(self):
-        self.cal   = pdt.Calendar()
+        self.cal = pdt.Calendar()
         self.tests = (('one', 1),
                       ('zero', 0),
                       ('eleven', 11),

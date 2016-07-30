@@ -49,8 +49,8 @@ class test(unittest.TestCase):
     def testOffsetFromDayOfWeek(self):
         self.cal.ptc.StartTimeFromSourceTime = True
 
-        s = datetime.datetime(2016, 2, 16) # a Tuesday
-        t = datetime.datetime(2016, 2, 18) # Thursday of the same week
+        s = datetime.datetime(2016, 2, 16)  # a Tuesday
+        t = datetime.datetime(2016, 2, 18)  # Thursday of the same week
         tPlusOffset = t + datetime.timedelta(hours=1)
 
         start = s.timetuple()
@@ -66,8 +66,8 @@ class test(unittest.TestCase):
     def testOffsetBeforeDayOfWeek(self):
         self.cal.ptc.StartTimeFromSourceTime = True
 
-        s = datetime.datetime(2016, 2, 16) # a Tuesday
-        t = datetime.datetime(2016, 2, 18) # Thursday of the same week
+        s = datetime.datetime(2016, 2, 16)  # a Tuesday
+        t = datetime.datetime(2016, 2, 18)  # Thursday of the same week
         tPlusOffset = t + datetime.timedelta(hours=-1)
 
         start = s.timetuple()
