@@ -49,12 +49,15 @@ lint:
 test: lint
 	python setup.py test
 
+tox: clean
+	tox
+
 coverage: clean
 	@coverage run --source=parsedatetime setup.py test
 	@coverage html
 	@coverage report
 
-ci: info coverage
+ci: tox
 	CODECOV_TOKEN=`cat .codecov-token` codecov
 
 build: clean
