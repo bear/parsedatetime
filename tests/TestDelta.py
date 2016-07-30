@@ -8,10 +8,12 @@ import datetime
 import unittest
 import parsedatetime as pdt
 
+
 # added to support Python 2.6 which does not have total_seconds() method for timedelta
 def total_seconds(timedelta):
     return (timedelta.microseconds + 0.0 +
             (timedelta.seconds + timedelta.days * 24 * 3600) * 10 ** 6) / 10 ** 6
+
 
 class test(unittest.TestCase):
 
