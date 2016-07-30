@@ -57,7 +57,7 @@ coverage: clean
 	@coverage html
 	@coverage report
 
-ci: tox
+ci: tox coverage
 	CODECOV_TOKEN=`cat .codecov-token` codecov
 
 build: clean
