@@ -1,9 +1,9 @@
 machine:
   pre:
-    - pyenv install 2.6.9
-    - pyenv install 2.7.11
-    - pyenv install 3.5.2
-    - pyenv install pypy-5.3.1
+    - pyenv install -s 2.6.9
+    - pyenv install -s 2.7.11
+    - pyenv install -s 3.5.2
+    - pyenv install -s pypy-5.3.1
   post:
     - pyenv global 2.7.11 3.5.2 2.6.9 pypy-5.3.1
 
