@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import unittest
+import sys
 import time
 import datetime
 import parsedatetime as pdt
 from parsedatetime.pdt_locales import get_icu
-
 from . import utils
+
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 
 pdtLocale_en = get_icu('en_US')

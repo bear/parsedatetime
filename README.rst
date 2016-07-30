@@ -2,7 +2,9 @@ parsedatetime
 
 Parse human-readable date/time strings.
 
-Python 2.7 or greater is required for parsedatetime version 1.0 or greater.
+Python 2.6 or greater is required for parsedatetime version 1.0 or greater.
+
+While we still test with Python 2.6 we cannot guarantee that future changes will not break under 2.6
 
 .. image:: https://img.shields.io/pypi/v/parsedatetime.svg
     :target: https://pypi.python.org/pypi/parsedatetime/
@@ -40,17 +42,21 @@ From the source directory::
 
     make test
 
-To run tests on several python versions, type ``tox``::
+To run tests on several python versions, type ``make tox``::
 
-  $ tox
+  $ make tox
   [... tox creates a virtualenv for every python version and runs tests inside of each]
   py27: commands succeeded
   py35: commands succeeded
 
-This assumes that you have ``python2.7``, ``python3.5``, etc in ``PATH`` or if your using
-PyEnv then you need to run::
+This assumes that you have the versions you want to test under installed as part of your
+PyEnv environment::
 
-    pyenv local 2.6.6 2.7.10 3.5.0
+    pyenv install -s 2.6.9
+    pyenv install -s 2.7.11
+    pyenv install -s 3.5.2
+    pyenv install -s pypy-5.3
+    pyenv global 2.7.11 3.5.2 2.6.9 pypy-5.3
 
 The tests depend on PyICU being installed. PyICU depends on icu4c which on OS X requires homebrew::
 

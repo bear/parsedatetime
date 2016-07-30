@@ -4,12 +4,17 @@ Test parsing of simple date and times
 """
 from __future__ import unicode_literals
 
-import unittest
+import sys
 import time
 import datetime
 import string
 import parsedatetime as pdt
 from . import utils
+
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 
 class test(unittest.TestCase):
