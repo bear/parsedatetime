@@ -1,7 +1,11 @@
+machine:
+  post:
+    - pyenv global 2.7.12 3.5.2 2.6.9 pypy-5.3.1
 
 dependencies:
   override:
     - pip install -U pip
+    - pip install tox
     - make dev
 
 test:
