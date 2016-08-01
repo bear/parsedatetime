@@ -8,3 +8,5 @@ coveralls
 codecov
 check-manifest
 unittest2
+tox
+tox-pyenv
