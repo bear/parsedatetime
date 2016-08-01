@@ -2,11 +2,6 @@ dependencies:
   override:
     - pip install -U pip
     - make dev
-    - pyenv install -s 2.7.11
-    - pyenv install -s 3.5.2
-    - pyenv install -s 2.6.9
-    - pyenv install -s pypy-5.3
-    - pyenv local 2.7.11 3.5.2 2.6.9 pypy-5.3
 
 test:
   pre:
