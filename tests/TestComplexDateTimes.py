@@ -139,7 +139,7 @@ class test(unittest.TestCase):
         self.assertExpectedResult(
             self.cal.parse('August 5th 12:00 pm', start), (target, 3))
 
-        if self.mth > 8 or (self.mth == 8 and self.dy > 5):
+        if self.mth > 8 or (self.mth == 8 and self.dy > 22):
             target = datetime(
                 self.yr + 1, 8, 22, 3, 26, 0).timetuple()
         else:
