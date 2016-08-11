@@ -127,3 +127,4 @@ class test(unittest.TestCase):
             "happen every week!!", start), None)
         self.assertExpectedResult(self.cal.nlp("$300", start), None)
         self.assertExpectedResult(self.cal.nlp("300ml", start), None)
+        self.assertExpectedResult(self.cal.nlp("nice ass", start), None)

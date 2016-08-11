@@ -2547,7 +2547,7 @@ class Constants(object):
 
         self.RE_QUNITS = r'''\b(?P<qty>
                                  -?
-                                 (?:\d+(?:{decimal_mark}\d+|)|(?:{numbers})s)\s?
+                                 (?:\d+(?:{decimal_mark}\d+|)|(?:{numbers})\s)\s?
                                  (?P<qunits>{qunits})
                              )\b'''.format(**self.locale.re_values)
 
