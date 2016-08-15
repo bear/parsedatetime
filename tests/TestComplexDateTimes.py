@@ -152,6 +152,12 @@ class test(unittest.TestCase):
         self.assertExpectedResult(
             self.cal.parse('August 22nd 3:26 am', start), (target, 3))
 
+    def testDatesWithDay(self):
+        start = datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
+        target = datetime(2016, 8, 23, 17, 0, 0).timetuple()
+        self.assertExpectedResult(
+            self.cal.parse('tuesday august 23nd 2016 at 5pm', start), (target, 3))
 
 if __name__ == "__main__":
     unittest.main()

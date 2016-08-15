@@ -1575,6 +1575,9 @@ class Calendar(object):
         """
         parseStr = None
         chunk1 = chunk2 = ''
+        
+        ctx = self.currentContext
+        log.debug('eval %s with context - %s, %s', s, ctx.hasDate, ctx.hasTime)
 
         # Weekday
         m = self.ptc.CRE_WEEKDAY.search(s)
@@ -1592,7 +1595,7 @@ class Calendar(object):
                     parseStr = s
                     s = ''
 
-        if parseStr:
+        if parseStr and not ctx.hasDate:
             debug and log.debug(
                 'found (weekday) [%s][%s][%s]', parseStr, chunk1, chunk2)
             sourceTime = self._evalWeekday(parseStr, sourceTime)
