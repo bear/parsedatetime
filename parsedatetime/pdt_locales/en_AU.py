@@ -14,8 +14,6 @@ dateFormats = {
     'short': 'd/MM/yy',
 }
 
-timeFormats = {
-    'long': timeFormats['full'],
-}
+timeFormats['long'] = timeFormats['full']
 
 dp_order = ['d', 'm', 'y']
