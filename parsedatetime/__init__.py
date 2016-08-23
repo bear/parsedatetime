@@ -1575,7 +1575,7 @@ class Calendar(object):
         """
         parseStr = None
         chunk1 = chunk2 = ''
-        
+
         ctx = self.currentContext
         log.debug('eval %s with context - %s, %s', s, ctx.hasDate, ctx.hasTime)
 
