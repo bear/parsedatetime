@@ -2472,11 +2472,11 @@ class Constants(object):
                                         (?P<day>\d\d?)
                                         (?P<suffix>{daysuffix})?
                                         (,)?
-                                        (\s)?
+                                        (\s)*
                                     )
                                     (?P<mthname>
                                         \b({months}|{shortmonths})\b
-                                    )\s?
+                                    )\s*
                                     (?P<year>\d\d
                                         (\d\d)?
                                     )?
@@ -2492,12 +2492,12 @@ class Constants(object):
         # when the day is absent from the string
         self.RE_DATE3 = r'''(?P<date>
                                 (?:
-                                    (?:^|\s)
+                                    (?:^|\s+)
                                     (?P<mthname>
                                         {months}|{shortmonths}
                                     )\b
                                     |
-                                    (?:^|\s)
+                                    (?:^|\s+)
                                     (?P<day>[1-9]|[012]\d|3[01])
                                     (?P<suffix>{daysuffix}|)\b
                                     (?!\s*(?:{timecomponents}))
@@ -2511,18 +2511,18 @@ class Constants(object):
 
         # not being used in code, but kept in case others are manually
         # utilizing this regex for their own purposes
-        self.RE_MONTH = r'''(\s|^)
+        self.RE_MONTH = r'''(\s+|^)
                             (?P<month>
                                 (
                                     (?P<mthname>
                                         \b({months}|{shortmonths})\b
                                     )
-                                    (\s?
+                                    (\s*
                                         (?P<year>(\d{{4}}))
                                     )?
                                 )
                             )
-                            (?=\s|$|[^\w])'''.format(**self.locale.re_values)
+                            (?=\s+|$|[^\w])'''.format(**self.locale.re_values)
 
         self.RE_WEEKDAY = r'''\b
                               (?:
@@ -2547,7 +2547,7 @@ class Constants(object):
 
         self.RE_QUNITS = r'''\b(?P<qty>
                                  -?
-                                 (?:\d+(?:{decimal_mark}\d+|)|(?:{numbers})\s)\s?
+                                 (?:\d+(?:{decimal_mark}\d+|)|(?:{numbers})\s+)\s*
                                  (?P<qunits>{qunits})
                              )\b'''.format(**self.locale.re_values)
 
@@ -2590,7 +2590,7 @@ class Constants(object):
                                  )'''
 
         if 'meridian' in self.locale.re_values:
-            self.RE_TIMEHMS2 += (r'\s?(?P<meridian>{meridian})\b'
+            self.RE_TIMEHMS2 += (r'\s*(?P<meridian>{meridian})\b'
                                  .format(**self.locale.re_values))
         else:
             self.RE_TIMEHMS2 += r'\b'
@@ -2630,20 +2630,20 @@ class Constants(object):
         self.RE_REMAINING = r'\s+'
 
         # Regex for date/time ranges
-        self.RE_RTIMEHMS = r'''(\s?|^)
+        self.RE_RTIMEHMS = r'''(\s*|^)
                                (\d\d?){timeseparator}
                                (\d\d)
                                ({timeseparator}(\d\d))?
-                               (\s?|$)'''.format(**self.locale.re_values)
+                               (\s*|$)'''.format(**self.locale.re_values)
 
-        self.RE_RTIMEHMS2 = (r'''(\s?|^)
+        self.RE_RTIMEHMS2 = (r'''(\s*|^)
                                  (\d\d?)
                                  ({timeseparator}(\d\d?))?
                                  ({timeseparator}(\d\d?))?'''
                              .format(**self.locale.re_values))
 
         if 'meridian' in self.locale.re_values:
-            self.RE_RTIMEHMS2 += (r'\s?({meridian})'
+            self.RE_RTIMEHMS2 += (r'\s*({meridian})'
                                   .format(**self.locale.re_values))
 
         self.RE_RDATE = r'(\d+([%s]\d+)+)' % dateSeps
@@ -2651,40 +2651,40 @@ class Constants(object):
                                 (
                                     (
                                         \b({months})\b
-                                    )\s?
+                                    )\s*
                                     (
                                         (\d\d?)
-                                        (\s?|{daysuffix}|$)+
+                                        (\s*|{daysuffix}|$)+
                                     )?
-                                    (,\s?\d{{4}})?
+                                    (,\s*\d{{4}})?
                                 )
                             )'''.format(**self.locale.re_values)
 
         # "06/07/06 - 08/09/06"
-        self.DATERNG1 = (r'{0}\s?{rangeseparator}\s?{0}'
+        self.DATERNG1 = (r'{0}\s*{rangeseparator}\s*{0}'
                          .format(self.RE_RDATE, **self.locale.re_values))
 
         # "march 31 - june 1st, 2006"
-        self.DATERNG2 = (r'{0}\s?{rangeseparator}\s?{0}'
+        self.DATERNG2 = (r'{0}\s*{rangeseparator}\s*{0}'
                          .format(self.RE_RDATE3, **self.locale.re_values))
 
         # "march 1rd -13th"
-        self.DATERNG3 = (r'{0}\s?{rangeseparator}\s?(\d\d?)\s?(rd|st|nd|th)?'
+        self.DATERNG3 = (r'{0}\s*{rangeseparator}\s*(\d\d?)\s*(rd|st|nd|th)?'
                          .format(self.RE_RDATE3, **self.locale.re_values))
 
         # "4:00:55 pm - 5:90:44 am", '4p-5p'
-        self.TIMERNG1 = (r'{0}\s?{rangeseparator}\s?{0}'
+        self.TIMERNG1 = (r'{0}\s*{rangeseparator}\s*{0}'
                          .format(self.RE_RTIMEHMS2, **self.locale.re_values))
 
-        self.TIMERNG2 = (r'{0}\s?{rangeseparator}\s?{0}'
+        self.TIMERNG2 = (r'{0}\s*{rangeseparator}\s*{0}'
                          .format(self.RE_RTIMEHMS, **self.locale.re_values))
 
         # "4-5pm "
-        self.TIMERNG3 = (r'\d\d?\s?{rangeseparator}\s?{0}'
+        self.TIMERNG3 = (r'\d\d?\s*{rangeseparator}\s*{0}'
                          .format(self.RE_RTIMEHMS2, **self.locale.re_values))
 
         # "4:30-5pm "
-        self.TIMERNG4 = (r'{0}\s?{rangeseparator}\s?{1}'
+        self.TIMERNG4 = (r'{0}\s*{rangeseparator}\s*{1}'
                          .format(self.RE_RTIMEHMS, self.RE_RTIMEHMS2,
                                  **self.locale.re_values))
 
