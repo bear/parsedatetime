@@ -2654,7 +2654,7 @@ class Constants(object):
                                     )\s*
                                     (
                                         (\d\d?)
-                                        (\s*|{daysuffix}|$)+
+                                        (\s?|{daysuffix}|$)+
                                     )?
                                     (,\s*\d{{4}})?
                                 )
