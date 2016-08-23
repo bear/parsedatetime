@@ -2502,7 +2502,7 @@ class Constants(object):
                                     (?P<suffix>{daysuffix}|)\b
                                     (?!\s*(?:{timecomponents}))
                                     |
-                                    ,?\s
+                                    ,?\s+
                                     (?P<year>\d\d(?:\d\d|))\b
                                     (?!\s*(?:{timecomponents}))
                                 ){{1,3}}
