@@ -915,7 +915,8 @@ class Calendar(object):
                 # day-of-week, we want to start with target as the day
                 # in the current week.
                 dowOffset = offset
-                if modifier not in ['next', 'last', 'prior', 'previous']:
+                relativeModifier = modifier not in ['this', 'next', 'last', 'prior', 'previous']
+                if relativeModifier:
                     dowOffset = 0
 
                 wkdy = self.ptc.WeekdayOffsets[wkdy]
@@ -926,7 +927,7 @@ class Calendar(object):
                                           startMinute, startSecond)
                 target = start + datetime.timedelta(days=diff)
 
-                if chunk1 != '':
+                if chunk1 != '' and relativeModifier:
                     # consider "one day before thursday": we need to parse chunk1 ("one day")
                     # and apply according to the offset ("before"), rather than allowing the
                     # remaining parse step to apply "one day" without the offset direction.
