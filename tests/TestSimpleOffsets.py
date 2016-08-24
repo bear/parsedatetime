@@ -186,6 +186,23 @@ class test(unittest.TestCase):
         self.assertExpectedResult(self.cal.parse('next friday', start),
                                   (target, 1))
 
+    def testNextWeekDayWithTime(self):
+        start = datetime.datetime.now()
+        target = start + datetime.timedelta(days=4 + 7 - start.weekday())
+        target = target.replace(hour=13, minute=0, second=0)
+        target = target.timetuple()
+
+        self.assertExpectedResult(self.cal.parse('next friday at 1pm', start),
+                                  (target, 3))
+        self.assertExpectedResult(self.cal.parse('1pm next friday', start),
+                                  (target, 3))
+
+        target = start + datetime.timedelta(days=4 - start.weekday())
+        target = target.replace(hour=13, minute=0, second=0)
+        target = target.timetuple()
+        self.assertExpectedResult(self.cal.parse('1pm this friday', start),
+                                  (target, 3))
+
     def testWeekBeforeNow(self):
         s = datetime.datetime.now()
         t = s + datetime.timedelta(weeks=-1)
