@@ -51,6 +51,14 @@ class test(unittest.TestCase):
 
         self.assertExpectedResult(self.cal.parse('now', start), (target, 2))
 
+    def testRightNow(self):
+        s = datetime.datetime.now()
+
+        start = s.timetuple()
+        target = s.timetuple()
+
+        self.assertExpectedResult(self.cal.parse('right now', start), (target, 2))
+
     def testOffsetFromDayOfWeek(self):
         self.cal.ptc.StartTimeFromSourceTime = True
 

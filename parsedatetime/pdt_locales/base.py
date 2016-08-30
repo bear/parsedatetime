@@ -104,7 +104,7 @@ re_values = {
     'daysuffix': 'rd|st|nd|th',
     'meridian': 'am|pm|a.m.|p.m.|a|p',
     'qunits': 'h|m|s|d|w|y',
-    'now': ['now'],
+    'now': ['now', 'right now'],
 }
 
 # Used to adjust the returned date before/after the source
