@@ -217,6 +217,8 @@ class test(unittest.TestCase):
             2013, 8, 1, self.hr, self.mn, self.sec).timetuple()
         self.assertExpectedResult(
             self.cal.parse('Aug. 2013', start), (target, 1))
+        self.assertExpectedResult(
+            self.cal.parse('Aug  2013', start), (target, 1))
 
     def testLeapDays(self):
         start = datetime.datetime(
