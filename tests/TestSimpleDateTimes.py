@@ -145,6 +145,10 @@ class test(unittest.TestCase):
         self.assertExpectedResult(self.cal.parse('$300', start), (start, 0))
         self.assertExpectedResult(self.cal.parse('300ml', start), (start, 0))
 
+        # Should not parse as a time due to false meridian
+        self.assertExpectedResult(self.cal.parse('3 axmx', start), (start, 0))
+        self.assertExpectedResult(self.cal.parse('3 pxmx', start), (start, 0))
+
     def testDates(self):
         start = datetime.datetime(
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
