@@ -2468,9 +2468,9 @@ class Constants(object):
                                         (,)?
                                         (\s)*
                                     )
-                                    (?P<mthname>
-                                        \b({months}|{shortmonths})\b
-                                    )\s*
+                                    \b(?P<mthname>
+                                        {months}|{shortmonths}
+                                    )\b\.?\s*
                                     (?P<year>\d\d
                                         (\d\d)?
                                     )?
@@ -2489,7 +2489,7 @@ class Constants(object):
                                     (?:^|\s+)
                                     (?P<mthname>
                                         {months}|{shortmonths}
-                                    )\b
+                                    )\b\.?
                                     |
                                     (?:^|\s+)
                                     (?P<day>[1-9]|[012]\d|3[01])
@@ -2508,9 +2508,9 @@ class Constants(object):
         self.RE_MONTH = r'''(\s+|^)
                             (?P<month>
                                 (
-                                    (?P<mthname>
-                                        \b({months}|{shortmonths})\b
-                                    )
+                                    \b(?P<mthname>
+                                        {months}|{shortmonths}
+                                    )\b\.?
                                     (\s*
                                         (?P<year>(\d{{4}}))
                                     )?
