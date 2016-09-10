@@ -1812,10 +1812,6 @@ class Calendar(object):
         """
         debug and log.debug('parse()')
 
-        datetimeString = re.sub(r'(\w)\.(\s)', r'\1\2', datetimeString)
-        datetimeString = re.sub(r'(\w)[\'"](\s|$)', r'\1 \2', datetimeString)
-        datetimeString = re.sub(r'(\s|^)[\'"](\w)', r'\1 \2', datetimeString)
-
         if sourceTime:
             if isinstance(sourceTime, datetime.datetime):
                 debug and log.debug('coercing datetime to timetuple')
@@ -1962,13 +1958,7 @@ class Calendar(object):
 
         orig_inputstring = inputString
 
-        # replace periods at the end of sentences w/ spaces
-        # opposed to removing them altogether in order to
-        # retain relative positions (identified by alpha, period, space).
-        # this is required for some of the regex patterns to match
-        inputString = re.sub(r'(\w)(\.)(\s)', r'\1 \3', inputString).lower()
-        inputString = re.sub(r'(\w)(\'|")(\s|$)', r'\1 \3', inputString)
-        inputString = re.sub(r'(\s|^)(\'|")(\w)', r'\1 \3', inputString)
+        inputString = inputString.lower()
 
         startpos = 0  # the start position in the inputString during the loop
 
