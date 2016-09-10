@@ -2574,13 +2574,13 @@ class Constants(object):
         # 1, 2, and 3 here refer to the type of match date, time, or units
         self.RE_NLP_PREFIX = r'''\b(?P<nlp_prefix>
                                   (on)
-                                  (\s)+1
+                                  [\s(\["'-]+1
                                   |
                                   (at|in)
-                                  (\s)+2
+                                  [\s(\["'-]+2
                                   |
                                   (in)
-                                  (\s)+3
+                                  [\s(\["'-]+3
                                  )'''
 
         if 'meridian' in self.locale.re_values:
