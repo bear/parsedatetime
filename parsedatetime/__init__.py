@@ -2486,12 +2486,12 @@ class Constants(object):
         # when the day is absent from the string
         self.RE_DATE3 = r'''(?P<date>
                                 (?:
-                                    (?:^|\s+)
+                                    (?:^|\s+|\b)
                                     (?P<mthname>
                                         {months}|{shortmonths}
                                     )\b\.?
                                     |
-                                    (?:^|\s+)
+                                    (?:^|\s+|\b)
                                     (?P<day>[1-9]|[012]\d|3[01])
                                     (?P<suffix>{daysuffix}|)\b
                                     (?!\s*(?:{timecomponents}))
