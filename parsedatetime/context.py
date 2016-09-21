@@ -73,6 +73,7 @@ class pdtContext(object):
     ACU_MIN = 2 ** 6
     ACU_SEC = 2 ** 7
     ACU_NOW = 2 ** 8
+    ACU_WILDCARD = 2 ** 9
 
     ACU_DATE = ACU_YEAR | ACU_MONTH | ACU_WEEK | ACU_DAY
     ACU_TIME = ACU_HALFDAY | ACU_HOUR | ACU_MIN | ACU_SEC | ACU_NOW
@@ -193,4 +194,10 @@ class pdtContext(object):
         return 'pdtContext(%s)' % accuracy_repr
 
     def __eq__(self, ctx):
-        return self.accuracy == ctx.accuracy
+        if not isinstance(ctx, pdtContext):
+            return False
+        return (
+            self.accuracy == ctx.accuracy or
+            self.accuracy == self.ACU_WILDCARD or
+            ctx.accuracy == self.ACU_WILDCARD
+        )
