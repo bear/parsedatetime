@@ -3,9 +3,9 @@ Unit tests for parsedatetime
 
 The tests can be run as a C{suite} by running::
 
-    nosetests
+    py.test
 
-Requires Python 3.0 or later
+Requires Python 2.7 or later
 """
 import logging
 
