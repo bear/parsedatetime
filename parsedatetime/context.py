@@ -116,6 +116,15 @@ class pdtContext(object):
         'seconds': ACU_SEC,
         'now': ACU_NOW}
 
+    @classmethod
+    def fromAccuracyStrings(cls, accuracyStrings):
+        accuracy = 0
+        for accuracyString in accuracyStrings:
+            if accuracyString in cls._ACCURACY_REVERSE_MAPPING:
+                accuracy |= cls._ACCURACY_REVERSE_MAPPING[accuracyString]
+
+        return cls(accuracy)
+
     def __init__(self, accuracy=0):
         """
         Default constructor of L{pdtContext} class.
