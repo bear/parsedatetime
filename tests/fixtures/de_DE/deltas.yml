@@ -1,0 +1,26 @@
+constants:
+    - &arbitrary_date 2016-01-01 00:00:00
+
+#
+# Single unit deltas
+#
+
+past_integer_values:
+    sourceTime: *arbitrary_date
+    cases:
+        - context: !pdtContext minute
+          target: !datedelta
+            minutes: -5
+          phrases:
+            - "-5 minuten"
+        - context: !pdtContext hour
+          target: !datedelta
+            hours: -34
+          phrases:
+            - "-34 stunden"
+        - context: !pdtContext day
+          target: !datedelta
+            days: -2
+          phrases:
+            - "-2 tage"
+

@@ -1,0 +1,169 @@
+constants:
+    # This is a Saturday
+    - &arbitrary_saturday 2011-01-01 00:00:00
+    - &sunday !datedelta
+      days: 1
+    - &monday !datedelta
+      days: 2
+    - &tuesday !datedelta
+      days: 3
+    - &wednesday !datedelta
+      days: 4
+    - &thursday !datedelta
+      days: 5
+    - &friday !datedelta
+      days: 6
+    - &saturday !datedelta
+      days: 7
+    - &january   2014-01-01 00:00:00
+    - &february  2014-02-01 00:00:00
+    - &march     2014-03-01 00:00:00
+    - &april     2014-04-01 00:00:00
+    - &may       2014-05-01 00:00:00
+    - &june      2014-06-01 00:00:00
+    - &july      2014-07-01 00:00:00
+    - &august    2014-08-01 00:00:00
+    - &september 2014-09-01 00:00:00
+    - &october   2014-10-01 00:00:00
+    - &november  2014-11-01 00:00:00
+    - &december  2014-12-01 00:00:00
+
+#
+# Single unit deltas
+#
+
+week_day_names:
+    sourceTime: *arbitrary_saturday
+    context: !pdtContext day
+    cases:
+        - target: *sunday
+          phrases:
+            - "Sunday"
+            - "Sun"
+        - target: *monday
+          phrases:
+            - "Monday"
+            - "Mon"
+        - target: *tuesday
+          phrases:
+            - "Tuesday"
+            - "Tues"
+            - "Tue"
+        - target: *wednesday
+          phrases:
+            - "Wednesday"
+            - "Wed"
+        - target: *thursday
+          phrases:
+            - "Thursday"
+            - "Thu"
+        - target: *friday
+          phrases:
+            - "Friday"
+            - "Fri"
+        - target: *saturday
+          phrases:
+            - "Saturday"
+            - "Sat"
+
+month_names:
+    # This could be any date from Dec 2 of the previous year to Jan 1 in order
+    # for all tests to pass, otherwise we have to deal with different years
+    sourceTime: *january
+    context: !pdtContext month
+    cases:
+        - target: *january
+          phrases:
+            - "January"
+            - "Jan"
+        - target: *february
+          phrases:
+            - "February"
+            - "Feb"
+        - target: *march
+          phrases:
+            - "March"
+            - "Mar"
+        - target: *april
+          phrases:
+            - "April"
+            - "Apr"
+        - target: *may
+          phrases:
+            - "May"
+        - target: *june
+          phrases:
+            - "June"
+            - "Jun"
+        - target: *july
+          phrases:
+            - "July"
+            - "Jul"
+        - target: *august
+          phrases:
+            - "August"
+            - "Aug"
+        - target: *september
+          phrases:
+            - "September"
+            - "Sep"
+        - target: *october
+          phrases:
+            - "October"
+            - "Oct"
+        - target: *november
+          phrases:
+            - "November"
+            - "Nov"
+        - target: *december
+          phrases:
+            - "December"
+            - "Dec"
+
+invalid_week_day_names:
+    context: !pdtContext
+    cases:
+        - target: null
+          phrases:
+            - "Sund"
+            - "Suna"
+            - "Money"
+            - "Tuesd"
+            - "atues"
+            - "Wednesdaying"
+            - "onthursday"
+            - "th. ursday"
+            - "fr iday"
+            - "Fríday"
+            - "satur-day"
+            - "sun_day"  # _ is not a word boundary; most characters would match "sun" here
+
+invalid_month_names:
+    sourceTime: *january
+    context: !pdtContext
+    cases:
+        - target: null
+          phrases:
+            - "January"
+            - "Jan"
+            - "February"
+            - "Feb"
+            - "March"
+            - "Mar"
+            - "April"
+            - "Apr"
+            - "May"
+            - "June"
+            - "Jun"
+            - "July"
+            - "Jul"
+            - "August"
+            - "Aug"
+            - "September"
+            - "Sep"
+            - "October"
+            - "Oct"
+            - "November"
+            - "Nov"
+            - "December"
+            - "Dec"

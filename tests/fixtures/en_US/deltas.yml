@@ -1,0 +1,124 @@
+constants:
+    - &arbitrary_date 2016-01-01 00:00:00
+    - &delta_3y2w5d !datedelta
+        years: 3
+        weeks: 2
+        days: 5
+    - &delta_2m1h4m32s !datedelta
+        months: 2
+        hours: 1
+        minutes: 4
+        seconds: 32
+
+#
+# Single unit deltas
+#
+
+past_integer_values:
+    sourceTime: *arbitrary_date
+    cases:
+        - context: !pdtContext minute
+          target: !datedelta
+            minutes: -5
+          phrases:
+            - "5 minutes ago"
+        - context: !pdtContext hour
+          target: !datedelta
+            hours: -34
+          phrases:
+            - "34 hours ago"
+        - context: !pdtContext day
+          target: !datedelta
+            days: -2
+          phrases:
+            - "2 days ago"
+
+
+past_float_values:
+    sourceTime: *arbitrary_date
+    cases:
+        - target: !datedelta
+            minutes: -58.4
+          phrases:
+            - "58.4 minutes ago"
+
+        - target: !datedelta
+            minutes: -1855336.424
+          phrases:
+            - "1855336.424 minutes ago"
+
+        - target: !datedelta
+            hours: -8.3
+          phrases:
+            - "8.3 hours ago"
+
+        - target: !datedelta
+            hours: -22.355
+          phrases:
+            - "22.355 hours ago"
+
+#
+# Multiple unit deltas
+#
+
+simple_multiple_unit_deltas:
+    sourceTime: *arbitrary_date
+    cases:
+        - target: *delta_3y2w5d
+          context: !pdtContext year | week | day
+          phrases: 
+            - "3 years, 2 weeks, 5 days"
+            - "3 years, 2 weeks and 5 days"
+            - "5 day 3 week 2 year"
+            - "2weeks, 5days, 2year"
+    cases:
+        - target: *delta_2m1h4m32s
+          context: !pdtContext month | hour | minute | second
+          phrases: 
+            - "2 months, 1 hour, 4 minutes, 32 seconds"
+            - "2 months, 1 hour, 4 minutes, and 32 seconds"
+            - "32 second 4 minute 2 month 1 hour"
+            - "2months, 4minute, 32second, 1hour"
+
+abbreviated_multiple_unit_deltas:
+    sourceTime: *arbitrary_date
+    cases:
+        - target: *delta_3y2w5d
+          context: !pdtContext year | week | day
+          phrases: 
+            - "3 yrs, 2 wks, 5 dys"
+            - "3 y, 2 w and 5 d"
+            - "5dy 3w 2yr"
+            - "2wk, 5d, 2y"
+    cases:
+        # Note: there is no single-letter abbreviation for "month" in English
+        # locales
+        - target: *delta_2m1h4m32s
+          context: !pdtContext month | hour | minute | second
+          phrases: 
+            - "2 mth, 1 hr, 4 min, 32 sec"
+            - "2 mth, 1 h, 4 m, and 32 s"
+            - "32sec 4m 2mth 1h"
+            - "2mth, 4min, 32s, 1hr"
+
+unix_at_style:
+    sourceTime: 2016-04-05 06:07:08
+    cases:
+        - target: !datedelta
+            sourceTime: 2016-04-05 16:00:00
+            days: 3
+          context: !pdtContext hour | day
+          phrases: 
+            - "4pm + 3 days"
+            - "4pm +3 days"
+
+unix_at_style_negative:
+    sourceTime: 2016-04-05 06:07:08
+    cases:
+        - target: !datedelta
+            sourceTime: 2016-04-05 16:00:00
+            days: -3
+          context: !pdtContext hour | day
+          phrases: 
+            - "4pm - 3 days"
+            - "4pm -3 days"
