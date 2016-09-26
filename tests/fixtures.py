@@ -15,14 +15,15 @@ import pytest
 
 from parsedatetime import Calendar, Constants, VERSION_CONTEXT_STYLE
 from parsedatetime.context import pdtContext
-from tests.data import loadData, DATEDELTA_KEY
+from tests.data import datedelta, loadData, nlpTarget
 from tests import log
 
 INC_KEYS = ('months', 'years')
 TIMEDELTA_KEYS = ('days', 'weeks', 'hours', 'minutes', 'seconds',
                   'milliseconds', 'microseconds')
 
-KNOWN_PARAMETERS = ('sourceTime', 'target', 'phrase', 'cal', 'context')
+KNOWN_PARAMETERS = ('sourceTime', 'target', 'nlpTarget', 'phrase', 'cal',
+                    'context')
 """Tuple[str]: The parameter names for which `pdtFixture` can provide test
 data (via `parameterValues`)."""
 
@@ -212,12 +213,14 @@ def parameterValues(group, parameters, localeID):
         case.
     """
     values = []
-    constants = Constants(localeID)
+    constants = Constants(localeID, usePyICU=False)
     cal = Calendar(constants, version=VERSION_CONTEXT_STYLE)
 
     for case in normalizedCases(group, cal):
         for phrase, target in case['phrases']:
             caseValues = []
+            context = case.get('context') or \
+                pdtContext(pdtContext.ACU_WILDCARD)
             for parameter in parameters:
                 if parameter == 'sourceTime':
                     caseValues.append(case['sourceTime'])
@@ -226,15 +229,16 @@ def parameterValues(group, parameters, localeID):
                 elif parameter == 'phrase':
                     caseValues.append(phrase)
                 elif parameter == 'context':
-                    caseValues.append(case.get('context') or
-                                      pdtContext(pdtContext.ACU_WILDCARD))
+                    caseValues.append(context)
                 elif parameter == 'cal':
                     caseValues.append(cal)
+                elif parameter == 'nlpTarget':
+                    caseValues.append(targetForNLP(target, phrase, context))
             values.append(caseValues)
     return values
 
 
-def normalizedCases(group, cal):
+def normalizedCases(group, calendar):
     """Pulls inherited data from the test group down to each case as required.
 
     Case markup is flexible to avoid excessive repetition between cases in a
@@ -244,7 +248,7 @@ def normalizedCases(group, cal):
     Args:
         group (Dict[str, Dict]): The test group data exactly as specified in
             the test data file
-        cal (Calendar): The `Calendar` for the current locale
+        calendar (Calendar): The `Calendar` for the current locale
 
     Returns:
         List[Dict[str, Any]]: A complete set of the following attributes for
@@ -273,7 +277,8 @@ def normalizedCases(group, cal):
             phrases = phrases.items()
 
         normCase['phrases'] = [(phrase, normalizedTarget(case['target'],
-                                                         sourceTime, cal))
+                                                         sourceTime, calendar,
+                                                         phrase))
                                for phrase in phrases]
 
         cases.append(normCase)
@@ -281,7 +286,7 @@ def normalizedCases(group, cal):
     return cases
 
 
-def normalizedTarget(target, sourceTime, cal):
+def normalizedTarget(target, sourceTime, calendar, phrase=None):
     """Coerces date deltas to `datetime`; other targets are passed through
     as-is.
 
@@ -291,20 +296,45 @@ def normalizedTarget(target, sourceTime, cal):
             `datetime.timedelta`.
         sourceTime (datetime.datetime): The datetime relative to which the test
             will be run.
-        cal (Calendar): A calendar corresponding to the locale from which the
-            data was loaded.
+        calendar (Calendar): A calendar corresponding to the locale from which
+            the data was loaded.
+        phrase (Optional[str]): The phrase associated with this target, for
+            calculating indexes in `nlpTarget`.
 
     Returns:
         Any: While generally a `datetime.datetime`, this may be any value
         targeted by the test data
     """
-    if isinstance(target, dict) and target[DATEDELTA_KEY]:
-        sourceTime = target.get('sourceTime') or sourceTime
-        inc_values = dict([(key.rstrip('s'), value)
-                           for key, value in target.items()
-                           if key in INC_KEYS])
-        timedelta_values = dict([(key, value) for key, value in target.items()
-                                 if key in TIMEDELTA_KEYS])
-        return cal.inc(sourceTime, **inc_values) + \
-            timedelta(**timedelta_values)
+    if isinstance(target, datedelta):
+        target.calendar = calendar
+        # Respect the sourceTime set on the datedelta
+        if target.sourceTime:
+            return target.sourceTime + target
+        return sourceTime + target
+    if isinstance(target, nlpTarget):
+        target.calendar = calendar
+        target.sourceTime = sourceTime
+        target.sourcePhrase = phrase
     return target
+
+
+def targetForNLP(target, phrase, context):
+    """Constructs a tuple for comparison against the return value of
+    `Calendar.nlp`.
+
+
+
+    Args:
+        target (Union[datetime.datetime,nlpTarget]): Description
+        phrase (str): The complete string in which the `target` is found.
+        context (pdtContext): The context corresponding either to the phrase in
+            the `nlpTarget` if provided, or to the `phrase` argument.
+
+    Returns:
+        Tuple[Tuple[datetime,pdtContext,int,int,str]]: A tuple matching the
+        return value of `nlp`.
+    """
+    if isinstance(target, nlpTarget):
+        return target
+    else:
+        return ((target, context, 0, len(phrase), phrase),)
