@@ -69,12 +69,10 @@ def pdtFixture(filename, explicitTestGroupNames=None, localeIDs=None):
         ``deltas.yml`` with a *past_float_deltas* test group will be included
         in this test.
 
-        If all phrases pass for this test case, the test results will include a
-        pass count of 1. However, for each phrase that fails the failure count
-        will be incremented by 1. Since parametrization allows each python test
-        function to run against many different combinations of parameters it is
-        important to understand that a single python test function may emit
-        multiple failures.
+        Since parametrization allows each python test function to run against
+        many different combinations of parameters it is important to understand
+        that a single python test function may emit multiple successes or
+        failures.
 
         Tests may span multiple test groups::
 
@@ -233,7 +231,8 @@ def parameterValues(group, parameters, localeID):
                 elif parameter == 'cal':
                     caseValues.append(cal)
                 elif parameter == 'nlpTarget':
-                    caseValues.append(targetForNLP(target, phrase, context))
+                    caseValues.append(targetForNLP(target, phrase, context,
+                                                   case['sourceTime'], cal))
             values.append(caseValues)
     return values
 
@@ -318,23 +317,28 @@ def normalizedTarget(target, sourceTime, calendar, phrase=None):
     return target
 
 
-def targetForNLP(target, phrase, context):
+def targetForNLP(target, phrase, context, sourceTime, calendar):
     """Constructs a tuple for comparison against the return value of
     `Calendar.nlp`.
-
-
 
     Args:
         target (Union[datetime.datetime,nlpTarget]): Description
         phrase (str): The complete string in which the `target` is found.
         context (pdtContext): The context corresponding either to the phrase in
             the `nlpTarget` if provided, or to the `phrase` argument.
+        sourceTime (datetime.datetime): The datetime relative to which the test
+            will be run.
+        calendar (Calendar): A calendar corresponding to the locale from which
+            the data was loaded.
 
     Returns:
-        Tuple[Tuple[datetime,pdtContext,int,int,str]]: A tuple matching the
-        return value of `nlp`.
+        nlpTarget: A tuple matching the return value of `nlp`.
     """
     if isinstance(target, nlpTarget):
         return target
     else:
-        return ((target, context, 0, len(phrase), phrase),)
+        return nlpTarget(targets=[{
+            'target': target,
+            'context': context,
+            'phrase': phrase
+        }], sourceTime=sourceTime, sourcePhrase=phrase, calendar=calendar)

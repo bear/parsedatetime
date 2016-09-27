@@ -16,6 +16,14 @@ from parsedatetime.context import pdtContext
 from tests import log
 
 
+# Allow Python 2 type checking in Python 3
+try:
+    unicode = unicode
+except NameError:
+    basestring = (str, bytes)
+    long = int
+
+
 class datedelta(object):
     """Represents a change in time over a number of years, months, or any unit
     supported by `datetime.timedelta`.
@@ -145,8 +153,6 @@ class datedelta(object):
                 raise ValueError(
                     'Calendar must be set before operating on datedelta')
             if self.sourceTime and self.sourceTime != other:
-                print self.sourceTime
-                print other
                 warn('datedelta was added to a datetime that did not match ' +
                      'its sourceTime')
             return self.calendar.inc(other, self._months, self._years) + \
@@ -301,8 +307,8 @@ class nlpTarget(object):
 
     @property
     def tupleValue(self):
-        """Tuple[Tuple[datetime.datetime,pdtContext,int,int,str]]: The
-        expected result from ``calendar.nlp(sourcePhrase, sourceTime)``
+        """Union[None,Tuple[Tuple[datetime.datetime,pdtContext,int,int,str]]]:
+        The expected result from ``calendar.nlp(sourcePhrase, sourceTime)``
 
         Raises:
             ValueError: If `calendar`, `sourceTime`, or `sourcePhrase` are not
@@ -316,12 +322,16 @@ class nlpTarget(object):
             raise ValueError('The sourceTime has not yet been set')
         if self.sourcePhrase is None:
             raise ValueError('The sourcePhrase has not yet been set')
-        return tuple([t.tupleValue for t in self._targetValues])
+        values = [t.tupleValue for t in self._targetValues]
+        values = tuple([value for value in values if value])
+        return values or None
 
     def __repr__(self):
         return '%s%s' % (self.__class__.__name__, self.tupleValue)
 
     def __eq__(self, other):
+        if other is None:
+            return self.tupleValue is None
         if isinstance(other, tuple):
             return self.tupleValue == other
         if isinstance(other, nlpTarget):
@@ -369,15 +379,18 @@ class nlpTargetValue(object):
 
     @property
     def tupleValue(self):
-        """Tuple[datetime.datetime,pdtContext,int,int,str]: A phrase tuple as
-        returned by `nlp`. The tuple contains the `datetime.datetime`, the
-        `pdtContext` representing the phrase, the start and end indexes of the
-        phrase within the source phrase, and the phrase.
+        """Union[None,Tuple[datetime.datetime,pdtContext,int,int,str]]: A
+        phrase tuple as returned by `nlp`. The tuple contains the
+        `datetime.datetime`, the `pdtContext` representing the phrase, the
+        start and end indexes of the phrase within the source phrase, and the
+        phrase.
 
         Raises:
             AssertionError: If the `nlpTargetValue` phrase is not included in
                 the `nlpTarget` `sourcePhrase`.
         """
+        if self._target is None:
+            return None
         context = self._context or pdtContext(pdtContext.ACU_WILDCARD)
         startIndex = self._startIndex
         target = self._target
@@ -505,8 +518,10 @@ def nlpTargetConstructor(loader, node):
     returned by `nlp` with a simple equality assertion.
 
     The context and startIndex values are optional; providing a context
-    improves the quality of a test but startIndex is only required if the
-    source phrase contains the same date phrase multiple times.
+    improves the quality of a test but startIndex *should only be used* if the
+    source phrase contains the same date phrase multiple times. Specifying a
+    startIndex reduces the reusability of tests cases (e.g. wrapping the phrase
+    in quotes).
 
     Examples:
         Yesterday I went to the park at noon::
