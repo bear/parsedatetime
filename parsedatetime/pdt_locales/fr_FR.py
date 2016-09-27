@@ -5,7 +5,7 @@ from .base import *  # noqa
 # don't use an unicode string
 localeID = 'fr_FR'
 dateSep = ['/', '-']
-timeSep = [':']
+timeSep = [':', 'h']
 meridian = []
 usesMeridian = False
 uses24 = True
@@ -23,13 +23,13 @@ shortWeekdays = [
 ]
 
 Months = [
-    'janvier', 'f(é|e)vrier', 'mars', 'avril', 'mai', 'juin', 'juillet',
-    'ao(û|u)t', 'septembre', 'octobre', 'novembre', 'd(é|e)cembre',
+    'janvier', 'février|fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet',
+    'août|aout', 'septembre', 'octobre', 'novembre', 'décembre|decembre',
 ]
 
 shortMonths = [
-    'jan', 'f(é|e)v', 'mar', 'avr', 'mai', 'jui',
-    'juil', 'ao(û|u)', 'sep', 'oct', 'nov', 'd(é|e)c',
+    'jan', 'fév|fev', 'mar', 'avr', 'mai', 'jui',
+    'juil', 'aoû|aou', 'sep', 'oct', 'nov', 'déc|dec',
 ]
 
 # use the same formats as ICU by default
@@ -119,7 +119,6 @@ Modifiers = {
     'antérieur': -1,
     'anterieur': -1,
     'dernier': -1,
-    'derni(è|e)re': -1,
     'dernière': -1,
     'derniere': -1,
     'précédent': -1,
@@ -151,7 +150,7 @@ dayOffsets = {
     'demain': 1,
     'aujourd\'hui': 0,
     'hier': -1,
-    'avant-hier': -2
+    'avant-hier': -2,
     'avant hier': -2
 }
 
