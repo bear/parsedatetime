@@ -1812,10 +1812,6 @@ class Calendar(object):
         """
         debug and log.debug('parse()')
 
-        datetimeString = re.sub(r'(\w)\.(\s)', r'\1\2', datetimeString)
-        datetimeString = re.sub(r'(\w)[\'"](\s|$)', r'\1 \2', datetimeString)
-        datetimeString = re.sub(r'(\s|^)[\'"](\w)', r'\1 \2', datetimeString)
-
         if sourceTime:
             if isinstance(sourceTime, datetime.datetime):
                 debug and log.debug('coercing datetime to timetuple')
@@ -1962,13 +1958,7 @@ class Calendar(object):
 
         orig_inputstring = inputString
 
-        # replace periods at the end of sentences w/ spaces
-        # opposed to removing them altogether in order to
-        # retain relative positions (identified by alpha, period, space).
-        # this is required for some of the regex patterns to match
-        inputString = re.sub(r'(\w)(\.)(\s)', r'\1 \3', inputString).lower()
-        inputString = re.sub(r'(\w)(\'|")(\s|$)', r'\1 \3', inputString)
-        inputString = re.sub(r'(\s|^)(\'|")(\w)', r'\1 \3', inputString)
+        inputString = inputString.lower()
 
         startpos = 0  # the start position in the inputString during the loop
 
@@ -2478,9 +2468,9 @@ class Constants(object):
                                         (,)?
                                         (\s)*
                                     )
-                                    (?P<mthname>
-                                        \b({months}|{shortmonths})\b
-                                    )\s*
+                                    \b(?P<mthname>
+                                        {months}|{shortmonths}
+                                    )\b\.?\s*
                                     (?P<year>\d\d
                                         (\d\d)?
                                     )?
@@ -2496,12 +2486,12 @@ class Constants(object):
         # when the day is absent from the string
         self.RE_DATE3 = r'''(?P<date>
                                 (?:
-                                    (?:^|\s+)
+                                    (?:^|\s+|\b)
                                     (?P<mthname>
                                         {months}|{shortmonths}
-                                    )\b
+                                    )\b\.?
                                     |
-                                    (?:^|\s+)
+                                    (?:^|\s+|\b)
                                     (?P<day>[1-9]|[012]\d|3[01])
                                     (?P<suffix>{daysuffix}|)\b
                                     (?!\s*(?:{timecomponents}))
@@ -2518,9 +2508,9 @@ class Constants(object):
         self.RE_MONTH = r'''(\s+|^)
                             (?P<month>
                                 (
-                                    (?P<mthname>
-                                        \b({months}|{shortmonths})\b
-                                    )
+                                    \b(?P<mthname>
+                                        {months}|{shortmonths}
+                                    )\b\.?
                                     (\s*
                                         (?P<year>(\d{{4}}))
                                     )?
@@ -2584,17 +2574,17 @@ class Constants(object):
         # 1, 2, and 3 here refer to the type of match date, time, or units
         self.RE_NLP_PREFIX = r'''\b(?P<nlp_prefix>
                                   (on)
-                                  (\s)+1
+                                  [\s(\["'-]+1
                                   |
                                   (at|in)
-                                  (\s)+2
+                                  [\s(\["'-]+2
                                   |
                                   (in)
-                                  (\s)+3
+                                  [\s(\["'-]+3
                                  )'''
 
         if 'meridian' in self.locale.re_values:
-            self.RE_TIMEHMS2 += (r'\s*(?P<meridian>{meridian})\b'
+            self.RE_TIMEHMS2 += (r'\s*(?P<meridian>{meridian})'
                                  .format(**self.locale.re_values))
         else:
             self.RE_TIMEHMS2 += r'\b'
