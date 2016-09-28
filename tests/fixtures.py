@@ -30,6 +30,17 @@ data (via `parameterValues`)."""
 basedir = os.path.dirname(__file__)
 
 
+@pytest.fixture
+def cal():
+    """A pytest fixture that provides a calendar with the default configuration
+    for use in tests that do not make use of `pdtFixture`.
+
+    Returns:
+        parsedatetime.Calendar: A calendar with the default configuration.
+    """
+    return Calendar()
+
+
 def pdtFixture(filename, explicitTestGroupNames=None, localeIDs=None):
     """A decorator for test functions that uses data from the specified file
     to parametrize the test.
