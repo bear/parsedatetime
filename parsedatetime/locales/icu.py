@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-pdt_locales
+parsedatetime/locales/icu.py
 
 All of the included locale classes shipped with pdt.
 """

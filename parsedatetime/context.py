@@ -2,49 +2,11 @@
 """
 parsedatetime/context.py
 
-Context related classes
-
+Class handling the context of the current parsing
 """
 
-from threading import local
 
-
-class pdtContextStack(object):
-    """
-    A thread-safe stack to store context(s)
-
-    Internally used by L{Calendar} object
-    """
-
-    def __init__(self):
-        self.__local = local()
-
-    @property
-    def __stack(self):
-        if not hasattr(self.__local, 'stack'):
-            self.__local.stack = []
-        return self.__local.stack
-
-    def push(self, ctx):
-        self.__stack.append(ctx)
-
-    def pop(self):
-        try:
-            return self.__stack.pop()
-        except IndexError:
-            return None
-
-    def last(self):
-        try:
-            return self.__stack[-1]
-        except IndexError:
-            raise RuntimeError('context stack is empty')
-
-    def isEmpty(self):
-        return not self.__stack
-
-
-class pdtContext(object):
+class Context(object):
     """
     Context contains accuracy flag detected by L{Calendar.parse()}
 
@@ -58,8 +20,7 @@ class pdtContext(object):
         ACU_HOUR - "18:00", "next hour"
         ACU_MIN - "18:32", "next 10 minutes"
         ACU_SEC - "18:32:55"
-        ACU_NOW - "now"
-
+        ACU_NOW - "now", "right now"
     """
 
     __slots__ = ('accuracy',)
@@ -118,13 +79,13 @@ class pdtContext(object):
 
     def __init__(self, accuracy=0):
         """
-        Default constructor of L{pdtContext} class.
+        Default constructor of L{Context} class.
 
         @type  accuracy: integer
         @param accuracy: Accuracy flag
 
         @rtype:  object
-        @return: L{pdtContext} instance
+        @return: L{Context} instance
         """
         self.accuracy = accuracy
 
@@ -139,7 +100,7 @@ class pdtContext(object):
 
     def update(self, context):
         """
-        Uses another L{pdtContext} instance to update current one
+        Uses another L{Context} instance to update current one
         """
         self.updateAccuracy(context.accuracy)
 
@@ -175,13 +136,13 @@ class pdtContext(object):
         accuracy_repr = []
         for acc, name in self._ACCURACY_MAPPING:
             if acc & self.accuracy:
-                accuracy_repr.append('pdtContext.ACU_%s' % name.upper())
+                accuracy_repr.append('Context.ACU_%s' % name.upper())
         if accuracy_repr:
             accuracy_repr = 'accuracy=' + ' | '.join(accuracy_repr)
         else:
             accuracy_repr = ''
 
-        return 'pdtContext(%s)' % accuracy_repr
+        return 'Context(%s)' % accuracy_repr
 
     def __eq__(self, ctx):
         return self.accuracy == ctx.accuracy

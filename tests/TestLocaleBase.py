@@ -10,7 +10,7 @@ import time
 import datetime
 import pytest
 import parsedatetime as pdt
-from parsedatetime.pdt_locales import get_icu
+from parsedatetime.locales import get_icu
 from . import utils
 
 if sys.version_info < (2, 7):
