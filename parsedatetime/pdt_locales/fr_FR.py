@@ -4,10 +4,10 @@ from .base import *  # noqa
 
 # don't use an unicode string
 localeID = 'fr_FR'
-dateSep = ['/', '-']
+dateSep = ['\/']
 timeSep = [':', 'h']
-meridian = []
-usesMeridian = False
+meridian = ['du matin', 'du soir']
+usesMeridian = True
 uses24 = True
 WeekdayOffsets = {}
 MonthOffsets = {}
@@ -27,8 +27,10 @@ Months = [
     'août|aout', 'septembre', 'octobre', 'novembre', 'décembre|decembre',
 ]
 
+# We do not list 'mar' as a short name for 'mars' as it conflicts with
+# the 'mar' of 'mardi'
 shortMonths = [
-    'jan', 'fév|fev', 'mar', 'avr', 'mai', 'jui',
+    'jan', 'fév|fev', 'mars', 'avr', 'mai', 'jui',
     'juil', 'aoû|aou', 'sep', 'oct', 'nov', 'déc|dec',
 ]
 
@@ -92,18 +94,18 @@ decimal_mark = ','
 # this will be added to re_values later
 units = {
     'seconds': ['seconde', 'secondes', 'sec', 's'],
-    'minutes': ['minute', 'minutes', 'min', 'm'],
+    'minutes': ['minute', 'minutes', 'min', 'mn'],
     'hours': ['heure', 'heures', 'h'],
     'days': ['jour', 'jours', 'journée', 'journee', 'journées', 'journees', 'j'],
     'weeks': ['semaine', 'semaines', 'sem'],
-    'months': ['mois', 'mo'],
-    'years': ['année', 'annee', 'an', 'années', 'annees', 'ans', 'a'],
+    'months': ['mois', 'm'],
+    'years': ['année', 'annee', 'an', 'années', 'annees', 'ans'],
 }
 
 # text constants to be used by later regular expressions
 re_values = {
     'specials': 'à|a|le|la|du|de',
-    'timeseparator': ':',
+    'timeseparator': '(?:\:|h|\s*heures?\s*)',
     'rangeseparator': '-',
     'daysuffix': 'ième|ieme|ème|eme|ère|ere|nde',
     'meridian': None,
@@ -115,6 +117,8 @@ re_values = {
 Modifiers = {
     'avant': -1,
     'il y a': -1,
+    'plus tot': -1,
+    'plus tôt': -1,
     'y a': -1,
     'antérieur': -1,
     'anterieur': -1,
@@ -138,8 +142,12 @@ Modifiers = {
     'a partir': 1,
     'après': 1,
     'apres': 1,
+    'lendemain': 1,
     'prochain': 1,
     'prochaine': 1,
+    'suivant': 1,
+    'suivante': 1,
+    'plus tard': 1
 }
 
 dayOffsets = {
