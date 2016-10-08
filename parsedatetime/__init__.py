@@ -23,7 +23,7 @@ Parse human-readable date/time text.
 Requires Python 2.6 or later
 """
 
-from __future__ import with_statement, absolute_import, unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 import re
 import time

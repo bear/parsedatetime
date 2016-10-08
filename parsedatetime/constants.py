@@ -5,6 +5,7 @@ parsedatetime/constants.py
 Class handling the loading and initialization of locale aware regexes
 as well as the parsing configuration used in Calendar
 """
+from __future__ import absolute_import, unicode_literals
 
 import re
 import logging
