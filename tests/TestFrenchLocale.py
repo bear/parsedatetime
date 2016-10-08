@@ -101,29 +101,29 @@ class test(unittest.TestCase):
             self.cal.parse('25/08', start), (target, 1))
 
     def testWeekDays(self):
-          start = datetime.datetime(
-              self.yr, self.mth, self.dy,
-              self.hr, self.mn, self.sec).timetuple()
+        start = datetime.datetime(
+            self.yr, self.mth, self.dy,
+            self.hr, self.mn, self.sec).timetuple()
 
-          o1 = self.ptc.CurrentDOWParseStyle
-          o2 = self.ptc.DOWParseStyle
+        o1 = self.ptc.CurrentDOWParseStyle
+        o2 = self.ptc.DOWParseStyle
 
-          # set it up so the current dow returns current day
-          self.ptc.CurrentDOWParseStyle = True
-          self.ptc.DOWParseStyle = 1
+        # set it up so the current dow returns current day
+        self.ptc.CurrentDOWParseStyle = True
+        self.ptc.DOWParseStyle = 1
 
-          for i in range(0, 7):
-              dow = self.ptc.shortWeekdays[i]
-              print(dow)
+        for i in range(0, 7):
+            dow = self.ptc.shortWeekdays[i]
+            print(dow)
 
-              result = self.cal.parse(dow, start)
+            result = self.cal.parse(dow, start)
 
-              yr, mth, dy, hr, mn, sec, wd, yd, isdst = result[0]
+            yr, mth, dy, hr, mn, sec, wd, yd, isdst = result[0]
 
-              self.assertEqual(wd, i)
+            self.assertEqual(wd, i)
 
-          self.ptc.CurrentDOWParseStyle = o1
-          self.ptc.DOWParseStyle = o2
+        self.ptc.CurrentDOWParseStyle = o1
+        self.ptc.DOWParseStyle = o2
 
 if __name__ == "__main__":
     unittest.main()

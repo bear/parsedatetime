@@ -17,6 +17,7 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 
+
 class test(unittest.TestCase):
 
     @utils.assertEqualWithComparator
@@ -120,6 +121,7 @@ class test(unittest.TestCase):
 
             self.ptc.CurrentDOWParseStyle = o1
             self.ptc.DOWParseStyle = o2
+
 
 class TestDayOffsets(test):
     # test how Aujourd'hui/Demain/Hier are parsed
