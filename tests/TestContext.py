@@ -27,8 +27,7 @@ class test(unittest.TestCase):
         self.assertEqual(self.cal.parse('5 min from now',
                                         version=pdt.VERSION_FLAG_STYLE)[1], 2)
         self.assertEqual(self.cal.parse('7/11/2015')[1],
-                         Context(Context.ACU_YEAR |
-                                    Context.ACU_MONTH | Context.ACU_DAY))
+                         Context(Context.ACU_YEAR | Context.ACU_MONTH | Context.ACU_DAY))
         self.assertEqual(self.cal.parse('7/11/2015',
                                         version=pdt.VERSION_FLAG_STYLE)[1], 1)
         self.assertEqual(self.cal.parse('14/32/2015')[1],
@@ -38,8 +37,7 @@ class test(unittest.TestCase):
 
     def testSources(self):
         self.assertEqual(self.cal.parse('afternoon 5pm')[1],
-                         Context(Context.ACU_HALFDAY |
-                                    Context.ACU_HOUR))
+                         Context(Context.ACU_HALFDAY | Context.ACU_HOUR))
 
         self.assertEqual(self.cal.parse('morning')[1],
                          Context(Context.ACU_HALFDAY))
