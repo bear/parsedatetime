@@ -104,6 +104,16 @@ class Context(object):
         """
         self.updateAccuracy(context.accuracy)
 
+    def pop_time_accuracy(self, m):
+        if not m:
+            return
+        if m.group('hours'):
+            self.updateAccuracy(self.ACU_HOUR)
+        if m.group('minutes'):
+            self.updateAccuracy(self.ACU_MIN)
+        if m.group('seconds'):
+            self.updateAccuracy(self.ACU_SEC)
+
     @property
     def hasDate(self):
         """

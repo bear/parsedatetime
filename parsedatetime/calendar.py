@@ -1017,7 +1017,7 @@ class Calendar(object):
         # time validation
         if hr < 24 and mn < 60 and sec < 60:
             sourceTime = (yr, mth, dy, hr, mn, sec, wd, yd, isdst)
-            self._pop_time_accuracy(m, self.currentContext)
+            self.currentContext.pop_time_accuracy(m)
 
         return sourceTime
 
@@ -1040,7 +1040,7 @@ class Calendar(object):
         # time validation
         if hr < 24 and mn < 60 and sec < 60:
             sourceTime = (yr, mth, dy, hr, mn, sec, wd, yd, isdst)
-            self._pop_time_accuracy(m, self.currentContext)
+            self.currentContext.pop_time_accuracy(m)
 
         return sourceTime
 
@@ -2026,16 +2026,6 @@ class Calendar(object):
                     combined))
 
         return tuple(proximity_matches)
-
-    def _pop_time_accuracy(self, m, ctx):
-        if not m:
-            return
-        if m.group('hours'):
-            ctx.updateAccuracy(ctx.ACU_HOUR)
-        if m.group('minutes'):
-            ctx.updateAccuracy(ctx.ACU_MIN)
-        if m.group('seconds'):
-            ctx.updateAccuracy(ctx.ACU_SEC)
 
     # Copied from feedparser.py
     # Universal Feedparser
