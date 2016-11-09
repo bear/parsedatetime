@@ -262,6 +262,9 @@ class Calendar(object):
         @param version:   Default style version of current Calendar instance.
                           Valid value can be 1 (L{VERSION_FLAG_STYLE}) or
                           2 (L{VERSION_CONTEXT_STYLE}). See L{parse()}.
+        @type  day_start_hour: int
+        @param day_start_hour: Hour to set a datetime when no time has been
+                               specified.
 
         @rtype:  object
         @return: L{Calendar} instance
