@@ -22,7 +22,6 @@ Parse human-readable date/time text.
 
 Requires Python 2.6 or later
 """
-
 from __future__ import with_statement, absolute_import, unicode_literals
 
 import re
@@ -243,7 +242,7 @@ def _parse_date_rfc822(dateString):
 
 VERSION_FLAG_STYLE = 1
 VERSION_CONTEXT_STYLE = 2
-
+DEFAULT_DAY_START_HOUR = 9
 
 class Calendar(object):
 
@@ -252,7 +251,8 @@ class Calendar(object):
     The text can either be 'normal' date values or it can be human readable.
     """
 
-    def __init__(self, constants=None, version=VERSION_FLAG_STYLE):
+    def __init__(self, constants=None, version=VERSION_FLAG_STYLE,
+                 day_start_hour=DEFAULT_DAY_START_HOUR):
         """
         Default constructor for the L{Calendar} class.
 
@@ -280,6 +280,7 @@ class Calendar(object):
                 'with argument `version=parsedatetime.VERSION_CONTEXT_STYLE`.',
                 pdt20DeprecationWarning)
         self._ctxStack = pdtContextStack()
+        self.day_start_hour = day_start_hour
 
     @contextlib.contextmanager
     def context(self):
@@ -790,7 +791,7 @@ class Calendar(object):
             startMinute = mn
             startSecond = sec
         else:
-            startHour = 9
+            startHour = self.day_start_hour
             startMinute = 0
             startSecond = 0
 
@@ -1142,7 +1143,7 @@ class Calendar(object):
             startMinute = mn
             startSecond = sec
         else:
-            startHour = 9
+            startHour = self.day_start_hour
             startMinute = 0
             startSecond = 0
 

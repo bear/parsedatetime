@@ -142,10 +142,13 @@ class TestDayOffsets(test):
         self.__old_pdtlocale_fr = pdt.pdtLocales.get('fr_FR')  # save for later
         pdt.pdtLocales['fr_FR'] = pdtLocale_fr  # override for the test
         self.ptc = pdt.Constants('fr_FR', usePyICU=False)
-        self.cal = pdt.Calendar(self.ptc)
+        self.day_start_hour = 9
+        self.cal = pdt.Calendar(
+            self.ptc, day_start_hour=self.day_start_hour)
 
     def test_dayoffsets(self):
-        start = datetime.datetime(self.yr, self.mth, self.dy, 9)
+        start = datetime.datetime(self.yr, self.mth, self.dy,
+                                  self.day_start_hour)
         for date_string, expected_day_offset in [
                 ("Aujourd'hui", 0),
                 ("aujourd'hui", 0),
