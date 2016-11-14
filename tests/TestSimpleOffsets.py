@@ -39,7 +39,9 @@ class test(unittest.TestCase):
         return utils.compareResultByTimeTuplesAndFlags(result, check, **kwargs)
 
     def setUp(self):
-        self.cal = pdt.Calendar()
+        self.day_start_hour = 9
+        self.cal = pdt.Calendar(
+            day_start_hour=self.day_start_hour)
         (self.yr, self.mth, self.dy, self.hr,
          self.mn, self.sec, self.wd, self.yd, self.isdst) = time.localtime()
 
@@ -253,7 +255,8 @@ class test(unittest.TestCase):
     def testSpecials(self):
         s = datetime.datetime.now()
         t = datetime.datetime(
-            self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=1)
+            self.yr, self.mth, self.dy,
+            self.day_start_hour, 0, 0) + datetime.timedelta(days=1)
 
         start = s.timetuple()
         target = t.timetuple()
@@ -264,13 +267,16 @@ class test(unittest.TestCase):
             self.cal.parse('next day', start), (target, 1))
 
         t = datetime.datetime(
-            self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=-1)
+            self.yr, self.mth, self.dy,
+            self.day_start_hour, 0, 0) + datetime.timedelta(days=-1)
         target = t.timetuple()
 
         self.assertExpectedResult(
             self.cal.parse('yesterday', start), (target, 1))
 
-        t = datetime.datetime(self.yr, self.mth, self.dy, 9, 0, 0)
+        t = datetime.datetime(
+            self.yr, self.mth, self.dy,
+            self.day_start_hour, 0, 0)
         target = t.timetuple()
 
         self.assertExpectedResult(self.cal.parse('today', start), (target, 1))
