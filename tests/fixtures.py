@@ -31,7 +31,7 @@ basedir = os.path.dirname(__file__)
 
 
 @pytest.fixture
-def cal():
+def calendar():
     """A pytest fixture that provides a calendar with the default configuration
     for use in tests that do not make use of `pdtFixture`.
 
@@ -48,7 +48,7 @@ def pdtFixture(filename, explicitTestGroupNames=None, localeIDs=None):
     The `pdtFixture` decorator supports the following arguments based on the
     test data:
 
-    cal
+    calendar
         A `Calendar` preconfigured according to the test data and locale.
     phrase
         The string to be tested.
@@ -239,7 +239,7 @@ def parameterValues(group, parameters, localeID):
                     caseValues.append(phrase)
                 elif parameter == 'context':
                     caseValues.append(context)
-                elif parameter == 'cal':
+                elif parameter == 'calendar':
                     caseValues.append(cal)
                 elif parameter == 'nlpTarget':
                     caseValues.append(targetForNLP(target, phrase, context,
