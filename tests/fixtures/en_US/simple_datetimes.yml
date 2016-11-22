@@ -2,23 +2,22 @@ constants:
   - &arbitrary_date 2016-01-01 00:00:00
 
 times:
-    sourceTime: 2016-01-01 00:00:00
     cases:
         # 23:00:00
         - context: !pdtContext hour | minute | second
-          target: 2016-01-01 23:00:00
+          target: !replace xxxx-xx-xx 23:00:00
           phrases:
             - "11:00:00 PM"
             - "11:00:00 P.M."
         - context: !pdtContext hour | minute
-          target: 2016-01-01 23:00:00
+          target: !replace xxxx-xx-xx 23:00:00
           phrases:
             - "11:00 PM"
             - "2300"
             - "23:00"
             - "11:00 P.M."
         - context: !pdtContext hour
-          target: 2016-01-01 23:00:00
+          target: !replace xxxx-xx-xx 23:00:00
           phrases:
             - "11 PM"
             - "11PM"
@@ -30,19 +29,19 @@ times:
             - "11 p.m."
         # 11:00:00
         - context: !pdtContext hour | minute | second
-          target: 2016-01-01 11:00:00
+          target: !replace xxxx-xx-xx 11:00:00
           phrases:
             - "11:00:00 AM"
             - "11:00:00 A.M."
         - context: !pdtContext hour | minute
-          target: 2016-01-01 11:00:00
+          target: !replace xxxx-xx-xx 11:00:00
           phrases:
             - "11:00 AM"
             - "1100"
             - "11:00"
             - "11:00 A.M."
         - context: !pdtContext hour
-          target: 2016-01-01 11:00:00
+          target: !replace xxxx-xx-xx 11:00:00
           phrases:
             - "11 AM"
             - "11AM"
@@ -63,9 +62,9 @@ invalid_times:
         - "3:2"
 
 dates:
-  sourceTime: 2016-01-01 01:02:03
+  sourceTime: !replace xxxx-01-xx xx:xx:xx
   cases:
-    - target: 2006-08-25 01:02:03
+    - target: !replace 2006-08-25 xx:xx:xx
       context: !pdtContext year | month | day
       phrases:
         - "08/25/2006"
@@ -82,7 +81,7 @@ dates:
         - "Aug. 25 2006"
         - "25 August 2006"
         - "25 Aug 2006"
-    - target: 2016-08-25 01:02:03
+    - target: !replace xxxx-08-25 xx:xx:xx
       context: !pdtContext month | day
       phrases:
         - "8/25"
@@ -91,7 +90,7 @@ dates:
         - "August 25"
         - "Aug 25"
         - "Aug. 25"
-    - target: 2006-08-01 01:02:03
+    - target: !replace 2006-08-01 xx:xx:xx
       context: !pdtContext year | month
       phrases:
         - "Aug. 2006"
@@ -105,25 +104,23 @@ invalid_dates:
         - "$12.34"
 
 leap_days:
-  sourceTime: 2016-01-01 01:02:03
   cases:
-    - target: 2000-02-29 01:02:03
+    - target: !replace 2000-02-29 xx:xx:xx
       phrases:
           - "02/29/2000"
-    - target: 2004-02-29 01:02:03
+    - target: !replace 2004-02-29 xx:xx:xx
       phrases:
           - "02/29/2004"
-    - target: 2008-02-29 01:02:03
+    - target: !replace 2008-02-29 xx:xx:xx
       phrases:
           - "02/29/2008"
-    - target: 2012-02-29 01:02:03
+    - target: !replace 2012-02-29 xx:xx:xx
       phrases:
           - "02/29/2012"
 
 day_suffixes:
-  sourceTime: 2016-01-01 01:02:03
   cases:
-    - target: 2008-08-22 01:02:03
+    - target: !replace 2008-08-22 xx:xx:xx
       phrases:
         - "August 22nd, 2008"
         - "Aug 22nd, 2008"
@@ -133,7 +130,7 @@ day_suffixes:
         - "Aug. 22nd 2008"
         - "22nd August 2008"
         - "22nd Aug 2008"
-    - target: 1949-12-31 01:02:03
+    - target: !replace 1949-12-31 xx:xx:xx
       phrases:
         - "December 31st, 1949"
         - "Dec 31st, 1949"
@@ -141,7 +138,7 @@ day_suffixes:
         - "Dec 31st 1949"
         - "31st December 1949"
         - "31st Dec 1949"
-    - target: 2008-08-23 01:02:03
+    - target: !replace 2008-08-23 xx:xx:xx
       phrases:
         - "August 23rd, 2008"
         - "Aug 23rd, 2008"
@@ -149,7 +146,7 @@ day_suffixes:
         - "August 23rd 2008"
         - "Aug 23rd 2008"
         - "Aug. 23rd 2008"
-    - target: 2008-08-25 01:02:03
+    - target: !replace 2008-08-25 xx:xx:xx
       phrases:
         - "August 25th, 2008"
         - "Aug 25th, 2008"
@@ -160,27 +157,26 @@ day_suffixes:
 
 
 special_times:
-  sourceTime: 2001-02-03 04:05:06
   cases:
-    - target: 2001-02-03 06:00:00
+    - target: !replace xxxx-xx-xx 06:00:00
       phrases:
         - "morning"
-    - target: 2001-02-03 08:00:00
+    - target: !replace xxxx-xx-xx 08:00:00
       phrases:
         - "breakfast"
-    - target: 2001-02-03 12:00:00
+    - target: !replace xxxx-xx-xx 12:00:00
       phrases:
         - "lunch"
-    - target: 2001-02-03 13:00:00
+    - target: !replace xxxx-xx-xx 13:00:00
       phrases:
         - "afternoon"
-    - target: 2001-02-03 18:00:00
+    - target: !replace xxxx-xx-xx 18:00:00
       phrases:
         - "evening"
-    - target: 2001-02-03 19:00:00
+    - target: !replace xxxx-xx-xx 19:00:00
       phrases:
         - "dinner"
-    - target: 2001-02-03 21:00:00
+    - target: !replace xxxx-xx-xx 21:00:00
       phrases:
         - "night"
         - "tonight"

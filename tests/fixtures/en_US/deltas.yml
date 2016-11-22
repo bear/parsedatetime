@@ -113,10 +113,9 @@ unix_at_style:
             - "4pm +3 days"
 
 unix_at_style_negative:
-    sourceTime: 2016-04-05 06:07:08
     cases:
         - target: !datedelta
-            sourceTime: 2016-04-05 16:00:00
+            sourceTime: !replace xxxx-xx-xx 16:00:00
             days: -3
           context: !pdtContext hour | day
           phrases: 

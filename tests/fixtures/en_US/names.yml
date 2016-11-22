@@ -1,6 +1,7 @@
 constants:
-    # This is a Saturday
-    - &arbitrary_saturday 2011-01-01 00:00:00
+    - &saturdays
+        - 2011-01-01 01:02:03
+        - 2016-02-27 04:05:06
     - &sunday !datedelta
       days: 1
     - &monday !datedelta
@@ -15,25 +16,25 @@ constants:
       days: 6
     - &saturday !datedelta
       days: 7
-    - &january   2014-01-01 00:00:00
-    - &february  2014-02-01 00:00:00
-    - &march     2014-03-01 00:00:00
-    - &april     2014-04-01 00:00:00
-    - &may       2014-05-01 00:00:00
-    - &june      2014-06-01 00:00:00
-    - &july      2014-07-01 00:00:00
-    - &august    2014-08-01 00:00:00
-    - &september 2014-09-01 00:00:00
-    - &october   2014-10-01 00:00:00
-    - &november  2014-11-01 00:00:00
-    - &december  2014-12-01 00:00:00
+    - &january   !replace xxxx-01-01 xx:xx:xx
+    - &february  !replace xxxx-02-01 xx:xx:xx
+    - &march     !replace xxxx-03-01 xx:xx:xx
+    - &april     !replace xxxx-04-01 xx:xx:xx
+    - &may       !replace xxxx-05-01 xx:xx:xx
+    - &june      !replace xxxx-06-01 xx:xx:xx
+    - &july      !replace xxxx-07-01 xx:xx:xx
+    - &august    !replace xxxx-08-01 xx:xx:xx
+    - &september !replace xxxx-09-01 xx:xx:xx
+    - &october   !replace xxxx-10-01 xx:xx:xx
+    - &november  !replace xxxx-11-01 xx:xx:xx
+    - &december  !replace xxxx-12-01 xx:xx:xx
 
 #
 # Single unit deltas
 #
 
 week_day_names:
-    sourceTime: *arbitrary_saturday
+    sourceTime: *saturdays
     context: !pdtContext day
     cases:
         - target: *sunday
@@ -139,31 +140,14 @@ invalid_week_day_names:
             - "sun_day"  # _ is not a word boundary; most characters would match "sun" here
 
 invalid_month_names:
-    sourceTime: *january
     context: !pdtContext
     cases:
         - target: null
           phrases:
-            - "January"
-            - "Jan"
-            - "February"
-            - "Feb"
-            - "March"
-            - "Mar"
-            - "April"
-            - "Apr"
-            - "May"
-            - "June"
-            - "Jun"
-            - "July"
-            - "Jul"
-            - "August"
-            - "Aug"
-            - "September"
-            - "Sep"
-            - "October"
-            - "Oct"
-            - "November"
-            - "Nov"
-            - "December"
-            - "Dec"
+            - "Janu"
+            - "aFebruary"
+            - "Ma rch"
+            - "A_pril"
+            - "Mayjune"
+            - "Ju"
+            - "augu.st"

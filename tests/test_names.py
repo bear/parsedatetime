@@ -18,3 +18,9 @@ def test_month_names(calendar, phrase, sourceTime, target, context,
     result = calendar.parse(phrase, sourceTime)
     assertLazyStructTimes(result[0], target.timetuple())
     assert result[1] == context
+
+
+@pdtFixture('names.yml')
+def test_invalid_month_names(calendar, phrase, sourceTime, context):
+    assert calendar.parse(phrase, sourceTime) == (sourceTime.timetuple(),
+                                                  context)
