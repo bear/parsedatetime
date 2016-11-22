@@ -11,7 +11,7 @@ import re
 from warnings import warn
 import yaml
 
-from parsedatetime import Calendar
+from parsedatetime import Calendar, Constants, VERSION_CONTEXT_STYLE
 from parsedatetime.context import pdtContext
 from tests import log
 
@@ -22,6 +22,22 @@ try:
 except NameError:
     basestring = (str, bytes)
     long = int
+
+
+DEFAULT_SOURCE_TIMES = (
+    datetime(2016, 02, 29, 03, 04, 05),
+    datetime(2015, 02, 28, 23, 22, 21),
+    datetime(1945, 12, 31, 03, 04, 05),
+)
+
+_PROPERTY_MAPPING = {
+    'sourceTime': lambda case, target, phrase: case.sourceTime,
+    'target': lambda case, target, phrase: case.resolveTarget(target, phrase),
+    'phrase': lambda case, target, phrase: phrase,
+    'context': lambda case, target, phrase: case.context,
+    'calendar': lambda case, target, phrase: case.calendar,
+    'nlpTarget': lambda case, target, phrase: case.nlpTarget(target, phrase)
+}
 
 
 class datedelta(object):
@@ -41,22 +57,17 @@ class datedelta(object):
     day yields March 1. If the ``timedelta`` were applied first, 1 day would be
     added to January 30 yielding January 31, then one month would be added
     yielding February 28.
-
-    Once the `calendar` has been set, the `datedelta` can be added to or
-    subtracted from a `datetime.datetime`.
     """
-    calendar = None
-    sourceTime = None
 
-    def __init__(self, years=0, months=0, sourceTime=None, calendar=None,
-                 **kwargs):
+    def __init__(self, years=0, months=0, sourceTime=None, **kwargs):
         """Initialize a `datedelta`
 
         Args:
             years (Optional[int]): Number of years.
             months (Optional[int]): Number of months.
-            sourceTime (Optional[datetime.datetime]): The date relative to
-                which this `datedelta` should be interpreted.
+            sourceTime (Optional[Union[datetime.datetime, dateReplacement]]):
+                The date relative to which this `datedelta` should be
+                interpreted.
             calendar (Optional[parsedatetime.Calendar]): The calendar on which
                 `Calendar.inc` will be called to handle year and month
                 calculation.
@@ -74,11 +85,13 @@ class datedelta(object):
             raise TypeError(typeErrorMsg % ('years', type(years).__name__))
         if not isinstance(months, (int, long)):
             raise TypeError(typeErrorMsg % ('months', type(months).__name__))
+        if not isinstance(sourceTime, (datetime, dateReplacement, type(None))):
+            raise TypeError('unsupported type for datedelta %s: %s' %
+                            ('sourceTime', type(sourceTime).__name__))
 
         self._years = years
         self._months = months
-        self.sourceTime = sourceTime
-        self.calendar = calendar
+        self._sourceTime = sourceTime
         self._kwargs = kwargs
         self._timedelta = delta
 
@@ -94,108 +107,30 @@ class datedelta(object):
 
     @property
     def sourceTime(self):
-        """datetime.datetime: The date relative to which this `datedelta`
-            should always be interpreted. It is expected that any logic
-            operating on a `datedelta` will check whether the `datedelta` has a
-            `sourceTime` and if so, calculate a final date based on that rather
-            than some other time.
-
-        Raises:
-            TypeError: If set to a value of the wrong type.
+        """Union[datetime.datetime,dateReplacement]: The date relative to which
+        this `datedelta` should always be interpreted. It is expected that any
+        logic operating on a `datedelta` will check whether the `datedelta` has
+        a `sourceTime` and if so, calculate a final date based on that rather
+        than some other time.
         """
         return self._sourceTime
 
-    @sourceTime.setter
-    def sourceTime(self, sourceTime):
-        if not isinstance(sourceTime, (datetime, type(None))):
-            raise TypeError('unsupported type for datedelta %s: %s' %
-                            ('sourceTime', type(sourceTime).__name__))
-        self._sourceTime = sourceTime
-
-    @property
-    def calendar(self):
-        """parsedatetime.Calendar: The calendar on which `Calendar.inc` will be
-        called to handle year and month calculation.
-
-        Raises:
-            TypeError: If set to a value of the wrong type.
-        """
-        return self._calendar
-
-    @calendar.setter
-    def calendar(self, calendar):
-        if not isinstance(calendar, (Calendar, type(None))):
-            raise TypeError('unsupported type for datedelta %s: %s' %
-                            ('calendar', type(calendar).__name__))
-        self._calendar = calendar
-
-    def __add__(self, other):
-        """Allows the `datedelta` to be added to a `datetime.datetime` value.
-
-        Addition is not implemented for other types. Note that if the
-        `datedelta` has a `sourceTime` set, this date should be used instead of
-        a date specified elsewhere in the test data.
-
-        The `datedelta` may appear on either side of the addition operator.
+    def add(self, other, calendar):
+        """Add the datedelta to the specified date.
 
         Args:
-            other (datetime.datetime): The date to adjust according to the
-                delta.
+            other (datetime.datetime): The ``datetime`` to which the interval
+                represented by this ``datedelta`` should be added.
+            calendar (Calendar): The calendar responsible for year and month
+                addition.
 
         Returns:
-            datetime.datetime: The adjusted date.
-
-        Raises:
-            ValueError: If the `calendar` has not yet been set.
+            datetime.datetime: The date adjusted according to the ``datedelta``
         """
         if isinstance(other, datetime):
-            if self.calendar is None:
-                raise ValueError(
-                    'Calendar must be set before operating on datedelta')
-            if self.sourceTime and self.sourceTime != other:
-                warn('datedelta was added to a datetime that did not match ' +
-                     'its sourceTime')
-            return self.calendar.inc(other, self._months, self._years) + \
-                self._timedelta
+            return (calendar.inc(other, self._months, self._years) +
+                    self._timedelta)
         return NotImplemented
-
-    __radd__ = __add__
-
-    def __rsub__(self, other):
-        """Allows the `datedelta` to be subtracted from a `datetime.datetime`
-        value.
-
-        Subtraction is not implemented for other types. Note that if the
-        `datedelta` has a `sourceTime` set, this date should be used instead of
-        a date specified elsewhere in the test data.
-
-        The `datedelta` may only appear on the right side of the subtraction
-        operator.
-
-        Args:
-            other (datetime.datetime): The date to adjust according to the
-                delta.
-
-        Returns:
-            datetime.datetime: The adjusted date.
-
-        Raises:
-            ValueError: If the `calendar` has not yet been set.
-        """
-        if isinstance(other, datetime):
-            if self.calendar is None:
-                raise ValueError(
-                    'Calendar must be set before operating on datedelta')
-            if self.sourceTime and self.sourceTime != other:
-                warn('datedelta was subtracted from a datetime that did not ' +
-                     'match its sourceTime')
-            return self.calendar.inc(other, -self._months, -self._years) - \
-                self._timedelta
-        return NotImplemented
-
-    def __neg__(self):
-        negkwargs = dict([(k, -v) for k, v in self._kwargs.items()])
-        return self.__class__(-self.years, -self.months, **negkwargs)
 
     def __repr__(self):
         if self._years:
@@ -222,13 +157,89 @@ class datedelta(object):
         return '%s %s' % (s, self._timedelta)
 
 
+class dateReplacement(object):
+    """A wrapper for `datetime.datetime.replace` allowing arbitrary
+    modifications to individual fields in a `datetime.datetime`.
+    """
+    def __init__(self, **kwargs):
+        """Initializes a `dateReplacement` with arguments suitable for
+        `datetime.datetime.replace`.
+
+        Args:
+            **kwargs: Arguments for `datetime.datetime.replace`.
+
+        Raises:
+            TypeError: If the keyword arguments are not acceptable for
+                `datetime.datetime.replace`.
+        """
+        # Use datetime.replace for its assertions
+        datetime.now().replace(**kwargs)
+        self._kwargs = kwargs
+
+    def replace(self, sourceTime):
+        """Perform the replacement on the given ``datetime``.
+
+        Args:
+            sourceTime (datetime.datetime): The date to use as a source for
+                replacement.
+
+        Returns:
+            datetime.datetime: A copy of the ``sourceTime`` modified according
+            to the replacement rules.
+        """
+        return sourceTime.replace(**self._kwargs)
+
+    @classmethod
+    def fromWildcardString(cls, wildcardString):
+        """Converts a string in *yyyy-mm-dd HH:MM:SS* format to a
+        `dateReplacement`.
+
+        Any field that should not be modified should be marked with an ``x``
+        and any field denoted with a number will be used for replacement. For
+        example, to convert a date to January without affecting the year, day,
+        or time the ``wildcardString`` should be ``xxxx-01-xx xx:xx:xx``. A
+        field cannot be partially replaced; ``19xx-xx-xx xx:xx:xx`` will make
+        no changes to the ``sourceTime`` since the year was not fully
+        specified.
+
+        Args:
+            wildcardString (str): A string in *yyyy-mm-dd HH:MM:SS* format with
+                numbers in any field that should be replaced.
+
+        Returns:
+            dateReplacement: The `dateReplacement` instance capable of making
+            the replacement identified in the `wildcardString`.
+
+        Raises:
+            ValueError: If the `wildcardString` is not properly formatted.
+        """
+        components = re.split(r'[:-]| +', wildcardString)
+        keywords = ('year', 'month', 'day', 'hour', 'minute', 'second')
+        kwargs = {}
+
+        if len(components) != 6:
+            raise ValueError('invalid dateReplacement string: %s' %
+                             wildcardString)
+
+        for index, kw in enumerate(keywords):
+            if components[index].isdigit():
+                kwargs[kw] = int(components[index])
+
+        return dateReplacement(**kwargs)
+
+
 class nlpTarget(object):
     """Represents one or more dates and phrases that would be parsed from a
     source phrase by `nlp`.
-    """
 
-    def __init__(self, targets, calendar=None, sourceTime=None,
-                 sourcePhrase=None):
+    Attributes:
+        sourcePhrase (str): The phrase on which `nlp` will operate.
+        testCase (TestCase): The `TestCase` to use for resolving targets.
+    """
+    sourcePhrase = None
+    testCase = None
+
+    def __init__(self, targets):
         """Initializes an `nlpTarget`.
 
         Args:
@@ -236,74 +247,11 @@ class nlpTarget(object):
                 corresponding to keyword arguments of `nlpTargetValue`. There
                 may be no additional keys and all input is type-validated with
                 assertions.
-            calendar (Optional[parsedatetime.Calendar]): The calendar under
-                which the phrase will be interpreted.
-            sourcePhrase (Optional[str]): The phrase on which `nlp` will
-                operate.
-            sourceTime (Optional[datetime.datetime]): The date and time to
-                which the test case is relative.
 
         Raises:
             AssertionError: If any input is of the incorrect type.
         """
-        self._targetValues = tuple([nlpTargetValue(self, **t)
-                                    for t in targets])
-        self.calendar = calendar
-        self.sourceTime = sourceTime
-        self.sourcePhrase = sourcePhrase
-
-    @property
-    def calendar(self):
-        """parsedatetime.Calendar: The calendar under which the phrase
-        will be interpreted.
-
-        Raises:
-            TypeError: If set to a value not of type `Calendar`
-        """
-        return self._calendar
-
-    @calendar.setter
-    def calendar(self, calendar):
-        if not isinstance(calendar, (Calendar, type(None))):
-            raise TypeError('unsupported type for nlpTarget calendar: %s' %
-                            type(calendar).__name__)
-
-        self._calendar = calendar
-
-    @property
-    def sourceTime(self):
-        """datetime.datetime: The date and time to which the test
-        case is relative.
-
-        Raises:
-            AssertionError: If set to a value not of type `datetime.datetime`
-        """
-        return self._sourceTime
-
-    @sourceTime.setter
-    def sourceTime(self, sourceTime):
-        if not isinstance(sourceTime, (datetime, type(None))):
-            raise TypeError('unsupported type for nlpTarget sourceTime: %s' %
-                            type(sourceTime).__name__)
-
-        self._sourceTime = sourceTime
-
-    @property
-    def sourcePhrase(self):
-        """str: The phrase on which `nlp` will operate.
-
-        Raises:
-            AssertionError: If set to a value not of type `basestring`
-        """
-        return self._sourcePhrase
-
-    @sourcePhrase.setter
-    def sourcePhrase(self, sourcePhrase):
-        if not isinstance(sourcePhrase, (basestring, type(None))):
-            raise TypeError('unsupported type for nlpTarget sourcePhrase: %s' %
-                            type(sourcePhrase).__name__)
-
-        self._sourcePhrase = sourcePhrase
+        self._targetValues = [nlpTargetValue(**target) for target in targets]
 
     @property
     def tupleValue(self):
@@ -311,25 +259,48 @@ class nlpTarget(object):
         The expected result from ``calendar.nlp(sourcePhrase, sourceTime)``
 
         Raises:
-            ValueError: If `calendar`, `sourceTime`, or `sourcePhrase` are not
-                yet set.
+            ValueError: If `testCase` or `sourcePhrase` are not yet set.
             ValueError: If any of the target values include a phrase that is
                 not contained in `sourcePhrase`.
         """
-        if self.calendar is None:
-            raise ValueError('The calendar has not yet been set')
-        if self.sourceTime is None:
-            raise ValueError('The sourceTime has not yet been set')
+        values = []
+
+        if self.testCase is None:
+            raise ValueError('testCase must be specified to generate a ' +
+                             'tupleValue')
         if self.sourcePhrase is None:
-            raise ValueError('The sourcePhrase has not yet been set')
-        values = [t.tupleValue for t in self._targetValues]
-        values = tuple([value for value in values if value])
-        return values or None
+            raise ValueError('sourcePhrase must be specified to generate a ' +
+                             'tupleValue')
+
+        for targetValue in self._targetValues:
+            if targetValue.target is None:
+                continue
+            startIndex = targetValue.startIndex
+            target = self.testCase.resolveTarget(targetValue.target)
+            if startIndex is None:
+                if targetValue.phrase not in self.sourcePhrase:
+                    raise ValueError('The phrase %r is not contained in %r' % (
+                                     targetValue.phrase, self.sourcePhrase))
+                startIndex = self.sourcePhrase.index(targetValue.phrase)
+            endIndex = startIndex + len(targetValue.phrase)
+            values.append((target, targetValue.context, startIndex, endIndex,
+                           targetValue.phrase))
+
+        return tuple(values) or None
 
     def __repr__(self):
         return '%s%s' % (self.__class__.__name__, self.tupleValue)
 
     def __eq__(self, other):
+        """Allows an `nlpTarget` to be compared directly to the tuple returned
+        by `nlp`.
+
+        Args:
+            other (Union[tuple, nlpTarget]): The object to test for equality.
+
+        Returns:
+            bool: Whether the objects compared both represent the same value.
+        """
         if other is None:
             return self.tupleValue is None
         if isinstance(other, tuple):
@@ -343,24 +314,20 @@ class nlpTargetValue(object):
     """An immutable container structure for representing a single value in the
     tuple format created by `nlp`.
     """
-    def __init__(self, parent, phrase, target, context=None, startIndex=None):
+    def __init__(self, phrase, target, context=None, startIndex=None):
         """Initializes an `nlpTargetValue`
 
         Args:
-            parent (nlpTarget): The target from which this value was
-                constructed.
             phrase (str): The phrase matched by `nlp`.
             target (Union[datetime.datetime,datedelta]): The date represented
                 by the phrase.
             context (Optional[pdtContext]): The context representing the
-                phrase.
+                phrase. If not specified, the wildcard context will be used to
+                match any context.
             startIndex (Optional[int]): The index of the phrase as it appears
                 in the source phrase. The end index is always calculated
                 automatically based on the length of the phrase.
         """
-        if not isinstance(parent, nlpTarget):
-            raise TypeError('unsupported type for nlpTargetValue parent: %s' %
-                            type(context).__name__)
         if not isinstance(phrase, basestring):
             raise TypeError('unsupported type for nlpTargetValue phrase' %
                             type(phrase).__name__)
@@ -371,42 +338,224 @@ class nlpTargetValue(object):
             raise TypeError('unsupported type for nlpTargetValue startIndex' %
                             type(startIndex).__name__)
 
-        self._parent = parent
         self._phrase = phrase
         self._target = target
-        self._context = context
+        self._context = context or pdtContext(pdtContext.ACU_WILDCARD)
         self._startIndex = startIndex
 
     @property
-    def tupleValue(self):
-        """Union[None,Tuple[datetime.datetime,pdtContext,int,int,str]]: A
-        phrase tuple as returned by `nlp`. The tuple contains the
-        `datetime.datetime`, the `pdtContext` representing the phrase, the
-        start and end indexes of the phrase within the source phrase, and the
-        phrase.
+    def phrase(self):
+        return self._phrase
 
-        Raises:
-            AssertionError: If the `nlpTargetValue` phrase is not included in
-                the `nlpTarget` `sourcePhrase`.
+    @property
+    def target(self):
+        return self._target
+
+    @property
+    def context(self):
+        return self._context
+
+    @property
+    def startIndex(self):
+        return self._startIndex
+
+
+class TestGroup(object):
+    """Parses a test group configuration to prepare for parametrizing a test.
+    """
+    def __init__(self, groupData, localeID):
+        # TODO: Constants and Calendar options in test data
+        constants = Constants(localeID, usePyICU=False)
+        sourceTime = groupData.get('sourceTime')
+
+        self._calendar = Calendar(constants, version=VERSION_CONTEXT_STYLE)
+        self._caseData = groupData['cases']
+        self._sourceTimes = DEFAULT_SOURCE_TIMES
+
+        if isinstance(sourceTime, dateReplacement):
+            self._sourceTimes = [sourceTime.replace(dt)
+                                 for dt in self._sourceTimes]
+        elif isinstance(sourceTime, list):
+            self._sourceTimes = sourceTime
+        elif sourceTime is not None:
+            self._sourceTimes = [sourceTime]
+
+    @property
+    def calendar(self):
+        return self._calendar
+
+    @property
+    def sourceTimes(self):
+        return self._sourceTimes
+
+    @classmethod
+    def supportedParameters(self, parameters):
+        """Filters the given parameters returning a list of those supported by
+        a test group.
+
+        Args:
+            parameters (List[str]): A list of function parameter names, some of
+                which may be pytest fixtures, others may be provided by
+                testGroup parametrization.
+
+        Returns:
+            List[str]: The parameters that are supported by testGroup
+            parametrization.
         """
-        if self._target is None:
-            return None
-        context = self._context or pdtContext(pdtContext.ACU_WILDCARD)
-        startIndex = self._startIndex
-        target = self._target
-        if startIndex is None:
-            if self._phrase not in self._parent.sourcePhrase:
-                raise ValueError('The phrase %r is not contained in %r' % (
-                                 self._phrase, self._parent.sourcePhrase))
-            startIndex = self._parent.sourcePhrase.index(self._phrase)
-        endIndex = startIndex + len(self._phrase)
-        if isinstance(target, datedelta):
-            target.calendar = self._parent.calendar
-            target = self._parent.sourceTime + target
-        return (target, context, startIndex, endIndex, self._phrase)
+        return [p for p in parameters if p in _PROPERTY_MAPPING]
 
-    def __repr__(self):
-        return '%s%s' % (self.__class__.__name__, self.tupleValue)
+    def parameterValues(self, parameters):
+        """Gather all values for the specified parameters across all cases in
+        the test group.
+
+        Args:
+            parameters (List[str]): The parameters that will be injected into
+                the test function. Supported parameters are  ``sourceTime``,
+                ``target``, ``phrase``, ``context``, ``calendar``, and
+                ``nlpTarget``.
+
+        Returns:
+            List[Tuple]: A list of tuples containing values that correspond to
+            the order of the `parameters`.
+        """
+        values = []
+        for sourceTime in self.sourceTimes:
+            for caseData in self._caseData:
+                case = TestCase(caseData, self.calendar, sourceTime)
+                values.extend(case.parameterValues(parameters))
+
+        return values
+
+
+class TestCase(object):
+    """Represents a single test case within a group, resolving test data
+    according to the group and case configuration.
+    """
+    def __init__(self, caseData, calendar, sourceTime):
+        self._calendar = calendar
+        self._sourceTime = sourceTime
+        self._phrases = caseData['phrases']
+        self._target = caseData.get('target')
+        self._context = (caseData.get('context') or
+                         pdtContext(pdtContext.ACU_WILDCARD))
+
+    @property
+    def calendar(self):
+        return self._calendar
+
+    @property
+    def context(self):
+        return self._context
+
+    @property
+    def sourceTime(self):
+        return self._sourceTime
+
+    @property
+    def targetByPhrase(self):
+        """Resolves the target value for each phrase.
+
+        Returns:
+            Dict[str, Any]: A dictionary mapping phrases to the target
+            specified in the test data. In most cases the target is either a
+            `datetime.datetime` or ``None``.
+        """
+        phrases = {}
+        if isinstance(self._phrases, list):
+            for phrase in self._phrases:
+                target = self.resolveTarget(self._target, phrase)
+                phrases[phrase] = target
+        if isinstance(self._phrases, dict):
+            for phrase, target in self._phrases.items():
+                phrases[phrase] = self.resolveTarget(target, phrase)
+        return phrases
+
+    def resolveTime(self, value):
+        """Uses the case's `sourceTime` to resolve date replacements and
+        deltas to explicit `datetime.datetime` values.
+
+        Args:
+            value (Union[datetime.datetime, dateReplacement, datedelta]):
+                The value to resolve.
+
+        Returns:
+            datetime.datetime: The explicit `datetime.datetime` to which the
+            `value` mapped in the context of the `sourceTime`.
+        """
+        if isinstance(value, datetime):
+            return value
+        if isinstance(value, dateReplacement):
+            return value.replace(self.sourceTime)
+        if isinstance(value, datedelta):
+            sourceTime = self.resolveTime(value.sourceTime)
+            return value.add(sourceTime, self.calendar)
+        return self.sourceTime
+
+    def resolveTarget(self, value, phrase=None):
+        """Ensures that the target is ready for use in a test assertion.
+
+        Resolves `dateReplacement` and `datedelta` to an explicit
+        `datetime.datetime` and prepares `nlpTarget` values for comparison to
+        `nlp` return values.
+
+        Args:
+            value (Any): The value to resolve.
+            phrase (Optional[str]): The phrase with which the target is
+                associated for use with resolving `nlpTarget` values.
+
+        Returns:
+            Any: The resolved value, or the provided value if not of a type
+            that requires resolution.
+        """
+        if isinstance(value, (dateReplacement, datedelta)):
+            return self.resolveTime(value)
+        if isinstance(value, nlpTarget):
+            value.testCase = self
+            value.sourcePhrase = phrase
+        return value
+
+    def nlpTarget(self, value, phrase):
+        """Coerces the `value` to an `nlpTarget` then resolves that target to
+        prepare for testing.
+
+        Args:
+            value (Any): A test target value.
+            phrase (str): The phrase with which the target is associated.
+
+        Returns:
+            nlpTarget: An `nlpTarget` that is prepared to compare against the
+            return value of `nlp`.
+        """
+        if not isinstance(value, nlpTarget):
+            value = nlpTarget(targets=[{
+                'target': value,
+                'context': self.context,
+                'phrase': phrase
+            }])
+        return self.resolveTarget(value, phrase)
+
+    def parameterValues(self, parameters):
+        """Collects the values corresponding to each parameter from the test
+        data.
+
+        Args:
+            parameters (List[str]): The parameters that will be injected into
+                the test function.
+
+        Returns:
+            Tuple: A tuple containing values that correspond to the order of
+            the `parameters`.
+        """
+        values = []
+        for phrase, target in self.targetByPhrase.items():
+            phraseValues = []
+            for parameter in parameters:
+                if parameter in _PROPERTY_MAPPING:
+                    value = _PROPERTY_MAPPING[parameter](self, target, phrase)
+                    phraseValues.append(value)
+            values.append(tuple(phraseValues))
+
+        return tuple(values)
 
 
 def loadData(path):
@@ -509,6 +658,40 @@ def datedeltaConstructor(loader, node):
     return datedelta(**value)
 
 
+def dateReplacementConstructor(loader, node):
+    """A YAML constructor for representing `dateReplacement` instances.
+
+    In some cases it is necessary to replace a component of a
+    `datetime.datetime` in a way that cannot be done with `datedelta`. This
+    constructor provides a simple format for identifying portions of a datetime
+    to replace.
+
+    Avoid creating impossible dates! February, April, June, September and
+    November should be avoided since they could result in an invalid date like
+    April 31.
+
+    Examples:
+        To convert any date to January::
+
+            !replace xxxx-01-xx xx:xx:xx
+
+        To set the hour and minute for any datetime::
+
+            !replace xxxx-xx-xx 12:34:xx
+
+    Args:
+        loader (yaml.Loader): The YAML loader
+        node (yaml.ScalarNode): The value provided to the ``!replace``
+            constructor, unwrappable by `loader` as a scalar value
+
+    Returns:
+        dateReplacement: The `dateReplacement` corresponding to the scalar
+        value as returned by `dateReplacement.fromWildcardString`.
+    """
+    value = loader.construct_scalar(node)
+    return dateReplacement.fromWildcardString(value)
+
+
 def nlpTargetConstructor(loader, node):
     """A YAML constructor for representing `nlpTarget` instances.
 
@@ -608,5 +791,6 @@ def pdtContextConstructor(loader, node):
 
 
 yaml.add_constructor(u'!datedelta', datedeltaConstructor)
+yaml.add_constructor(u'!replace', dateReplacementConstructor)
 yaml.add_constructor(u'!nlpTarget', nlpTargetConstructor)
 yaml.add_constructor(u'!pdtContext', pdtContextConstructor)
