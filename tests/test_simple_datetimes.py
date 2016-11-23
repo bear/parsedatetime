@@ -36,6 +36,16 @@ def test_day_suffixes(calendar, phrase, sourceTime, target, context,
 def test_special_times(calendar, phrase, sourceTime, target, context):
     assert calendar.parse(phrase, sourceTime) == (target.timetuple(), context)
 
+
+@pdtFixture('simple_datetimes.yml')
+def test_midnight(calendar, phrase, sourceTime, target, context):
+    assert calendar.parse(phrase, sourceTime) == (target.timetuple(), context)
+
+
+@pdtFixture('simple_datetimes.yml')
+def test_noon(calendar, phrase, sourceTime, target, context):
+    assert calendar.parse(phrase, sourceTime) == (target.timetuple(), context)
+
 #
 # Leap years
 #
