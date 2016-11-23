@@ -1,0 +1,51 @@
+constants:
+    - &saturdays
+        - 2016-02-27 01:02:03
+        - 2016-11-19 23:05:06
+
+phrases:
+    cases:
+        - target: !replace xxxx-xx-xx 16:00:00
+          context: !pdtContext hour
+          phrases:
+            - "flight from SFO at 4pm"
+        - target: !replace xxxx-xx-xx 17:00:00
+          context: !pdtContext halfday
+          phrases:
+            - "meeting eod"
+            - "eod meeting"
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 17:00:00
+            days: 1
+          context: !pdtContext day | halfday
+          phrases:
+            - "tomorrow eod"
+            - "eod tomorrow"
+
+end_of_phrases:
+    cases:
+        - target: !replace xxxx-xx-xx 17:00:00
+          context: !pdtContext halfday
+          phrases:
+            - "eod"
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-01 09:00:00
+            months: 1
+            days: -1
+          context: !pdtContext day
+          phrases:
+            - "eom"
+        - target: !replace xxxx-12-31 09:00:00
+          context: !pdtContext month
+          phrases:
+            - "eoy"
+
+last_phrases:
+    sourceTime: *saturdays
+    cases:
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 09:00:00
+            days: -1
+          context: !pdtContext day
+          phrases:
+            - "last friday"
