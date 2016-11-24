@@ -1,0 +1,62 @@
+constants:
+    - &tuesdays
+        - 2016-05-31 12:11:10
+        - 2016-03-01 00:00:00
+
+now:
+    cases:
+        - target: !datedelta
+            seconds: 0
+          context: !pdtContext now
+          phrases:
+            - "now"
+            - "right now"
+
+offset_from_day_of_week:
+    sourceTime: *tuesdays
+    cases:
+        - target: !datedelta
+            days: 2
+          context: !pdtContext day
+          phrases:
+            - "Thursday"
+        - target: !datedelta
+            # TODO: Handling this as Thursday at 9 plus 1 hour seems
+            # unexpected.
+            sourceTime: !replace xxxx-xx-xx 09:00:00
+            days: 2
+            hours: 1
+          context: !pdtContext day | hour
+          phrases:
+            - "one hour from Thursday"
+        - target: !datedelta
+            # TODO: Handling this as Thursday at 9 minus 1 hour seems
+            # unexpected.
+            sourceTime: !replace xxxx-xx-xx 09:00:00
+            days: 2
+            hours: -1
+          context: !pdtContext day | hour
+          phrases:
+            - "one hour before Thursday"
+
+offset_from_day_of_week_matching_source_time:
+    sourceTime: *tuesdays
+    options:
+        StartTimeFromSourceTime: True
+    cases:
+        - target: !datedelta
+            # TODO: Handling this as Thursday at the current time plus 1 hour
+            # seems unexpected.
+            days: 2
+            hours: 1
+          context: !pdtContext day | hour
+          phrases:
+            - "one hour from Thursday"
+        - target: !datedelta
+            # TODO: Handling this is Thursday at the current time minus 1 hour
+            # seems unexpected.
+            days: 2
+            hours: -1
+          context: !pdtContext day | hour
+          phrases:
+            - "one hour before Thursday"
