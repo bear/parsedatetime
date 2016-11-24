@@ -8,7 +8,6 @@ constructors to represent data in YAML.
 
 from datetime import datetime, timedelta
 import re
-from warnings import warn
 import yaml
 
 from parsedatetime import Calendar, Constants, VERSION_CONTEXT_STYLE
@@ -25,9 +24,9 @@ except NameError:
 
 
 DEFAULT_SOURCE_TIMES = (
-    datetime(2016, 02, 29, 03, 04, 05),
-    datetime(2015, 02, 28, 23, 22, 21),
-    datetime(1945, 12, 31, 03, 04, 05),
+    datetime(2016,  2, 29,  3,  4,  5),
+    datetime(2015,  2, 28, 23, 22, 21),
+    datetime(1945, 12, 31,  3,  4,  5),
 )
 
 _PROPERTY_MAPPING = {
