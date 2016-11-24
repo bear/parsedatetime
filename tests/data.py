@@ -364,9 +364,44 @@ class TestGroup(object):
     """Parses a test group configuration to prepare for parametrizing a test.
     """
     def __init__(self, groupData, localeID):
+        """Initializes a `TestGroup`. `TestCase` instances are not created
+        until the `parameterValues` are requested.
+
+        Args:
+            groupData (Dict): The data for a group of related tests. Supported
+                top-level keys are:
+
+                sourceTime
+                    An optional way to specify or modify the datetimes against
+                    which the test will be run. By default, the test will be
+                    run against a small set of dates focusing on leap days and
+                    similar edge cases. Specify a `dateReplacement` to modify
+                    those dates, for example to ensure the month is January. A
+                    list of dates can be provided as an alternative to the
+                    default dates, which is particularly useful when dates must
+                    fall on a specific day of the week. While a single
+                    `datetime.datetime` can be provided, it is recommended to
+                    specify at least two values for ``sourceTime`` if the
+                    defaults cannot be used.
+                options
+                    A dictionary mapping `Constants` attribute names to the
+                    value that should be set when running a test. This is
+                    useful for modifying flags such as StartTimeFromSourceTime
+                    or DOWParseStyle.
+                cases
+                    A list of objects suitable for creating `TestCase`. Cases
+                    are usually grouped by target and context so that multiple
+                    phrases with the same target date and context flags appear
+                    in a single case.
+            localeID (str): The locale from which the test data was loaded.
+        """
         # TODO: Constants and Calendar options in test data
         constants = Constants(localeID, usePyICU=False)
         sourceTime = groupData.get('sourceTime')
+        options = groupData.get('options') or {}
+
+        for (attr, value) in options.items():
+            setattr(constants, attr, value)
 
         self._calendar = Calendar(constants, version=VERSION_CONTEXT_STYLE)
         self._caseData = groupData['cases']
