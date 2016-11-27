@@ -32,5 +32,6 @@ class test(unittest.TestCase):
         for pair in self.tests:
             self.assertEqual(self.cal._convertUnitAsWords(pair[0]), pair[1])
 
+
 if __name__ == "__main__":
     unittest.main()
