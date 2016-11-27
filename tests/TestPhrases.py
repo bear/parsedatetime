@@ -117,8 +117,8 @@ class test(unittest.TestCase):
             yr += 1
 
         t = (datetime.datetime(
-            yr, mth, 1, self.day_start_hour, 0, 0)
-             + datetime.timedelta(days=-1))
+             yr, mth, 1, self.day_start_hour, 0, 0) +
+             datetime.timedelta(days=-1))
 
         start = s.timetuple()
         target = t.timetuple()

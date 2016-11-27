@@ -84,5 +84,6 @@ class test(unittest.TestCase):
         self.assertExpectedResult(
             self.cal.parse('5 hours before next noon', start), (target, 2))
 
+
 if __name__ == "__main__":
     unittest.main()

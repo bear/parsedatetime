@@ -244,6 +244,7 @@ VERSION_FLAG_STYLE = 1
 VERSION_CONTEXT_STYLE = 2
 DEFAULT_DAY_START_HOUR = 9
 
+
 class Calendar(object):
 
     """
