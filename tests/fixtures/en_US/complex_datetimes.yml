@@ -1,0 +1,171 @@
+year_month_day_and_time:
+    cases:
+        - target: 2014-08-05 04:15:00
+          context: !pdtContext year | month | day | hour | minute
+          phrases:
+            - "Aug 05, 2014 4:15 AM"
+        - target: 2003-08-05 03:15:00
+          context: !pdtContext year | month | day | hour | minute
+          phrases:
+            - "Aug 05, 2003 3:15 AM"
+        - target: 2003-08-05 03:15:00
+          context: !pdtContext year | month | day | hour | minute
+          phrases:
+            - "Aug 05, 2003 3:15 AM"
+            - "Aug 05, 2003 03:15 AM"
+
+future_month_day_and_time:
+    # Months below are after May
+    sourceTime: !replace xxxx-05-xx xx:xx:xx
+    cases:
+        - target: !replace xxxx-06-30 12:00:00
+          context: !pdtContext month | day | hour
+          phrases:
+            - "June 30th 12PM"
+        - target: !replace xxxx-06-30 12:00:00
+          context: !pdtContext month | day | hour | minute
+          phrases:
+            - "June 30th 12:00"
+        - target: !replace xxxx-11-30 23:00:00
+          context: !pdtContext month | day | hour
+          phrases:
+            - "November 30th 23PM"
+        - target: !replace xxxx-11-30 23:02:00
+          context: !pdtContext month | day | hour | minute
+          phrases:
+            - "November 30th 23:02"
+
+past_month_day_and_time:
+    # Months below are before December
+    sourceTime: !replace xxxx-12-xx xx:xx:xx
+    cases:
+        - target: !datedelta
+            sourceTime: !replace xxxx-06-30 12:00:00
+            years: 1
+          context: !pdtContext month | day | hour
+          phrases:
+            - "June 30th 12PM"
+        - target: !datedelta
+            sourceTime: !replace xxxx-06-30 12:00:00
+            years: 1
+          context: !pdtContext month | day | hour | minute
+          phrases:
+            - "June 30th 12:00"
+        - target: !datedelta
+            sourceTime: !replace xxxx-11-30 23:00:00
+            years: 1
+          context: !pdtContext month | day | hour
+          phrases:
+            - "November 30th 23PM"
+        - target: !datedelta
+            sourceTime: !replace xxxx-11-30 23:02:00
+            years: 1
+          context: !pdtContext month | day | hour | minute
+          phrases:
+            - "November 30th 23:02"
+
+date_variations:
+    cases:
+        - target: 2006-08-25 17:00:00
+          context: !pdtContext year | month | day | hour
+          phrases:
+            - "08/25/2006 5pm"
+            - "5pm on 08.25.2006"
+            - "5pm August 25, 2006"
+            - "5pm August 25th, 2006"
+            - "5pm 25 August, 2006"
+            - "5pm 25th August, 2006"
+            - "Aug 25, 2006 5pm"
+            - "Aug 25th, 2006 5pm"
+            - "25 Aug, 2006 5pm"
+            - "25th Aug 2006, 5pm"
+
+future_date_variations:
+    sourceTime: !replace xxxx-01-xx xx:xx:xx
+    cases:
+        - target: !replace xxxx-08-05 17:00:00
+          context: !pdtContext month | day | hour
+          phrases:
+            - "8/5 at 5pm"
+            - "5pm 8.5"
+            - "08/05 5pm"
+            - "August 5 5pm"
+            - "5pm Aug 05"
+            - "Aug 05 5pm"
+            - "Aug 05th 5pm"
+            - "5 August 5pm"
+            - "5th August 5pm"
+            - "5pm 05 Aug"
+            - "05 Aug 5pm"
+            - "05th Aug 5pm"
+            - "August 5th 5pm"
+        - target: !replace xxxx-08-05 12:00:00
+          context: !pdtContext month | day | hour
+          phrases:
+            - "August 5th 12pm"
+            - "August 5th 12 pm"
+        - target: !replace xxxx-08-05 12:00:00
+          context: !pdtContext month | day | hour | minute
+          phrases:
+            - "August 5th 12:00"
+            - "August 5th 12:00pm"
+            - "August 5th 12:00 pm"
+        - target: !replace xxxx-08-22 03:26:00
+          context: !pdtContext month | day | hour | minute
+          phrases:
+            - "August 22nd 3:26"
+            - "August 22nd 3:26am"
+            - "August 22nd 3:26 am"
+
+past_date_variations:
+    sourceTime: !replace xxxx-10-xx xx:xx:xx
+    cases:
+        - target: !datedelta
+            sourceTime: !replace xxxx-08-05 17:00:00
+            years: 1
+          context: !pdtContext month | day | hour
+          phrases:
+            - "8/5 at 5pm"
+            - "5pm 8.5"
+            - "08/05 5pm"
+            - "August 5 5pm"
+            - "5pm Aug 05"
+            - "Aug 05 5pm"
+            - "Aug 05th 5pm"
+            - "5 August 5pm"
+            - "5th August 5pm"
+            - "5pm 05 Aug"
+            - "05 Aug 5pm"
+            - "05th Aug 5pm"
+            - "August 5th 5pm"
+        - target: !datedelta
+            sourceTime: !replace xxxx-08-05 12:00:00
+            years: 1
+          context: !pdtContext month | day | hour
+          phrases:
+            - "August 5th 12pm"
+            - "August 5th 12 pm"
+        - target: !datedelta
+            sourceTime: !replace xxxx-08-05 12:00:00
+            years: 1
+          context: !pdtContext month | day | hour | minute
+          phrases:
+            - "August 5th 12:00"
+            - "August 5th 12:00pm"
+            - "August 5th 12:00 pm"
+        - target: !datedelta
+            sourceTime: !replace xxxx-08-22 03:26:00
+            years: 1
+          context: !pdtContext month | day | hour | minute
+          phrases:
+            - "August 22nd 3:26"
+            - "August 22nd 3:26am"
+            - "August 22nd 3:26 am"
+
+dates_with_weekday:
+    cases:
+        - target: 2016-08-23 17:00:00
+          context: !pdtContext year | month | day | hour
+          phrases:
+            # FIXME: 23nd? Not a future-proof test.
+            - "tuesday august 23nd 2016 at 5pm"
