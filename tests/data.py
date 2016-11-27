@@ -543,6 +543,8 @@ class TestCase(object):
         """
         if isinstance(value, (dateReplacement, datedelta)):
             return self.resolveTime(value)
+        if isinstance(value, list):
+            return [self.resolveTarget(item, phrase) for item in value]
         if isinstance(value, nlpTarget):
             value.testCase = self
             value.sourcePhrase = phrase
