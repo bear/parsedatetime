@@ -24,9 +24,9 @@ except NameError:
 
 
 DEFAULT_SOURCE_TIMES = (
-    datetime(2016,  2, 29,  3,  4,  5),
-    datetime(2015,  2, 28, 23, 22, 21),
-    datetime(1945, 12, 31,  3,  4,  5),
+    datetime(2016, 2, 29, 3, 4, 5),
+    datetime(2015, 2, 28, 23, 22, 21),
+    datetime(1945, 12, 31, 3, 4, 5),
 )
 
 _PROPERTY_MAPPING = {
@@ -622,6 +622,7 @@ def loadData(path):
                 log.error(exc)
 
     return data
+
 
 loadData._cache = {}
 
