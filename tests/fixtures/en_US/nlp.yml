@@ -5,6 +5,7 @@ constants:
   - &sundays_before_august_5
     - 2013-08-04 21:25:00
     - 2016-07-31 02:04:06
+  - &default_day_start_time !replace xxxx-xx-xx 09:00:00
 
 long_phrases:
     sourceTime: *sundays_before_august_5
@@ -24,7 +25,7 @@ long_phrases:
               context: !pdtContext minute
             - phrase: "next week"
               target: !datedelta
-                sourceTime: !replace xxxx-xx-xx 09:00:00
+                sourceTime: *default_day_start_time
                 days: 7
               context: !pdtContext week
           phrases:
@@ -52,7 +53,7 @@ long_phrases_with_quotes:
               context: !pdtContext minute
             - phrase: "next week"
               target: !datedelta
-                sourceTime: !replace xxxx-xx-xx 09:00:00
+                sourceTime: *default_day_start_time
                 days: 7
               context: !pdtContext week
           phrases:
