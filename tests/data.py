@@ -486,6 +486,9 @@ class TestCase(object):
         self._context = (caseData.get('context') or
                          pdtContext(pdtContext.ACU_WILDCARD))
 
+        if 'sourceTime' in caseData:
+            self._sourceTime = self.resolveTime(caseData['sourceTime'])
+
     @property
     def calendar(self):
         return self._calendar
