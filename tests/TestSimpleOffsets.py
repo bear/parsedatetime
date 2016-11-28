@@ -29,6 +29,7 @@ def _truncateResult(result, trunc_seconds=True, trunc_hours=False):
         dt = dt[:3] + (0,) * 6
     return dt, flag
 
+
 _tr = _truncateResult
 
 
