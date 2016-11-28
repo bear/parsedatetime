@@ -230,15 +230,8 @@ class dateReplacement(object):
 class nlpTarget(object):
     """Represents one or more dates and phrases that would be parsed from a
     source phrase by `nlp`.
-
-    Attributes:
-        sourcePhrase (str): The phrase on which `nlp` will operate.
-        testCase (TestCase): The `TestCase` to use for resolving targets.
     """
-    sourcePhrase = None
-    testCase = None
-
-    def __init__(self, targets):
+    def __init__(self, targets, testCase=None, sourcePhrase=None):
         """Initializes an `nlpTarget`.
 
         Args:
@@ -246,11 +239,31 @@ class nlpTarget(object):
                 corresponding to keyword arguments of `nlpTargetValue`. There
                 may be no additional keys and all input is type-validated with
                 assertions.
+            sourcePhrase (str): The phrase on which `nlp` will operate.
+            testCase (TestCase): The `TestCase` to use for resolving targets.
 
         Raises:
             AssertionError: If any input is of the incorrect type.
         """
+        self._targets = targets
         self._targetValues = [nlpTargetValue(**target) for target in targets]
+        self._testCase = testCase
+        self.sourcePhrase = sourcePhrase
+
+    def forTestCase(self, testCase, sourcePhrase):
+        return nlpTarget(self._targets, testCase, sourcePhrase)
+
+    @property
+    def testCase(self):
+        return self._testCase
+
+    @property
+    def sourcePhrase(self):
+        return self._sourcePhrase
+
+    @sourcePhrase.setter
+    def sourcePhrase(self, sourcePhrase):
+        self._sourcePhrase = sourcePhrase
 
     @property
     def tupleValue(self):
@@ -546,8 +559,7 @@ class TestCase(object):
         if isinstance(value, list):
             return [self.resolveTarget(item, phrase) for item in value]
         if isinstance(value, nlpTarget):
-            value.testCase = self
-            value.sourcePhrase = phrase
+            return value.forTestCase(self, phrase)
         return value
 
     def nlpTarget(self, value, phrase):

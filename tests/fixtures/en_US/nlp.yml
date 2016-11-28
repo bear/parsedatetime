@@ -1,18 +1,31 @@
+constants:
+  - &saturdays
+    - 2016-08-06 08:30:00
+    - 2016-02-27 11:11:11
+  - &sundays_before_august_5
+    - 2013-08-04 21:25:00
+    - 2016-07-31 02:04:06
+
 long_phrases:
-    sourceTime: 2013-08-01 21:25:00
+    sourceTime: *sundays_before_august_5
     cases:
         - target: !nlpTarget
             - phrase: "At 8PM on August 5th"
-              target: 2013-08-05 20:00:00
+              target: !replace xxxx-08-05 20:00:00
               context: !pdtContext month | day | hour
             - phrase: "next Friday at 9PM"
-              target: 2013-08-09 21:00:00
+              target: !datedelta
+                sourceTime: !replace xxxx-xx-xx 21:00:00
+                days: 5
               context: !pdtContext day | hour
             - phrase: "in 5 minutes"
-              target: 2013-08-01 21:30:00
+              target: !datedelta
+                minutes: 5
               context: !pdtContext minute
             - phrase: "next week"
-              target: 2013-08-08 09:00:00
+              target: !datedelta
+                sourceTime: !replace xxxx-xx-xx 09:00:00
+                days: 7
               context: !pdtContext week
           phrases:
             - >
@@ -22,20 +35,25 @@ long_phrases:
                 next week.
 
 long_phrases_with_quotes:
-    sourceTime: 2013-08-01 21:25:00
+    sourceTime: *sundays_before_august_5
     cases:
         - target: !nlpTarget
             - phrase: "At '8PM on August 5th"
-              target: 2013-08-05 20:00:00
+              target: !replace xxxx-08-05 20:00:00
               context: !pdtContext month | day | hour
             - phrase: "next Friday at 9PM"
-              target: 2013-08-09 21:00:00
+              target: !datedelta
+                sourceTime: !replace xxxx-xx-xx 21:00:00
+                days: 5
               context: !pdtContext day | hour
             - phrase: "in '5 minutes"
-              target: 2013-08-01 21:30:00
+              target: !datedelta
+                minutes: 5
               context: !pdtContext minute
             - phrase: "next week"
-              target: 2013-08-08 09:00:00
+              target: !datedelta
+                sourceTime: !replace xxxx-xx-xx 09:00:00
+                days: 7
               context: !pdtContext week
           phrases:
             - >
@@ -45,17 +63,18 @@ long_phrases_with_quotes:
                 "next week"
 
 prefixes:
-    sourceTime: 2016-08-06 08:30:00 # Saturday
+    sourceTime: *saturdays
     cases:
         - target: !nlpTarget
             - phrase: "on Monday"
-              target: 2016-08-08 08:30:00
+              target: !datedelta
+                days: 2
               context: !pdtContext day
           phrases: 
             - "Buy a balloon on Monday"
         - target: !nlpTarget
             - phrase: "at noon"
-              target: 2016-08-06 12:00:00
+              target: !replace xxxx-xx-xx 12:00:00
               context: !pdtContext halfday
           phrases: 
             - "Buy a balloon at noon"
@@ -68,13 +87,13 @@ prefixes:
             - "Buy a balloon in a month"
         - target: !nlpTarget
             - phrase: "Monday"
-              target: 2016-08-08 08:30:00
+              target: !datedelta
+                days: 2
               context: !pdtContext day
           phrases:
             - "Buy a balloon Monday" # Should not pull "on" from the end of "balloon"
 
 invalid_phrases:
-    sourceTime: 2013-08-01 21:25:00
     cases:
         - target: null
           phrases:
