@@ -227,3 +227,33 @@ noon:
         - "12 P.M."
         - "12P.M."
         - "12p.m."
+
+year_parse_style_1:
+  options:
+    YearParseStyle: 1
+  sourceTime: !replace xxxx-05-xx xx:xx:xx
+  cases:
+    - target: !datedelta
+        sourceTime: !replace xxxx-02-11 xx:xx:xx
+        years: 1
+      phrases:
+        - "February 11"
+        - "2/11"
+    - target: !replace xxxx-10-11 xx:xx:xx
+      phrases:
+        - "October 11"
+        - "10/11"
+
+year_parse_style_0:
+  options:
+    YearParseStyle: 0
+  sourceTime: !replace xxxx-05-xx xx:xx:xx
+  cases:
+    - target: !replace xxxx-02-11 xx:xx:xx
+      phrases:
+        - "February 11"
+        - "2/11"
+    - target: !replace xxxx-10-11 xx:xx:xx
+      phrases:
+        - "October 11"
+        - "10/11"

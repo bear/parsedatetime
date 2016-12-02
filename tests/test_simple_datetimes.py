@@ -1,3 +1,6 @@
+import datetime
+import string
+
 from .fixtures import pdtFixture
 
 
@@ -46,14 +49,26 @@ def test_midnight(calendar, phrase, sourceTime, target, context):
 def test_noon(calendar, phrase, sourceTime, target, context):
     assert calendar.parse(phrase, sourceTime) == (target.timetuple(), context)
 
-#
-# Leap years
-#
-
 
 @pdtFixture('simple_datetimes.yml')
 def test_leap_days(calendar, phrase, sourceTime, target, context,
                    assertLazyStructTimes):
+    result = calendar.parse(phrase, sourceTime)
+    assertLazyStructTimes(result[0], target.timetuple())
+    assert result[1] == context
+
+
+@pdtFixture('simple_datetimes.yml')
+def test_year_parse_style_1(calendar, phrase, sourceTime, target, context,
+                            assertLazyStructTimes):
+    result = calendar.parse(phrase, sourceTime)
+    assertLazyStructTimes(result[0], target.timetuple())
+    assert result[1] == context
+
+
+@pdtFixture('simple_datetimes.yml')
+def test_year_parse_style_0(calendar, phrase, sourceTime, target, context,
+                            assertLazyStructTimes):
     result = calendar.parse(phrase, sourceTime)
     assertLazyStructTimes(result[0], target.timetuple())
     assert result[1] == context
@@ -71,3 +86,36 @@ def test_days_in_month(calendar):
         assert calendar.ptc.daysInMonth(i, 2003) == dNormal[i - 1]
         assert calendar.ptc.daysInMonth(i, 2004) == dLeap[i - 1]
         assert calendar.ptc.daysInMonth(i, 2005) == dNormal[i - 1]
+
+
+def test_word_boundaries(calendar):
+    start = target = datetime.datetime.now().timetuple()
+    loc = calendar.ptc.locale
+    keywords = []
+
+    def flattenWeekdays(wds):
+        return sum([wd.split('|') for wd in wds], [])
+
+    # Test all known keywords for the locale
+    keywords.extend(loc.meridian)
+    keywords.extend(flattenWeekdays(loc.Weekdays))
+    keywords.extend(flattenWeekdays(loc.shortWeekdays))
+    keywords.extend(loc.Months)
+    keywords.extend(loc.shortMonths)
+    keywords.extend(loc.numbers.keys())
+    keywords.extend(loc.Modifiers.keys())
+    keywords.extend(loc.dayOffsets.keys())
+    keywords.extend(loc.re_sources.keys())
+    keywords.extend(loc.small.keys())
+    keywords.extend(loc.magnitude.keys())
+
+    for units in loc.units.values():
+        keywords.extend(units)
+
+    # Finally, test all lowercase letters to be particularly thorough - it
+    # would be very difficult to track down bugs due to single letters.
+    keywords.extend(list(string.ascii_lowercase))
+
+    for keyword in keywords:
+        phrase = '1 %sfoo' % keyword
+        assert calendar.parse(phrase, start) == (target, 0)
