@@ -411,11 +411,15 @@ class TestGroup(object):
         constants = Constants(localeID, usePyICU=False)
         sourceTime = groupData.get('sourceTime')
         options = groupData.get('options') or {}
+        calendar_options = {}
 
         for (attr, value) in options.items():
-            setattr(constants, attr, value)
+            if attr == 'day_start_hour':
+                calendar_options[attr] = value
+            else:
+                setattr(constants, attr, value)
 
-        self._calendar = Calendar(constants, version=VERSION_CONTEXT_STYLE)
+        self._calendar = Calendar(constants, version=VERSION_CONTEXT_STYLE, **calendar_options)
         self._caseData = groupData['cases']
         self._sourceTimes = DEFAULT_SOURCE_TIMES
 
