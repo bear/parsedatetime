@@ -1,0 +1,119 @@
+minutes:
+    cases:
+        - target: !datedelta
+            minutes: 1
+          context: !pdtContext minute
+          phrases:
+            - "1 minutes"
+            - "1 minute"
+            - "1 min"
+            - "1min"
+            - "1 m"
+            - "1m"
+        - target: !datedelta
+            minutes: -1
+          context: !pdtContext minute
+          phrases:
+            - "1 minutes ago"
+            - "1 minute ago"
+
+hours:
+    cases:
+        - target: !datedelta
+            hours: 1
+          context: !pdtContext hour
+          phrases:
+            - "1 hour"
+            - "1 hours"
+            - "1 hr"
+        - target: !datedelta
+            hours: -1
+          context: !pdtContext hour
+          phrases:
+            - "1 hour ago"
+            - "1 hours ago"
+
+days:
+    cases:
+        - target: !datedelta
+            days: 1
+          context: !pdtContext day
+          phrases:
+            - "1 day"
+            - "1 days"
+            - "1days"
+            - "1 dy"
+            - "1 d"
+        - target: !datedelta
+            days: -1
+          context: !pdtContext day
+          phrases:
+            - "-1 day"
+            - "-1 days"
+            - "-1days"
+            - "-1 dy"
+            - "-1 d"
+            - "- 1 day"
+            - "- 1 days"
+            - "- 1days"
+            - "- 1 dy"
+            - "- 1 d"
+            - "1 day ago"
+            - "1 days ago"
+
+weeks:
+    cases:
+        - target: !datedelta
+            weeks: 1
+          context: !pdtContext week
+          phrases:
+            - "1 week"
+            - "1week"
+            - "1 weeks"
+            - "1 wk"
+            - "1 w"
+            - "1w"
+        - target: !datedelta
+            weeks: -1
+          context: !pdtContext week
+          phrases:
+            - "1 week ago"
+            - "1 weeks ago"
+
+months:
+    cases:
+        - target: !datedelta
+            months: 1
+          context: !pdtContext month
+          phrases:
+            - "1 month"
+            - "1 months"
+            - "1month"
+        - target: !datedelta
+            months: -1
+          context: !pdtContext month
+          phrases:
+            - "1 month ago"
+            - "1 months ago"
+
+years:
+    cases:
+        - target: !datedelta
+            years: 1
+          context: !pdtContext year
+          phrases:
+            - "1 year"
+            - "1 years"
+            - "1 yr"
+            - "1 y"
+            - "1y"
+        - target: !datedelta
+            years: -1
+          context: !pdtContext year
+          phrases:
+            - "1 year ago"
+            - "1 years ago"
+            - "1 yr ago"
+            - "1 y ago"
+            - "1y ago"
+
