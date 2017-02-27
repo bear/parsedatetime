@@ -1,0 +1,37 @@
+end_of_phrases_enabled:
+    options:
+        StartTimeFromSourceTime: true
+    cases:
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-01 xx:xx:xx
+            months: 1
+            days: -1
+          context: !pdtContext day
+          phrases:
+            - "eom"
+            - "meeting eom"
+        - target: !datedelta
+            sourceTime: !replace xxxx-12-31 xx:xx:xx
+          context: !pdtContext month
+          phrases:
+            - "eoy"
+            - "meeting eoy"
+
+end_of_phrases_disabled:
+    options:
+        StartTimeFromSourceTime: false
+    cases:
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-01 09:00:00
+            months: 1
+            days: -1
+          context: !pdtContext day
+          phrases:
+            - "eom"
+            - "meeting eom"
+        - target: !datedelta
+            sourceTime: !replace xxxx-12-31 09:00:00
+          context: !pdtContext month
+          phrases:
+            - "eoy"
+            - "meeting eoy"
