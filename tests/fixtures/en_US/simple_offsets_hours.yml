@@ -1,0 +1,64 @@
+hours_from_now:
+    cases:
+        - target: !datedelta
+            hours: 5
+          context: !pdtContext hour
+          phrases:
+            - "in 5 hours"
+            - "in 5 hour"
+            - "5 hours"
+            - "5 hr"
+            - "5h"
+            - "in five hours"
+            - "in five hour"
+            - "five hours"
+            - "five hr"
+        - target: !datedelta
+            hours: 5
+          context: !pdtContext hour | now
+          phrases:
+            - "5 hours from now"
+            - "5 hour from now"
+            - "5 hr from now"
+            - "five hours from now"
+            - "five hour from now"
+            - "five hr from now"
+        - target: !datedelta
+            hours: 1
+          context: !pdtContext hour
+          phrases:
+            - "in an hour"
+            - "an hour"
+            - "an hr"
+            - "an h"
+        - target: !datedelta
+            hours: 1
+          context: !pdtContext hour | now
+          phrases:
+            - "an hour from now"
+
+invalid_hours_from_now:
+    cases:
+        - target: null
+          phrases:
+            - "anhour"
+            - "an hamburger"
+
+hours_before_now:
+    cases:
+        - target: !datedelta
+            hours: -5
+          context: !pdtContext hour | now
+          phrases:
+            - "5 hours before now"
+            - "5 hr before now"
+            - "5h before now"
+            - "five hours before now"
+            - "five hr before now"
+        - target: !datedelta
+            hours: -1
+          context: !pdtContext hour | now
+          phrases:
+            - "an hour before now"
+            - "an hr before now"
+            - "an h before now"
