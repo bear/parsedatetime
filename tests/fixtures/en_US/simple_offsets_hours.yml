@@ -1,3 +1,6 @@
+constants:
+    - &noon !replace xxxx-xx-xx 12:00:00
+
 hours_from_now:
     cases:
         - target: !datedelta
@@ -62,3 +65,60 @@ hours_before_now:
             - "an hour before now"
             - "an hr before now"
             - "an h before now"
+
+hours_from_noon:
+    cases:
+        - target: !datedelta
+            sourceTime: *noon
+            hours: 5
+          context: !pdtContext hour
+          phrases:
+            - "5 hours after 12pm"
+            - "five hours after 12pm"
+            - "5 hours after 12 pm"
+        - target: !datedelta
+            sourceTime: *noon
+            hours: 5
+          context: !pdtContext hour | minute
+          phrases:
+            - "5 hours after 12:00pm"
+            - "5 hours after 12:00 pm"
+        - target: !datedelta
+            sourceTime: *noon
+            hours: 5
+          context: !pdtContext hour | halfday
+          phrases:
+            - "5 hours after noon"
+            - "5 hours from noon"
+
+hours_before_noon:
+    cases:
+        - target: !datedelta
+            sourceTime: *noon
+            hours: -5
+          context: !pdtContext hour
+          phrases:
+            - "5 hours before 12pm"
+            - "five hours before 12pm"
+            - "5 hours before 12 pm"
+        - target: !datedelta
+            sourceTime: *noon
+            hours: -5
+          context: !pdtContext hour | minute
+          phrases:
+            - "5 hours before 12:00pm"
+            - "5 hours before 12:00 pm"
+        - target: !datedelta
+            sourceTime: *noon
+            hours: -5
+          context: !pdtContext hour | halfday
+          phrases:
+            - "5 hours before noon"
+        # FIXME: This phrase does not respect the sourceTime; next noon is interpreted relative to the current date
+        # - target: !datedelta
+        #     sourceTime: *noon
+        #     days: 1
+        #     hours: -5
+        #   context: !pdtContext hour | halfday
+        #   phrases:
+        #     - "5 hours before next noon"
