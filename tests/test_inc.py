@@ -1,7 +1,5 @@
 import datetime
 
-from .fixtures import pdtFixture
-
 
 def test_inc_months(calendar):
     s = datetime.datetime(2006, 1, 1, 12, 0, 0)
