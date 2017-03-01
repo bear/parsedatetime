@@ -219,6 +219,11 @@ class dateReplacement(object):
                 kwargs[kw] = int(components[index])
 
         return dateReplacement(**kwargs)
+    
+    def __eq__(self, other):
+        if isinstance(other, dateReplacement):
+            return self._kwargs == other._kwargs
+        return NotImplemented
 
 
 class nlpTarget(object):
