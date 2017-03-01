@@ -129,31 +129,25 @@ class datedelta(object):
         if isinstance(other, datetime):
             return (calendar.inc(other, self._months, self._years) +
                     self._timedelta)
-        return NotImplemented
+        raise NotImplementedError
 
     def __repr__(self):
-        if self._years:
-            return "%s(%d, %d, %s)" % (self.__class__.__name__,
-                                       self._years,
-                                       self._months,
-                                       self._timedelta)
-        if self._months:
-            return "%s(%d, %s)" % (self.__class__.__name__,
+        return "%s(%d, %d, %s)" % (self.__class__.__name__,
+                                   self._years,
                                    self._months,
-                                   self._timedelta)
-
-        return "%s(%s)" % (self.__class__.__name__, self._timedelta)
+                                   repr(self._timedelta))
 
     def __str__(self):
         def plural(n):
             return n, abs(n) != 1 and "s" or ""
-        s = ''
+        s = []
         if self._years:
-            s += '%d year%s' % plural(self._years)
+            s.append('%d year%s' % plural(self._years))
         if self._months:
-            s += '%d month%s' % plural(self._months)
-
-        return '%s %s' % (s, self._timedelta)
+            s.append('%d month%s' % plural(self._months))
+            
+        s.append(str(self._timedelta))
+        return ', '.join(s)
 
 
 class dateReplacement(object):
