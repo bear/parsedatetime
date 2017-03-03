@@ -58,7 +58,7 @@ tox: clean
 	tox
 
 coverage: clean
-	@coverage run --source=parsedatetime setup.py test
+	@coverage run setup.py test
 	@coverage html
 	@coverage report
 
