@@ -4,6 +4,18 @@ import pytest
 from .data import datedelta
 
 
+def test_get_years(calendar):
+    target = 2
+    delta = datedelta(years=target)
+    assert delta.years == target
+
+
+def test_get_months(calendar):
+    target = 2
+    delta = datedelta(months=target)
+    assert delta.months == target
+    
+
 def test_add_years(calendar):
     delta = datedelta(years=2)
     start = datetime(2017, 1, 2)

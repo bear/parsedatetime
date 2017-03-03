@@ -65,6 +65,10 @@ def test_raises_error_on_invalid_kwargs():
         dateReplacement(foo=1)
 
 
+def test_equality_to_other_types():
+    assert not (dateReplacement() == 1)
+
+
 def test_accepts_all_datetime_replace_kwargs():
     dateReplacement(
         year=1,
