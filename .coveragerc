@@ -2,6 +2,6 @@
 branch = True
 include =
   parsedatetime/*
-  tests/*
+  tests/lib/*
 omit =
-  tests/test_*
+  tests/*/test_*

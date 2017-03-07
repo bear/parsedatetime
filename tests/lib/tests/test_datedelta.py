@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytest
 
-from .data import datedelta
+from tests.lib.data import datedelta
 
 
 def test_get_years(calendar):

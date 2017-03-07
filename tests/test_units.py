@@ -1,4 +1,4 @@
-from .fixtures import pdtFixture
+from tests.lib.fixtures import pdtFixture
 
 
 @pdtFixture('units.yml')

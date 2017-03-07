@@ -1,6 +1,6 @@
 import pytest
 
-from .fixtures import pdtFixture
+from tests.lib.fixtures import pdtFixture
 
 
 @pdtFixture('nlp.yml')

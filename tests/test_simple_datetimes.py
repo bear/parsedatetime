@@ -1,7 +1,7 @@
 import datetime
 import string
 
-from .fixtures import pdtFixture
+from tests.lib.fixtures import pdtFixture
 
 
 @pdtFixture('simple_datetimes.yml')

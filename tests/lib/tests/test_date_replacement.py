@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytest
 
-from .data import dateReplacement
+from tests.lib.data import dateReplacement
 
 
 def test_replace():

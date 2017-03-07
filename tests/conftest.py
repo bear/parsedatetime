@@ -3,5 +3,5 @@
 Preloads fixtures and adds any test hooks or plugins.
 """
 
-from .assertions import *
-from .fixtures import *
+from tests.lib.assertions import *
+from tests.lib.fixtures import *

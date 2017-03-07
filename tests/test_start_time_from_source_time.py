@@ -1,4 +1,4 @@
-from .fixtures import pdtFixture
+from tests.lib.fixtures import pdtFixture
 
 
 @pdtFixture('start_time_from_source_time.yml')

@@ -13,10 +13,10 @@ import os
 import pytest
 
 from parsedatetime import Calendar
-from tests.data import loadData, TestGroup
+from .data import loadData, TestGroup
 from tests import log
 
-basedir = os.path.dirname(__file__)
+basedir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
 
 
 @pytest.fixture
@@ -104,9 +104,9 @@ def pdtFixture(filename, explicitTestGroupNames=None, localeIDs=None):
 
     Args:
         filename (str): The name of the file from which to load test data
-            relative to the locale directory in the test fixtures. The file
-            will be loaded from :file:`./tests/fixtures/{localeID}/{filename}`
-            and must include the proper extension.
+            relative to the locale directory. The file will be loaded from
+            :file:`./tests/data/{localeID}/{filename}` and must include the
+            proper extension.
         explicitTestGroupNames (Optional[List[str]]): The specific test
             groups to load from the specified fixture data file. If
             unspecified, `pdtFixture` will look for a test group matching the
@@ -163,7 +163,7 @@ def generateParameters(filename, testGroupNames, parameters, localeIDs=None):
         to the order of values in all of the tuples in the second element.
     """
     localeID = localeIDs[0] if localeIDs and len(localeIDs) == 1 else '*'
-    paths = glob.iglob(os.path.join(basedir, 'fixtures', localeID, filename))
+    paths = glob.iglob(os.path.join(basedir, 'data', localeID, filename))
     knownParameters = TestGroup.supportedParameters(parameters)
     parameterGroups = []
 
