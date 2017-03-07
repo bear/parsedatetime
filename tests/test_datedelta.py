@@ -14,7 +14,18 @@ def test_get_months(calendar):
     target = 2
     delta = datedelta(months=target)
     assert delta.months == target
+
+
+def test_raises_error_on_invalid_types(calendar):
+    with pytest.raises(TypeError):
+        datedelta(years='bad')
+        
+    with pytest.raises(TypeError):
+        datedelta(months={})
     
+    with pytest.raises(TypeError):
+        datedelta(sourceTime='bad')
+
 
 def test_add_years(calendar):
     delta = datedelta(years=2)
