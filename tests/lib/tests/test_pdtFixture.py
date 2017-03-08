@@ -5,7 +5,7 @@ import tests.lib.fixtures as fixtures
 from tests.lib.fixtures import pdtFixture
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope='function', autouse=True)
 def patch_generateParameters(mocker):
     mocker.patch.object(fixtures, 'generateParameters')
     
