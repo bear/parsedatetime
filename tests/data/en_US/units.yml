@@ -10,12 +10,20 @@ minutes:
             - "1min"
             - "1 m"
             - "1m"
+            - "one minute"
+            - "one min"
+            - "one m"
+            - "a minute"
         - target: !datedelta
             minutes: -1
           context: !pdtContext minute
           phrases:
             - "1 minutes ago"
             - "1 minute ago"
+            - "one minute ago"
+            - "one min ago"
+            - "one m ago"
+            - "a minute ago"
 
 hours:
     cases:

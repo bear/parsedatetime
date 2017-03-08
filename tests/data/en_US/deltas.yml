@@ -68,14 +68,14 @@ simple_multiple_unit_deltas:
           context: !pdtContext year | week | day
           phrases: 
             - "3 years, 2 weeks, 5 days"
-            - "3 years, 2 weeks and 5 days"
+            - "3 years, two weeks and five days"
             - "5 day 3 week 2 year"
             - "2weeks, 5days, 2year"
     cases:
         - target: *delta_2m1h4m32s
           context: !pdtContext month | hour | minute | second
           phrases: 
-            - "2 months, 1 hour, 4 minutes, 32 seconds"
+            - "2 months, an hour, four minutes, 32 seconds"
             - "2 months, 1 hour, 4 minutes, and 32 seconds"
             - "32 second 4 minute 2 month 1 hour"
             - "2months, 4minute, 32second, 1hour"

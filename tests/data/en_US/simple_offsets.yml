@@ -30,6 +30,7 @@ offset_from_day_of_week:
           context: !pdtContext day | hour
           phrases:
             - "one hour from Thursday"
+            - "1h from Thursday"
         - target: !datedelta
             # TODO: Handling this as Thursday at 9 minus 1 hour seems
             # unexpected.
@@ -38,7 +39,8 @@ offset_from_day_of_week:
             hours: -1
           context: !pdtContext day | hour
           phrases:
-            - "one hour before Thursday"
+            - "an hour before Thursday"
+            - "1 hr before Thursday"
 
 offset_from_day_of_week_matching_source_time:
     sourceTime: *tuesdays
