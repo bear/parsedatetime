@@ -1,0 +1,13 @@
+noon:
+    sourceTime: 2016-01-01 08:00:00
+    cases:
+        - target: 2016-01-01 12:00:00
+          phrases:
+            - "noon"
+
+morning:
+    sourceTime: 2016-01-01 08:00:00
+    cases:
+        - target: 2016-01-01 06:00:00
+          phrases:
+            - "morning"
