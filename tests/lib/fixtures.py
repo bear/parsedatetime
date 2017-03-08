@@ -16,8 +16,6 @@ from parsedatetime import Calendar
 from .data import loadData, TestGroup
 from tests import log
 
-basedir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
-
 
 @pytest.fixture
 def calendar():
@@ -130,22 +128,26 @@ def pdtFixture(filename, explicitTestGroupNames=None, localeIDs=None):
     """
     def decorator(testFn):
         parameters = inspect.getargspec(testFn)[0]
+        basedir = os.path.dirname(inspect.getsourcefile(testFn))
         testGroupNames = explicitTestGroupNames or \
             [testFn.__name__.replace('test_', '')]
-        parameterization = generateParameters(filename, testGroupNames,
+        parameterization = generateParameters(filename, basedir, testGroupNames,
                                               parameters, localeIDs)
 
         return pytest.mark.parametrize(*parameterization)(testFn)
     return decorator
 
 
-def generateParameters(filename, testGroupNames, parameters, localeIDs=None):
+def generateParameters(filename, basedir, testGroupNames, parameters,
+                       localeIDs=None):
     """Collects all parameters from all test groups and returns a tuple that
     can be passed as ``*args`` to `@pytest.mark.parametrize`.
 
     Args:
         filename (str): The name of the test data file, including the ``.yml``
             extension.
+        basedir (str): The directory of the test file, relative to which the
+            data will be loaded.
         testGroupNames (List[str]): The test groups from the specified file
             that should be included in the parametrization.
         parameters (List[str]): The parameter names required by the test
