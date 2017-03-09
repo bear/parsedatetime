@@ -607,7 +607,12 @@ class TestCase(object):
                 if parameter in _PROPERTY_MAPPING:
                     value = _PROPERTY_MAPPING[parameter](self, target, phrase)
                     phraseValues.append(value)
-            values.append(tuple(phraseValues))
+            # Individual parameters must be unwrapped otherwise a tuple
+            # containing the value is injected in the test
+            if len(phraseValues) == 1:
+                values.append(phraseValues[0])
+            else:
+                values.append(tuple(phraseValues))
 
         return tuple(values)
 
