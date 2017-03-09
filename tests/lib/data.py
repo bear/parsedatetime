@@ -18,7 +18,7 @@ from tests import log
 # Allow Python 2 type checking in Python 3
 try:
     unicode = unicode
-except NameError:
+except NameError:      # pragma: no cover
     basestring = (str, bytes)
     long = int
 
@@ -35,7 +35,8 @@ _PROPERTY_MAPPING = {
     'phrase': lambda case, target, phrase: phrase,
     'context': lambda case, target, phrase: case.context,
     'calendar': lambda case, target, phrase: case.calendar,
-    'nlpTarget': lambda case, target, phrase: case.nlpTarget(target, phrase)
+    'nlpTarget': lambda case, target, phrase: case.nlpTarget(target, phrase),
+    'case': lambda case, target, phrase: case,
 }
 
 
