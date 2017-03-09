@@ -1,0 +1,7 @@
+datedelta: !datedelta
+    years: 1
+    days: 1
+
+dateReplacement: !replace xxxx-01-xx 01:xx:xx
+
+pdtContext: !pdtContext year | hour | second

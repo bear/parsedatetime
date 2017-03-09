@@ -1,0 +1,11 @@
+target_by_phrase:
+    cases:
+        - phrases:
+            noon: !replace xxxx-xx-xx 12:00:00
+            morning: !replace xxxx-xx-xx 06:00:00
+        # NOTE: specifying an absolute sourceTime here is not encouraged since
+        # the test will still run once for each sourceTime assigned to the group
+        - sourceTime: 2016-01-12 00:00:00
+          phrases:
+            "Jan 12, 2016 5am": 2016-01-12 05:00:00
+            
