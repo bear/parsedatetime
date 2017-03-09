@@ -638,6 +638,7 @@ def loadData(path):
                 }
             except yaml.YAMLError as exc:
                 log.error(exc)
+                raise exc
 
     return data
 
