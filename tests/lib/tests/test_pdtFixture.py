@@ -64,38 +64,3 @@ def test_localeIDs(basedir):
     fixtures.generateParameters.assert_called_once_with(filename, basedir,
                                                         testGroupNames,
                                                         parameters, localeIDs)
-
-
-@pdtFixture('simple.yml')
-def test_noon(phrase, target):
-    """
-    explicitTestGroupNames should override the test function name
-    """
-    assert phrase == 'noon'
-
-
-@pdtFixture('simple.yml', explicitTestGroupNames=['noon'])
-def test_morning(phrase, target):
-    """
-    explicitTestGroupNames should override the test function name
-    """
-    assert phrase == 'noon'
-
-
-@pdtFixture('simple.yml', explicitTestGroupNames=['noon'], localeIDs=['xx'])
-@pytest.mark.xfail('Should skip, no tests to run', strict=True)
-def test_unknown_locale(phrase, target):
-    """
-    xfail to ensure that the test is not called for an invalid locale
-    """
-    pass
-
-
-@pdtFixture('simple.yml')
-@pytest.mark.xfail('Should skip, no tests to run', strict=True)
-def test_unknown_group(phrase, target):
-    """
-    xfail to ensure that the test is not called for a group that does not
-    appear in the data file.
-    """
-    pass
