@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Convenience classes and 
+Convenience classes for testing parsedatetime.
 
-In addition to the syntax supported by ``PyYaml``, parsedatetime provides a few
-constructors to represent data in YAML.
+Allows test data to be represented flexibly in the YAML data files with minimal
+logic required in each test assertion.
 """
 
 from datetime import datetime, timedelta

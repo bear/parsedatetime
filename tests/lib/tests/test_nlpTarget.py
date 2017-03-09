@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytest
 
-from tests.lib.data import nlpTarget, TestCase
+from tests.lib.models import nlpTarget, TestCase
 
 
 @pytest.fixture

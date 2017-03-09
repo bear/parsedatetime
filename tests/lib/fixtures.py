@@ -13,7 +13,8 @@ import os
 import pytest
 
 from parsedatetime import Calendar
-from .data import loadData, TestGroup
+from tests.lib.data import loadData
+from tests.lib.models import TestGroup
 from tests import log
 
 

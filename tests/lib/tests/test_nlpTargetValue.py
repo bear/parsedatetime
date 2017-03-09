@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytest
 
-from tests.lib.data import nlpTargetValue
+from tests.lib.models import nlpTargetValue
 from parsedatetime.context import pdtContext
 
 
