@@ -24,9 +24,7 @@ class test(unittest.TestCase):
 
     def setUp(self):
         self.cal = pdt.Calendar(version=pdt.VERSION_CONTEXT_STYLE)
-        self.source = (self.yr, self.mth, self.dy,
-                       self.hr, self.mn, self.sec,
-                       self.wd, self.yd, self.isdst) = time.localtime()
+        self.source = (2017, 1, 1, 7, 1, 2, 6, 1, 1)
 
     def assertDelta(self, ts, years=None, months=None, **deltakw):
         ts = ts[0]
