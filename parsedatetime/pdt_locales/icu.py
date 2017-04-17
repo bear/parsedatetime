@@ -14,7 +14,7 @@ except NameError:
 
 try:
     import PyICU as pyicu
-except:
+except ImportError:
     pyicu = None
 
 
