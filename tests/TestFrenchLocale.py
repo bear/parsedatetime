@@ -125,5 +125,6 @@ class test(unittest.TestCase):
         self.ptc.CurrentDOWParseStyle = o1
         self.ptc.DOWParseStyle = o2
 
+
 if __name__ == "__main__":
     unittest.main()
