@@ -36,7 +36,6 @@ setup(
     platforms=['Any'],
     long_description=read('README.rst'),
     install_requires=['future'],
-    setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     test_suite='tests',
     classifiers=[
