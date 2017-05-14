@@ -1,3 +1,9 @@
+14 May 2017 - bear
+    v2.4 release
+    v2.5 bump
+
+    Issue #219 - remove 'setup_requires' from setup.py
+
 10 Mar 2017 - bear
     v2.3 release
     v2.4 bump
