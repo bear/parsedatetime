@@ -29,11 +29,11 @@ dev: env
 	@echo "on OS X use homebrew to install icu4c"
 	LDFLAGS=${PYICU_LD} CPPFLAGS=${PYICU_CPP} ICU_VERSION=${ICU_VER} \
     pip install -U pyicu
+	pyenv install -s 2.6.9
 	pyenv install -s 2.7.11
 	pyenv install -s 3.6.1
-	pyenv install -s 2.6.9
 	pyenv install -s pypy-5.3
-	pyenv local 2.7.11 3.5.2 2.6.9 pypy-5.3
+	pyenv local 2.6.9 2.7.11 3.6.1 pypy-5.3
 
 info:
 	@python --version
