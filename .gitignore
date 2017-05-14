@@ -3,6 +3,7 @@ foo.py
 
 # IDE
 .idea/
+.vscode
 
 # Packages
 *.egg
