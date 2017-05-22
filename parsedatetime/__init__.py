@@ -970,7 +970,7 @@ class Calendar(object):
                         yr, mth, dy, hr, mn, sec, wd, yd, isdst = t
                         start = datetime.datetime(
                             yr, mth, dy, hr, mn, sec)
-                        t = self.inc(start, year=offset).timetuple()
+                        # t = self.inc(start, year=offset).timetuple()
                     elif u in self.ptc.Weekdays:
                         t = t + datetime.timedelta(weeks=offset)
 
