@@ -35,6 +35,11 @@ def merge_weekdays(base_wd, icu_wd):
 
 
 def get_icu(locale):
+
+    def _sanitize_key(k):
+        import re
+        return re.sub("\\.(\\||$)", "\\1", k)
+
     from . import base
     result = dict([(key, getattr(base, key))
                    for key in dir(base) if not key.startswith('_')])
@@ -58,16 +63,16 @@ def get_icu(locale):
 
     # grab ICU list of weekdays, skipping first entry which
     # is always blank
-    wd = [w.lower() for w in symbols.getWeekdays()[1:]]
-    swd = [sw.lower() for sw in symbols.getShortWeekdays()[1:]]
+    wd = [_sanitize_key(w.lower()) for w in symbols.getWeekdays()[1:]]
+    swd = [_sanitize_key(sw.lower()) for sw in symbols.getShortWeekdays()[1:]]
 
     # store them in our list with Monday first (ICU puts Sunday first)
     result['Weekdays'] = merge_weekdays(result['Weekdays'],
                                         wd[1:] + wd[0:1])
     result['shortWeekdays'] = merge_weekdays(result['shortWeekdays'],
                                              swd[1:] + swd[0:1])
-    result['Months'] = [m.lower() for m in symbols.getMonths()]
-    result['shortMonths'] = [sm.lower() for sm in symbols.getShortMonths()]
+    result['Months'] = [_sanitize_key(m.lower()) for m in symbols.getMonths()]
+    result['shortMonths'] = [_sanitize_key(sm.lower()) for sm in symbols.getShortMonths()]
     keys = ['full', 'long', 'medium', 'short']
 
     createDateInstance = pyicu.DateFormat.createDateInstance
