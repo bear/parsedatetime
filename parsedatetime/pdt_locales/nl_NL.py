@@ -71,7 +71,6 @@ Modifiers = {
     'vanaf': 1,
     'voor': -1,
     'na': 1,
-    'vorige': -1,
     'eervorige': -1,
     'prev': -1,
     'laastste': -1,
