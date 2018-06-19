@@ -105,18 +105,33 @@ class test(unittest.TestCase):
             2006, 9, 2, self.hr, self.mn, self.sec).timetuple()
 
         self.assertExpectedResult(
-            self.cal.evalRanges("Aug 29, 2006 - Sep 2, 2006", start),
+            self.cal.evalRanges("from Aug 29, 2006 to Sep 2, 2006", start),
             (targetStart, targetEnd, 1))
         self.assertExpectedResult(
-            self.cal.evalRanges("August 29 - September 2 2006", start),
+            self.cal.evalRanges("August 29th - September 2nd 2006", start),
             (targetStart, targetEnd, 1))
         self.assertExpectedResult(
             self.cal.evalRanges("29 August- 2 September 2006", start),
             (targetStart, targetEnd, 1))
-        '''self.assertExpectedResult(
+        self.assertExpectedResult(
             self.cal.evalRanges("August 29th - September 2nd, 2006", start),
-            (targetStart, targetEnd, 1))'''
+            (targetStart, targetEnd, 1))
 
+        '''targetStart = datetime.datetime(
+            2006, 8, 29, 13, 45, self.sec).timetuple()
+        targetEnd = datetime.datetime(
+            2006, 9, 2, 15, 30, self.sec).timetuple()
+
+        self.assertExpectedResult(
+            self.cal.evalRanges("Aug 29, 2006 1:45 pm- Sep 2, 2006 3:30 pm", start),
+            (targetStart, targetEnd, 1))
+        self.assertExpectedResult(
+            self.cal.evalRanges("August 29 1:45 pm- September 2 2006 3:30 pm", start),
+            (targetStart, targetEnd, 1))
+        self.assertExpectedResult(
+            self.cal.evalRanges("29 August 1:45 pm - 2 September 2006 3:30 pm", start),
+            (targetStart, targetEnd, 1))
+        '''
         targetStart = datetime.datetime(
             self.yr + 1, 3, 2, self.hr, self.mn, self.sec).timetuple()
         targetEnd = datetime.datetime(
@@ -126,7 +141,7 @@ class test(unittest.TestCase):
             self.cal.evalRanges(" Mar 2nd - 13th", start),
             (targetStart, targetEnd, 1))
         self.assertExpectedResult(
-            self.cal.evalRanges("2 - 13 March", start),
+            self.cal.evalRanges("2nd - 13th March", start),
             (targetStart, targetEnd, 1))
 
         targetStart = datetime.datetime(
@@ -144,6 +159,132 @@ class test(unittest.TestCase):
             self.cal.evalRanges("2006/08/29 - 2006/09/02", start),
             (targetStart, targetEnd, 1))
 
+        targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=1)
+        targetEnd = targetEnd.timetuple()
+
+        self.assertExpectedResult(
+            self.cal.evalRanges("from today to tomorrow", start),
+            (targetStart, targetEnd, 0))
+
+        targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) + datetime.timedelta(days=4)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) + datetime.timedelta(days=5)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("after 4 days", start),
+            (targetStart, targetEnd, 1))
+
+        targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=4)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=5)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("2 days from day after tomorrow", start),
+            (targetStart, targetEnd, 1))
+        self.assertExpectedResult(
+            self.cal.evalRanges("3 days from tomorrow", start),
+            (targetStart, targetEnd, 1))
+        self.assertExpectedResult(
+            self.cal.evalRanges("4 days from today", start),
+            (targetStart, targetEnd, 1))
+
+        targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) + datetime.timedelta(days=5)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("in 5 days", start),
+            (targetStart, targetEnd, 1))
+        self.assertExpectedResult(
+            self.cal.evalRanges("next 5 days", start),
+            (targetStart, targetEnd, 1))
+
+        targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) - datetime.timedelta(days=5)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("since 5 days", start),
+            (targetStart, targetEnd, 1))
+
+        targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) - datetime.timedelta(days=1)\
+                      + datetime.timedelta(hours=1)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("since 23 hours", start),
+            (targetStart, targetEnd, 1))
+
+        targetStart = datetime.datetime(
+            self.yr - 5, self.mth, self.dy, self.hr, self.mn, self.sec)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("since 5 yrs", start),
+            (targetStart, targetEnd, 1))
+
+        targetStart = datetime.datetime(
+            self.yr , 3, 13, self.hr, self.mn, self.sec)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("since 13th March", start),
+            (targetStart, targetEnd, 1))
+
+        # TEST CASE WORKS, BUT IS RELATIVE
+        '''targetStart = datetime.datetime(
+            self.yr, 1, self.dy, self.hr, self.mn, self.sec)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("since 5 months", start),
+            (targetStart, targetEnd, 1))'''
+
+
+        '''targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) + datetime.timedelta(days=2)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) + datetime.timedelta(days=4)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("from friday til sunday", start),
+            (targetStart, targetEnd, 1))'''
+
+        '''targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=1)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=2)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("this tuesday", start),
+            (targetStart, targetEnd, 0))
+        self.assertExpectedResult(
+            self.cal.evalRanges("coming tuesday", start),
+            (targetStart, targetEnd, 0))'''
+
+
     def _testSubRanges(self):
         start = datetime.datetime(
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
@@ -152,8 +293,11 @@ class test(unittest.TestCase):
         targetEnd = datetime.datetime(2006, 8, 15, 9, 0, 0).timetuple()
 
         self.assertExpectedResult(
-            self.cal.evalRanges("August 1-15, 2006", start),
+            self.cal.evalRanges("August 1st-15th, 2006", start),
             (targetStart, targetEnd, 1))
+
+    #def _testRelRanges(self):
+
 
 
 if __name__ == "__main__":

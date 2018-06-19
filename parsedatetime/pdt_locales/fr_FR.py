@@ -111,6 +111,12 @@ re_values = {
     'meridian': None,
     'qunits': 'h|m|s|j|sem|a',
     'now': ['maintenant', 'tout de suite', 'immédiatement', 'immediatement', 'à l\'instant', 'a l\'instant'],
+    'after': 'after',
+    'from' : 'from',
+    'this': r'this|coming|this\scoming',
+    'next': 'next',
+    'in': r'for\sthe\snext|the\snext|next|for',
+    'since': 'since',
 }
 
 # Used to adjust the returned date before/after the source

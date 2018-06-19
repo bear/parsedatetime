@@ -63,6 +63,12 @@ re_values.update({
     'daysuffix': ' |de',
     'qunits': 'h|m|s|d|w|m|j',
     'now': ['nu'],
+    'after': 'after',
+    'from' : 'from',
+    'this': r'this|coming|this\scoming',
+    'next': 'next',
+    'in': r'for\sthe\snext|the\snext|next|for',
+    'since': 'since',
 })
 
 # Used to adjust the returned date before/after the source
