@@ -562,6 +562,7 @@ class Calendar(object):
         @rtype:  tuple
         @return: tuple of: start datetime, end datetime and the invalid flag
         """
+
         rangeFlag = retFlag = 0
         startStr = endStr = ''
 
@@ -571,13 +572,20 @@ class Calendar(object):
             s = s.replace(self.ptc.rangeSep, ' %s ' % self.ptc.rangeSep)
             s = s.replace('  ', ' ')
 
-        for cre, rflag in [(self.ptc.CRE_TIMERNG1, 1),
-                           (self.ptc.CRE_TIMERNG2, 2),
-                           (self.ptc.CRE_TIMERNG4, 7),
+        for cre, rflag in [
+                           (self.ptc.CRE_DATERNG5, 10),
+                           (self.ptc.CRE_DATERNG1, 6),
+                           (self.ptc.CRE_DATERNG2, 7),
+                           (self.ptc.CRE_DATERNG3, 8),
+                           (self.ptc.CRE_TIMERNG1, 1),
+                           (self.ptc.CRE_TIMERNG4, 4),
+                           (self.ptc.CRE_DATERNG4, 9),
                            (self.ptc.CRE_TIMERNG3, 3),
-                           (self.ptc.CRE_DATERNG1, 4),
-                           (self.ptc.CRE_DATERNG2, 5),
-                           (self.ptc.CRE_DATERNG3, 6)]:
+                           (self.ptc.CRE_TIMERNG5, 5),
+                           (self.ptc.CRE_TIMERNG2, 2)
+                           ]:
+
+
             m = cre.search(s)
             if m is not None:
                 rangeFlag = rflag
@@ -600,20 +608,21 @@ class Calendar(object):
                     sourceTime = None
             else:
                 parseStr = s
-
         if rangeFlag in (1, 2):
+            # print 'timerng 1 or 2'
             m = re.search(self.ptc.rangeSep, parseStr)
             startStr = parseStr[:m.start()]
             endStr = parseStr[m.start() + 1:]
             retFlag = 2
 
-        elif rangeFlag in (3, 7):
+        elif rangeFlag in (3, 4, 5):
+            # print 'timerng 3, 4 or 5'
             m = re.search(self.ptc.rangeSep, parseStr)
             # capturing the meridian from the end time
             if self.ptc.usesMeridian:
                 ampm = re.search(self.ptc.am[0], parseStr)
 
-                # appending the meridian to the start time
+                # appending the meriidan to the start time
                 if ampm is not None:
                     startStr = parseStr[:m.start()] + self.ptc.meridian[0]
                 else:
@@ -624,13 +633,15 @@ class Calendar(object):
             endStr = parseStr[m.start() + 1:]
             retFlag = 2
 
-        elif rangeFlag == 4:
+        elif rangeFlag == 6:
+            # print 'daterng 1'
             m = re.search(self.ptc.rangeSep, parseStr)
             startStr = parseStr[:m.start()]
             endStr = parseStr[m.start() + 1:]
             retFlag = 1
 
-        elif rangeFlag == 5:
+        elif rangeFlag in (7, 10):
+           # print 'daterng 2 or 5'
             m = re.search(self.ptc.rangeSep, parseStr)
             endStr = parseStr[m.start() + 1:]
 
@@ -653,7 +664,8 @@ class Calendar(object):
 
             retFlag = 1
 
-        elif rangeFlag == 6:
+        elif rangeFlag == 8:
+            # print 'daterng 3'
             m = re.search(self.ptc.rangeSep, parseStr)
 
             startStr = parseStr[:m.start()]
@@ -664,6 +676,27 @@ class Calendar(object):
 
             # appending the month name to the end date
             endStr = mth + parseStr[(m.start() + 1):]
+
+            retFlag = 1
+        elif rangeFlag == 9:
+            #print 'daterng 4'
+            m = re.search(self.ptc.rangeSep, parseStr)
+            endStr = parseStr[m.start() + 1:]
+
+            # capturing the month from the end date
+            mth = self.ptc.CRE_DATE4.search(endStr)
+            mth = mth.group('mthname')
+
+            startStr = parseStr[:m.start()] + mth
+
+            endYear = self.ptc.CRE_DATE4.search(endStr)
+            endYear = endYear.group('year')
+
+            # appending the year to the start date if the start date
+            # does not have year information and the end date does.
+            # eg : "21 Aug - 4 Sep, 2007"
+            if endYear is not None:
+                startStr = startStr + ', ' + endYear
 
             retFlag = 1
 
@@ -1729,6 +1762,7 @@ class Calendar(object):
         return s, sourceTime, bool(parseStr)
 
     def parseDT(self, datetimeString, sourceTime=None,
+
                 tzinfo=None, version=None):
         """
         C{datetimeString} is as C{.parse}, C{sourceTime} has the same semantic
@@ -2471,21 +2505,21 @@ class Constants(object):
         # not being used in code, but kept in case others are manually
         # utilizing this regex for their own purposes
         self.RE_DATE4 = r'''(?P<date>
-                                (
-                                    (
-                                        (?P<day>\d\d?)
-                                        (?P<suffix>{daysuffix})?
-                                        (,)?
-                                        (\s)*
-                                    )
-                                    (?P<mthname>
-                                        \b({months}|{shortmonths})\b
-                                    )\s*
-                                    (?P<year>\d\d
-                                        (\d\d)?
-                                    )?
-                                )
-                            )'''.format(**self.locale.re_values)
+                                                (
+                                                    (
+                                                        (?P<day>\d\d?)
+                                                        (?P<suffix>{daysuffix})?
+                                                        (,)?
+                                                        \s*
+                                                    )
+                                                    (?P<mthname>
+                                                        \b({months}|{shortmonths})\b
+                                                    )\s*
+                                                    (?P<year>\d\d
+                                                        (\d\d)?
+                                                    )?
+                                                )
+                                            )'''.format(**self.locale.re_values)
 
         # still not completely sure of the behavior of the regex and
         # whether it would be best to consume all possible irrelevant
@@ -2495,23 +2529,23 @@ class Constants(object):
         # including fixing the bug of matching a 4-digit year as ddyy
         # when the day is absent from the string
         self.RE_DATE3 = r'''(?P<date>
-                                (?:
-                                    (?:^|\s+)
-                                    (?P<mthname>
-                                        {months}|{shortmonths}
-                                    )\b
-                                    |
-                                    (?:^|\s+)
-                                    (?P<day>[1-9]|[012]\d|3[01])
-                                    (?P<suffix>{daysuffix}|)\b
-                                    (?!\s*(?:{timecomponents}))
-                                    |
-                                    ,?\s+
-                                    (?P<year>\d\d(?:\d\d|))\b
-                                    (?!\s*(?:{timecomponents}))
-                                ){{1,3}}
-                                (?(mthname)|$-^)
-                            )'''.format(**self.locale.re_values)
+                                        (?:
+                                            (?:^|\s+)
+                                            (?P<mthname>
+                                                {months}|{shortmonths}
+                                            )\b
+                                            |
+                                            (?:^|\s+)
+                                            (?P<day>[1-9]|[012]\d|3[01])
+                                            (?P<suffix>{daysuffix}|)\b
+                                            (?!\s*(?:{timecomponents}))
+                                            |
+                                            ,?\s+
+                                            (?P<year>\d\d(?:\d\d|))\b
+                                            (?!\s*(?:{timecomponents}))
+                                        ){{1,3}}
+                                        (?(mthname)|$-^)
+                                    )'''.format(**self.locale.re_values)
 
         # not being used in code, but kept in case others are manually
         # utilizing this regex for their own purposes
@@ -2635,8 +2669,8 @@ class Constants(object):
 
         # Regex for date/time ranges
         self.RE_RTIMEHMS = r'''(\s*|^)
-                               (\d\d?){timeseparator}
-                               (\d\d)
+                               (\d\d?)({timeseparator}
+                               (\d\d))
                                ({timeseparator}(\d\d))?
                                (\s*|$)'''.format(**self.locale.re_values)
 
@@ -2651,39 +2685,57 @@ class Constants(object):
                                   .format(**self.locale.re_values))
 
         self.RE_RDATE = r'(\d+([%s]\d+)+)' % dateSeps
-        self.RE_RDATE3 = r'''(
-                                (
-                                    (
-                                        \b({months})\b
-                                    )\s*
-                                    (
-                                        (\d\d?)
-                                        (\s?|{daysuffix}|$)+
-                                    )?
-                                    (,\s*\d{{4}})?
-                                )
-                            )'''.format(**self.locale.re_values)
 
-        # "06/07/06 - 08/09/06"
+        self.RE_RDATE3 = r'''(
+                                        (
+                                            (
+                                                \b({months}|{shortmonths})\b
+                                            )\s*
+                                            (
+                                                (\d\d?)
+                                                (\s?|{daysuffix})+
+                                            )?
+                                            (,?\s*\d{{4}})?
+                                        )
+                                    )'''.format(**self.locale.re_values)
+        self.RE_RDATE4 = r'''(
+                                                (
+                                                    (
+                                                        (\d\d?)
+                                                        ({daysuffix})?
+                                                        (,)?
+                                                        \s*
+                                                    )
+                                                    (
+                                                        \b({months}|{shortmonths})\b
+                                                    )\s*
+                                                    (\d\d
+                                                        (\d\d)?
+                                                    )?
+                                                )
+                                            )'''.format(**self.locale.re_values)
+
+        # "06/07/06 - 08/09/06""yyyy/mm?/dd? OR mm/dd/yyy?y? "
         self.DATERNG1 = (r'{0}\s*{rangeseparator}\s*{0}'
                          .format(self.RE_RDATE, **self.locale.re_values))
 
-        # "march 31 - june 1st, 2006"
+        # "march 31 - june 1, 2006"
         self.DATERNG2 = (r'{0}\s*{rangeseparator}\s*{0}'
                          .format(self.RE_RDATE3, **self.locale.re_values))
 
-        # "march 1rd -13th"
-        self.DATERNG3 = (r'{0}\s*{rangeseparator}\s*(\d\d?)\s*(rd|st|nd|th)?'
+        # "march 1st -13th"
+        self.DATERNG3 = (r'{0}\s*{rangeseparator}\s*(\d\d?)\s*({daysuffix})?'
                          .format(self.RE_RDATE3, **self.locale.re_values))
 
         # "4:00:55 pm - 5:90:44 am", '4p-5p'
         self.TIMERNG1 = (r'{0}\s*{rangeseparator}\s*{0}'
                          .format(self.RE_RTIMEHMS2, **self.locale.re_values))
 
+        # "10:00 - 13:30"
         self.TIMERNG2 = (r'{0}\s*{rangeseparator}\s*{0}'
                          .format(self.RE_RTIMEHMS, **self.locale.re_values))
 
-        # "4-5pm "
+        # "4-5pm ""4-5:30pm"
         self.TIMERNG3 = (r'\d\d?\s*{rangeseparator}\s*{0}'
                          .format(self.RE_RTIMEHMS2, **self.locale.re_values))
 
@@ -2691,6 +2743,17 @@ class Constants(object):
         self.TIMERNG4 = (r'{0}\s*{rangeseparator}\s*{1}'
                          .format(self.RE_RTIMEHMS, self.RE_RTIMEHMS2,
                                  **self.locale.re_values))
+        # "4:30 -5:30 pm"
+        self.TIMERNG5 = (r'{0}\s*{rangeseparator}\s*{0}{meridian}'
+                         .format(self.RE_RTIMEHMS, **self.locale.re_values))
+
+        # " 1st - 13th March"
+        self.DATERNG4 = (r'(\d\d?)({daysuffix})?\s*{rangeseparator}\s*{0}'
+                         .format(self.RE_RDATE4, **self.locale.re_values))
+
+        # " 31 March - 1 June 2006"
+        self.DATERNG5 = (r'{0}\s*{rangeseparator}\s*{0}'
+                         .format(self.RE_RDATE4, **self.locale.re_values))
 
         self.re_option = re.IGNORECASE + re.VERBOSE
         self.cre_source = {'CRE_SPECIAL': self.RE_SPECIAL,
@@ -2715,13 +2778,17 @@ class Constants(object):
                            'CRE_RTIMEHMS2': self.RE_RTIMEHMS2,
                            'CRE_RDATE': self.RE_RDATE,
                            'CRE_RDATE3': self.RE_RDATE3,
+                           'CRE_RDATE4': self.RE_RDATE4,
                            'CRE_TIMERNG1': self.TIMERNG1,
                            'CRE_TIMERNG2': self.TIMERNG2,
                            'CRE_TIMERNG3': self.TIMERNG3,
                            'CRE_TIMERNG4': self.TIMERNG4,
+                           'CRE_TIMERNG5': self.TIMERNG5,
                            'CRE_DATERNG1': self.DATERNG1,
                            'CRE_DATERNG2': self.DATERNG2,
                            'CRE_DATERNG3': self.DATERNG3,
+                           'CRE_DATERNG4': self.DATERNG4,
+                           'CRE_DATERNG5': self.DATERNG5,
                            'CRE_NLP_PREFIX': self.RE_NLP_PREFIX}
         self.cre_keys = set(self.cre_source.keys())
 
