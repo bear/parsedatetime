@@ -106,11 +106,13 @@ re_values = {
     'qunits': 'h|m|s|d|w|y',
     'now': ['now', 'right now'],
     'after': 'after',
-    'from' : 'from',
-    'this': r'this|coming|this\scoming',
-    'next': 'next',
-    'in': r'for\sthe\snext|the\snext|next|in|in\sthe\s\next|in\snext',
-    'since' : 'since',
+    'ago': 'ago',  # imply next or last but at the end of a phrase
+    'from': 'from',  # num unit from rel
+    'this': 'this',
+    'next': 'next|coming',  # imply next but in the beginning of a phrase
+    'last': 'last|previous',  # imply last but in the beginning of a phrase
+    'in': r'in',  # "in 5 days"
+    'since': 'since',  # since time, since date, since num unit
 
 }
 

@@ -574,22 +574,38 @@ class Calendar(object):
             s = s.replace('  ', ' ')
 
         for cre, rflag in [(self.ptc.CRE_COMINGRNG, 13), # coming tuesday
+                           (self.ptc.CRE_NEXTRNG, 22), # next year
+                           (self.ptc.CRE_LASTRNG, 23), # last month
                            (self.ptc.CRE_INRNG, 15), # in 5 days
+                           (self.ptc.CRE_SINCETIMERNG, 18), # since 4pm
                            (self.ptc.CRE_SINCERNG, 16), # since 4 hrs
-                           (self.ptc.CRE_SINCEDATERNG, 17),
-                           (self.ptc.CRE_AFTERRNG, 12), # after 4 days
+                           (self.ptc.CRE_SINCEDATERNG, 17), # since 4th July
+
                            (self.ptc.CRE_FROMRNG, 14), # 2 days from now
                            (self.ptc.CRE_DAYRNG, 11), # monday - tuesday
+
+
                            (self.ptc.CRE_DATERNG4, 9),
                            (self.ptc.CRE_DATERNG5, 10),
                            (self.ptc.CRE_DATERNG1, 6),
                            (self.ptc.CRE_DATERNG2, 7),
                            (self.ptc.CRE_DATERNG3, 8),
+
+                           (self.ptc.CRE_AFTERRNG, 12),  # after 4 days
+
                            (self.ptc.CRE_TIMERNG1, 1),
                            (self.ptc.CRE_TIMERNG4, 4),
                            (self.ptc.CRE_TIMERNG3, 3),
+
+                           (self.ptc.CRE_RDATE, 21),
+                           (self.ptc.CRE_RDATE4, 20),
+                           (self.ptc.CRE_RDATE3, 19),
+
                            (self.ptc.CRE_TIMERNG5, 5),
                            (self.ptc.CRE_TIMERNG2, 2),
+
+
+
                            ]:
             #order matters
 
@@ -620,14 +636,12 @@ class Calendar(object):
             else:
                 parseStr = s
         if rangeFlag in (1, 2):
-            # print 'timerng 1 or 2'
             m = re.search(self.ptc.rangeSep, parseStr)
             startStr = parseStr[:m.start()]
             endStr = parseStr[m.start() + 1:]
             retFlag = 2
 
         elif rangeFlag in (3, 4, 5):
-            # print 'timerng 3, 4 or 5'
             m = re.search(self.ptc.rangeSep, parseStr)
             # capturing the meridian from the end time
             if self.ptc.usesMeridian:
@@ -645,14 +659,12 @@ class Calendar(object):
             retFlag = 2
 
         elif rangeFlag in (6, 11):
-            # print 'daterng 1'
             m = re.search(self.ptc.rangeSep, parseStr)
             startStr = parseStr[:m.start()]
             endStr = parseStr[m.start() + 1:]
             retFlag = 1
 
         elif rangeFlag in (7, 10):
-           # print 'daterng 2 or 5'
             m = re.search(self.ptc.rangeSep, parseStr)
             endStr = parseStr[m.start() + 1:]
             startStr = parseStr[:m.start()]
@@ -676,7 +688,6 @@ class Calendar(object):
             retFlag = 1
 
         elif rangeFlag == 8:
-            # print 'daterng 3'
             m = re.search(self.ptc.rangeSep, parseStr)
 
             startStr = parseStr[:m.start()]
@@ -690,7 +701,6 @@ class Calendar(object):
 
             retFlag = 1
         elif rangeFlag == 9:
-            #print 'daterng 4'
             m = re.search(self.ptc.rangeSep, parseStr)
             endStr = parseStr[m.start() + 1:]
 
@@ -710,16 +720,15 @@ class Calendar(object):
                 startStr = startStr + ', ' + endYear
 
             retFlag = 1
-        elif rangeFlag in (12, 13, 14):
+        elif rangeFlag in (12, 13, 14, 19, 20, 21):
             startDT, sctx = self.parse(parseStr, sourceTime, VERSION_CONTEXT_STYLE)
             target = datetime.datetime(*startDT[:6]) + datetime.timedelta(days=1)
             endDT = target.timetuple()
             retFlag = 1
             Flag = 1
 
-            # NOTE: NO RANGE FLAG
         elif rangeFlag == 15:
-            startStr = 'now'
+            startStr = "now"
             endStr = parseStr
             retFlag = 1
 
@@ -760,7 +769,11 @@ class Calendar(object):
 
         elif rangeFlag == 17:
             endDT, ectx = self.parse('now', sourceTime, VERSION_CONTEXT_STYLE)
-            rem = parseStr.replace('since', '')
+            parse = parseStr.split()
+            rem = parseStr
+            for i in parse:
+                if i in self.ptc.since.split('|'):
+                    rem = rem.replace(i,'')
             rem.strip()
             endYear1 = self.ptc.CRE_DATE4.search(rem)
             if endYear1 is not None:
@@ -776,13 +789,79 @@ class Calendar(object):
             else:
                 target, tctx = self.parse(rem, sourceTime, VERSION_CONTEXT_STYLE)
                 target = datetime.datetime(*target[:6])
-                if target > datetime.datetime.now():
+                if target > datetime.datetime(*sourceTime[:6]):
                     rem = rem + " " + str(target.year - 1)
                     startDT, sctx = self.parse(rem, sourceTime, VERSION_CONTEXT_STYLE)
                 else:
                     startDT = target.timetuple()
             retFlag = 1
             Flag = 1
+        elif rangeFlag == 18:
+            endDT, ectx = self.parse('now', sourceTime, VERSION_CONTEXT_STYLE)
+            parse = parseStr.split()
+            rem = parseStr
+            for i in parse:
+                if i in self.ptc.since.split('|'):
+                    rem = rem.replace(i, '')
+            rem = rem.strip()
+            target, tctx = self.parse(rem, sourceTime, VERSION_CONTEXT_STYLE)
+            target = datetime.datetime(*target[:6])
+            if target > datetime.datetime(*sourceTime[:6]):
+                target = target - datetime.timedelta(days=1)
+            startDT = target.timetuple()
+            retFlag = 1
+            Flag = 1
+
+        elif rangeFlag == 22:
+            startDT, sctx = self.parse(parseStr, sourceTime, VERSION_CONTEXT_STYLE)
+            target  = datetime.datetime(*startDT[:6])
+            parse = parseStr.split()
+            newmonth = mewyear = 0
+            flag = 0
+            for i in parse:
+                if i in self.ptc.units['years']:
+                    newyear = target.year + 1
+                    newmonth = target.month
+                    flag = 1
+                    break
+                elif i in self.ptc.units['months']:
+                    if target.month != 12:
+                        newmonth = target.month + 1
+                        newyear = target.year
+                    else:
+                        newmonth = 1
+                        newyear = target.year + 1
+                    flag = 1
+                    break
+                elif i in self.ptc.units['weeks']:
+                    target = target + datetime.timedelta(days=7)
+                    break
+                elif i in self.ptc.units['days']:
+                    target = target + datetime.timedelt(days=1)
+                    break
+                elif i in self.ptc.units['hours']:
+                    target = target + datetime.timedelta(hours=1)
+                    break
+                elif i in self.ptc.units['minutes']:
+                    target = target + datetime.timedelta(minutes=1)
+                    break
+                elif i in self.ptc.units['seconds']:
+                    target = target + datetime.datetime(seconds=1)
+                    break
+
+            if flag == 1:
+                target = datetime.datetime(newyear, newmonth, 1, 9, 0, 0)
+            endDT = target.timetuple()
+            retFlag = 1
+            Flag = 1
+
+        elif rangeFlag == 23:
+            startDT, sctx = self.parse(parseStr, sourceTime, VERSION_CONTEXT_STYLE)
+            time = datetime.datetime(*sourceTime[:6])
+            endDT = datetime.datetime(time.year, 1, 1, 9, 0, 0).timetuple()
+            retFlag = 1
+            Flag = 1
+
         else:
             # if range is not found
             startDT = endDT = time.localtime()
@@ -2531,6 +2610,7 @@ class Constants(object):
             self.suffix = self.locale.re_values ['daysuffix']
             self.fromSep = self.locale.re_values ['from']
             self.units = self.locale.units
+            self.since = self.locale.re_values['since']
 
             mths = _getLocaleDataAdjusted(self.locale.Months)
             smths = _getLocaleDataAdjusted(self.locale.shortMonths)
@@ -2741,7 +2821,7 @@ class Constants(object):
 
         self.RE_DAY = r'''\b
                           (?:
-                              {dayoffsets}
+                              ({dayoffsets})
                           )
                           \b'''.format(**self.locale.re_values)
 
@@ -2850,10 +2930,10 @@ class Constants(object):
                          .format(self.RE_DAY, self.RE_WEEKDAY,
                                  **self.locale.re_values))
         # "after 4 days"
-        self.AFTERRNG = (r'{after}\s*\d\d?\s*({units})'.format(**self.locale.re_values))
+        self.AFTERRNG = (r'({after})?\s*\d\d?\s*({units})\s*({ago})?'.format(**self.locale.re_values))
 
         # "next monday" "coming tuesday"
-        self.COMINGRNG = (r'({this}|{next})?\s*({0})'
+        self.COMINGRNG = (r'({this}|{next}|{last})?\s*({0})'
                          .format(self.RE_WEEKDAY, **self.locale.re_values))
 
         # "5 days from now" "2 months from Monday"
@@ -2861,15 +2941,26 @@ class Constants(object):
                         .format(**self.locale.re_values))
 
         # "in five days" "next five days"
-        self.INRNG = (r'({in})\s*\d\d?\s*({units})'.format(**self.locale.re_values))
+        self.INRNG = (r'({in}|{next})\s*\d\d?\s*({units})'.format(**self.locale.re_values))
 
         # "since five days" "since 2 hours"
-        self.SINCERNG = (r'({since})\s*\d\d?\s*({units})'.format(**self.locale.re_values))
+        self.SINCERNG = (r'({since}|{last})\s*\d\d?\s*({units})'.format(**self.locale.re_values))
 
         # "since 5th March
         self.SINCEDATERNG = (r'({since})\s*({0}|{1}|{2})'
                              .format(self.RE_RDATE, self.RE_RDATE3,
                                      self.RE_RDATE4, **self.locale.re_values))
+
+        # "since 5pm" (NOTE IF 5PM IS AFTER CURRENT TIME, THEN YESTERDAY DATE SHOULD BE GIVEN)
+        self.SINCETIMERNG = (r'({since})\s*({0})'
+                             .format(self.RE_RTIMEHMS2, **self.locale.re_values))
+
+        # "next year"
+        self.NEXTRNG = (r'({next}|{this})\s*({units})'.format(**self.locale.re_values))
+
+        # last month
+        self.LASTRNG = (r'({last})\s*({units})'.format(**self.locale.re_values))
+
 
         self.re_option = re.IGNORECASE + re.VERBOSE
         self.cre_source = {'CRE_SPECIAL': self.RE_SPECIAL,
@@ -2912,6 +3003,9 @@ class Constants(object):
                            'CRE_INRNG' : self.INRNG,
                            'CRE_SINCERNG': self.SINCERNG,
                            'CRE_SINCEDATERNG': self.SINCEDATERNG,
+                           'CRE_SINCETIMERNG': self.SINCETIMERNG,
+                           'CRE_NEXTRNG': self.NEXTRNG,
+                           'CRE_LASTRNG': self.LASTRNG,
                            'CRE_NLP_PREFIX': self.RE_NLP_PREFIX}
         self.cre_keys = set(self.cre_source.keys())
 
