@@ -87,8 +87,8 @@ decimal_mark = '.'
 # this will be added to re_values later
 units = {
     'seconds': ['second', 'seconds', 'sec', 's'],
-    'minutes': ['minute', 'minutes', 'min', 'm'],
-    'hours': ['hour', 'hours', 'hr', 'h'],
+    'minutes': ['minute', 'minutes', 'min', 'mins', 'm'],
+    'hours': ['hour', 'hours', 'hr', 'hrs', 'h'],
     'days': ['day', 'days', 'dy', 'd'],
     'weeks': ['week', 'weeks', 'wk', 'w'],
     'months': ['month', 'months', 'mth'],
@@ -100,11 +100,18 @@ units = {
 re_values = {
     'specials': 'in|on|of|at',
     'timeseparator': ':',
-    'rangeseparator': '-',
+    'rangeseparator': r'-|to |til|until',
     'daysuffix': 'rd|st|nd|th',
     'meridian': r'am|pm|a\.m\.|p\.m\.|a|p',
     'qunits': 'h|m|s|d|w|y',
     'now': ['now', 'right now'],
+    'after': 'after',
+    'from' : 'from',
+    'this': r'this|coming|this\scoming',
+    'next': 'next',
+    'in': r'for\sthe\snext|the\snext|next|in|in\sthe\s\next|in\snext',
+    'since' : 'since',
+
 }
 
 # Used to adjust the returned date before/after the source
@@ -120,6 +127,7 @@ Modifiers = {
     'previous': -1,
     'end of': 0,
     'this': 0,
+    'coming':0,
     'eod': 1,
     'eom': 1,
     'eoy': 1,
