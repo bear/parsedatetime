@@ -563,9 +563,8 @@ class Calendar(object):
         @return: tuple of: start datetime, end datetime and the invalid flag
         """
 
-        rangeFlag = retFlag = Flag = 0
+        rangeFlag = retFlag = 0
         startStr = endStr = ''
-
 
         s = datetimeString.strip().lower()
 
@@ -573,6 +572,10 @@ class Calendar(object):
             s = s.replace(self.ptc.rangeSep, ' %s ' % self.ptc.rangeSep)
             s = s.replace('  ', ' ')
 
+        # order in which the string is matched to the pattern changes the outcome,
+        # since some strings may fit multiple patterns, but belongs to one of the patterns more accurately.
+        # example: 3rd march 2017 - 4th april 2017 fits into daterng5 and re_rdate4, but daterng5 is more accurate
+        # therefore daterng 5 is above in the list as compared to re_rdate4.
         for cre, rflag in [(self.ptc.CRE_COMINGRNG, 13), # coming tuesday
                            (self.ptc.CRE_INRNG, 15), # in 5 days
                            (self.ptc.CRE_SINCERNG, 16), # since 4 hrs
@@ -591,8 +594,6 @@ class Calendar(object):
                            (self.ptc.CRE_TIMERNG5, 5),
                            (self.ptc.CRE_TIMERNG2, 2),
                            ]:
-            #order matters
-
 
             m = cre.search(s)
             if m is not None:
@@ -603,8 +604,6 @@ class Calendar(object):
 
         if m is not None:
             if (m.group() != s):
-
-
                 # capture remaining string
                 parseStr = m.group()
                 chunk1 = s[:m.start()]
@@ -613,12 +612,12 @@ class Calendar(object):
 
                 sourceTime, ctx = self.parse(s, sourceTime,
                                              VERSION_CONTEXT_STYLE)
-
-
+#
                 if not ctx.hasDateOrTime:
                     sourceTime = None
             else:
                 parseStr = s
+
         if rangeFlag in (1, 2):
             m = re.search(self.ptc.rangeSep, parseStr)
             startStr = parseStr[:m.start()]
@@ -709,7 +708,6 @@ class Calendar(object):
             target = datetime.datetime(*startDT[:6]) + datetime.timedelta(days=1)
             endDT = target.timetuple()
             retFlag = 1
-            Flag = 1
 
             # NOTE: NO RANGE FLAG
         elif rangeFlag == 15:
@@ -750,7 +748,6 @@ class Calendar(object):
             else:
                 startDT, sctx = self.parse(target, sourceTime, VERSION_CONTEXT_STYLE)
             retFlag = 1
-            Flag = 1
 
         elif rangeFlag == 17:
             endDT, ectx = self.parse('now', sourceTime, VERSION_CONTEXT_STYLE)
@@ -776,12 +773,11 @@ class Calendar(object):
                 else:
                     startDT = target.timetuple()
             retFlag = 1
-            Flag = 1
         else:
             # if range is not found
             startDT = endDT = time.localtime()
 
-        if retFlag and Flag == 0:
+        if retFlag and startStr != '':
             startDT, sctx = self.parse(startStr, sourceTime,
                                        VERSION_CONTEXT_STYLE)
             endDT, ectx = self.parse(endStr, sourceTime,
@@ -2420,8 +2416,6 @@ class Constants(object):
 
         self._DaysInMonthList = (31, 28, 31, 30, 31, 30,
                                  31, 31, 30, 31, 30, 31)
-        #self.rangeSep = '-|to'
-
         self.BirthdayEpoch = 50
 
         # When True the starting time for all relative calculations will come
@@ -2735,7 +2729,7 @@ class Constants(object):
 
         self.RE_DAY = r'''\b
                           (?:
-                              {dayoffsets}
+                              ({dayoffsets})
                           )
                           \b'''.format(**self.locale.re_values)
 

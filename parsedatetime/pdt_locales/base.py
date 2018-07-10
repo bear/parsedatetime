@@ -100,7 +100,7 @@ units = {
 re_values = {
     'specials': 'in|on|of|at',
     'timeseparator': ':',
-    'rangeseparator': '-|to|til|until',
+    'rangeseparator': r'-|to |til|until',
     'daysuffix': 'rd|st|nd|th',
     'meridian': r'am|pm|a\.m\.|p\.m\.|a|p',
     'qunits': 'h|m|s|d|w|y',
