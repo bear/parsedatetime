@@ -126,9 +126,11 @@ Modifiers = {
 }
 
 dayOffsets = {
+    'day after tomorrow': 2,
     'tomorrow': 1,
     'today': 0,
     'yesterday': -1,
+    'day before yesterday': -2,
 }
 
 # special day and/or times, i.e. lunch, noon, evening
