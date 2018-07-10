@@ -609,20 +609,18 @@ class Calendar(object):
             else:
                 parseStr = s
         if rangeFlag in (1, 2):
-            # print 'timerng 1 or 2'
             m = re.search(self.ptc.rangeSep, parseStr)
             startStr = parseStr[:m.start()]
             endStr = parseStr[m.start() + 1:]
             retFlag = 2
 
         elif rangeFlag in (3, 4, 5):
-            # print 'timerng 3, 4 or 5'
             m = re.search(self.ptc.rangeSep, parseStr)
             # capturing the meridian from the end time
             if self.ptc.usesMeridian:
                 ampm = re.search(self.ptc.am[0], parseStr)
 
-                # appending the meriidan to the start time
+                # appending the meridian to the start time
                 if ampm is not None:
                     startStr = parseStr[:m.start()] + self.ptc.meridian[0]
                 else:
@@ -634,14 +632,12 @@ class Calendar(object):
             retFlag = 2
 
         elif rangeFlag == 6:
-            # print 'daterng 1'
             m = re.search(self.ptc.rangeSep, parseStr)
             startStr = parseStr[:m.start()]
             endStr = parseStr[m.start() + 1:]
             retFlag = 1
 
         elif rangeFlag in (7, 10):
-           # print 'daterng 2 or 5'
             m = re.search(self.ptc.rangeSep, parseStr)
             endStr = parseStr[m.start() + 1:]
 
@@ -665,29 +661,27 @@ class Calendar(object):
             retFlag = 1
 
         elif rangeFlag == 8:
-            # print 'daterng 3'
             m = re.search(self.ptc.rangeSep, parseStr)
 
             startStr = parseStr[:m.start()]
 
             # capturing the month from the start date
             mth = self.ptc.CRE_DATE3.search(startStr)
-            mth = mth.group('mthname')
+            mthName = mth.group('mthname')
 
             # appending the month name to the end date
-            endStr = mth + parseStr[(m.start() + 1):]
+            endStr = mthName + parseStr[(m.start() + 1):]
 
             retFlag = 1
         elif rangeFlag == 9:
-            #print 'daterng 4'
             m = re.search(self.ptc.rangeSep, parseStr)
             endStr = parseStr[m.start() + 1:]
 
             # capturing the month from the end date
             mth = self.ptc.CRE_DATE4.search(endStr)
-            mth = mth.group('mthname')
+            mthName = mth.group('mthname')
 
-            startStr = parseStr[:m.start()] + mth
+            startStr = parseStr[:m.start()] + mthName
 
             endYear = self.ptc.CRE_DATE4.search(endStr)
             endYear = endYear.group('year')
@@ -2668,12 +2662,14 @@ class Constants(object):
         self.RE_REMAINING = r'\s+'
 
         # Regex for date/time ranges
+        # dd:dd(:dd)? "4:45, 16:45"
         self.RE_RTIMEHMS = r'''(\s*|^)
                                (\d\d?)({timeseparator}
                                (\d\d))
                                ({timeseparator}(\d\d))?
                                (\s*|$)'''.format(**self.locale.re_values)
 
+        # dd(:dd)?(:dd)? (am/pm)? "4 pm, 4:45 pm"
         self.RE_RTIMEHMS2 = (r'''(\s*|^)
                                  (\d\d?)
                                  ({timeseparator}(\d\d?))?
@@ -2684,8 +2680,10 @@ class Constants(object):
             self.RE_RTIMEHMS2 += (r'\s*({meridian})'
                                   .format(**self.locale.re_values))
 
+        # mm/dd/yyyy
         self.RE_RDATE = r'(\d+([%s]\d+)+)' % dateSeps
 
+        # month day year
         self.RE_RDATE3 = r'''(
                                         (
                                             (
@@ -2698,6 +2696,7 @@ class Constants(object):
                                             (,?\s*\d{{4}})?
                                         )
                                     )'''.format(**self.locale.re_values)
+        # day month year
         self.RE_RDATE4 = r'''(
                                                 (
                                                     (

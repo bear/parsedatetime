@@ -64,9 +64,11 @@ class test(unittest.TestCase):
             self.yr, self.mth, self.dy, 15, 0, 0).timetuple()
         targetEnd = datetime.datetime(
             self.yr, self.mth, self.dy, 17, 30, 0).timetuple()
-
         self.assertExpectedResult(
             self.cal.evalRanges("today 3-5:30 pm", start),
+            (targetStart, targetEnd, 2))
+        self.assertExpectedResult(
+            self.cal.evalRanges("today 3-5:30pm", start),
             (targetStart, targetEnd, 2))
         self.assertExpectedResult(
             self.cal.evalRanges("15:00 - 17:30", start),
@@ -76,9 +78,11 @@ class test(unittest.TestCase):
             self.yr, self.mth, self.dy, 15, 45, 0).timetuple()
         targetEnd = datetime.datetime(
             self.yr, self.mth, self.dy, 17, 0, 0).timetuple()
-
         self.assertExpectedResult(
             self.cal.evalRanges("today 3:45-5 pm", start),
+            (targetStart, targetEnd, 2))
+        self.assertExpectedResult(
+            self.cal.evalRanges("today 3:45-5pm", start),
             (targetStart, targetEnd, 2))
 
         self.assertExpectedResult(
