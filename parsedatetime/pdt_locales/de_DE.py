@@ -48,28 +48,32 @@ dp_order = ['d', 'm', 'y']
 # between m for minutes and M for months.
 units = {
     'seconds': ['sekunden', 'sek', 's'],
-    'minutes': ['minuten', 'min', 'm'],
+    'minutes': ['minuten', 'min'],
     'hours': ['stunden', 'std', 'h'],
-    'days': ['tag', 'tage', 't'],
-    'weeks': ['wochen', 'w'],
+    'days': ['tag', 'tage', 'tagen', 't'],
+    'weeks': ['wochen', 'woche', 'w'],
     'months': ['monat', 'monate'],
-    'years': ['jahr', 'jahre', 'j'],
+    'years': ['jahren', 'jahr', 'jahre', 'j'],
 }
 
 re_values = re_values.copy()
 re_values.update({
     'specials': 'am|dem|der|im|in|den|zum',
     'timeseparator': ':',
-    'rangeseparator': '-',
+    'of': '.', # "eg. 3rd of march"
+    'rangeseparator': '-|bis',
     'daysuffix': '',
     'qunits': 'h|m|s|t|w|m|j',
     'now': ['jetzt'],
-    'after': 'after',
-    'from' : 'from',
-    'this': r'this|coming|this\scoming',
-    'next': 'next',
-    'in': r'for\sthe\snext|the\snext|next|for',
-    'since' : 'since',
+    'after': 'nach|vor', # imply after/later/ago but at the beginning of a phrase
+    'ago': 'später|spater', # imply after/later/ago but at the end of a phrase
+    'from': 'von',  # num unit from rel
+    'this': 'deises|diesen|kommenden',
+    'next': 'nächsten|nächster|nächste|nachsten|nachster|nachste',
+    'last': 'letzter|letzten|letzte',
+    'in': r'in',  # "in 5 days" #done (german same eng)
+    'since': 'seit',  # since time, since date, since num unit
+
 })
 
 # Used to adjust the returned date before/after the source
@@ -77,13 +81,32 @@ re_values.update({
 Modifiers = {
     'from': 1,
     'before': -1,
-    'after': 1,
+
+    'nach': 1,
+    'vor': -1,
+    'später': -1,
+    'spater': -1,
+
     'vergangener': -1,
     'vorheriger': -1,
+
     'prev': -1,
+
     'letzter': -1,
+    'letzten': -1,
+    'letzte': -1,
+
     'nächster': 1,
+    'nächsten': 1,
+    'nächste': 1,
+    'nachster': 1,
+    'nachsten': 1,
+    'nachste': 1,
+
     'dieser': 0,
+    'diesen': 0,
+    'kommenden': 0,
+
     'previous': -1,
     'in a': 2,
     'end of': 0,
@@ -99,6 +122,7 @@ dayOffsets = {
     'gestern': -1,
     'vorgestern': -2,
     'übermorgen': 2,
+    'ubermorgen': 2,
 }
 
 # special day and/or times, i.e. lunch, noon, evening

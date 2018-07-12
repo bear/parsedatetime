@@ -99,24 +99,28 @@ units = {
     'days': ['jour', 'jours', 'journée', 'journee', 'journées', 'journees', 'j'],
     'weeks': ['semaine', 'semaines', 'sem'],
     'months': ['mois', 'm'],
-    'years': ['année', 'annee', 'an', 'années', 'annees', 'ans'],
+    'years': ['année', 'l\'année', 'annee', 'l\'annee', 'an', 'années', 'annees', 'ans'],
 }
 
 # text constants to be used by later regular expressions
 re_values = {
     'specials': 'à|a|le|la|du|de',
     'timeseparator': '(?:\:|h|\s*heures?\s*)',
-    'rangeseparator': '-',
+    'of': None, # "eg. 3rd of march"
+    'rangeseparator': '-|a|à',
     'daysuffix': 'ième|ieme|ème|eme|ère|ere|nde',
     'meridian': None,
     'qunits': 'h|m|s|j|sem|a',
     'now': ['maintenant', 'tout de suite', 'immédiatement', 'immediatement', 'à l\'instant', 'a l\'instant'],
-    'after': 'after',
-    'from' : 'from',
-    'this': r'this|coming|this\scoming',
-    'next': 'next',
-    'in': r'for\sthe\snext|the\snext|next|for',
-    'since': 'since',
+    'after': 'après|apres|il\sy\sa', # imply after/later/ago but at the beginning of a phrase
+    'ago': r'plus\stard', # imply after/later/ago but at the end of a phrase
+    'from' : r'à\spartir|a\spartir|à\spartir\sde|a\spartir\sde|à\spartir\sd\'|a\spartir\sd\'|de|d\'', # num unit from rel
+    'this': 'ce|cette',
+    'next': 'prochaine|prochain|prochains|prochaines',
+    'last':'dernière|derniere|dernier|dernières|dernieres|derniers',
+    'in': r'dans', # "in 5 days"
+    'since': 'depuis', # since time, since date, since num unit
+
 }
 
 # Used to adjust the returned date before/after the source
@@ -177,6 +181,8 @@ re_sources = {
     'apres-midi': {'hr': 13, 'mn': 0, 'sec': 0},
     'après midi': {'hr': 13, 'mn': 0, 'sec': 0},
     'apres midi': {'hr': 13, 'mn': 0, 'sec': 0},
+    'aprèm': {'hr': 13, 'mn': 0, 'sec': 0},
+    'aprem': {'hr': 13, 'mn': 0, 'sec': 0},
     'midi': {'hr': 12, 'mn': 0, 'sec': 0},
     'déjeuner': {'hr': 12, 'mn': 0, 'sec': 0},
     'dejeuner': {'hr': 12, 'mn': 0, 'sec': 0},
@@ -251,4 +257,4 @@ magnitude = {
     'decillion': 1000000000000000000000000000000000,
 }
 
-ignore = ('et', ',')
+ignore = ('et', ',', 'le', 'la', 'l\'')

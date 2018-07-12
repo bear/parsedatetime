@@ -100,17 +100,18 @@ units = {
 re_values = {
     'specials': 'in|on|of|at',
     'timeseparator': ':',
-    'rangeseparator': '-|to|til|until',
+    'of': 'of', # "eg. 3rd of march"
+    'rangeseparator': '-|to|til|till|until',
     'daysuffix': 'rd|st|nd|th',
     'meridian': r'am|pm|a\.m\.|p\.m\.|a|p',
     'qunits': 'h|m|s|d|w|y',
     'now': ['now', 'right now'],
-    'after': 'after',
-    'ago': 'ago',  # imply next or last but at the end of a phrase
+    'after': 'after|before',  # imply after/later/ago but at the beginning of a phrase
+    'ago': 'ago|later',  # imply after/later/ago but at the end of a phrase
     'from': 'from',  # num unit from rel
     'this': 'this',
-    'next': 'next|coming',  # imply next but in the beginning of a phrase
-    'last': 'last|previous',  # imply last but in the beginning of a phrase
+    'next': 'next|coming',
+    'last': 'last|previous',
     'in': r'in',  # "in 5 days"
     'since': 'since',  # since time, since date, since num unit
 
@@ -120,19 +121,29 @@ re_values = {
 Modifiers = {
     'from': 1,
     'before': -1,
+    'earlier': -1,
     'after': 1,
     'ago': -1,
     'prior': -1,
+    'since': -1,
     'prev': -1,
     'last': -1,
-    'next': 1,
     'previous': -1,
     'end of': 0,
     'this': 0,
-    'coming':0,
+    'coming': 0,
+    'upcoming': 1,
+    'later': 1,
+    'next': 1,
     'eod': 1,
+    'end of day': 1,
+    'end of the day': 1,
     'eom': 1,
+    'end of month': 1,
+    'end of the month': 1,
     'eoy': 1,
+    'end of year': 1,
+    'end of the year': 1,
 }
 
 dayOffsets = {

@@ -60,6 +60,7 @@ class test(unittest.TestCase):
             "10:00:00 am - 1:30:00 pm", start), (targetStart, targetEnd, 2))
         self.assertExpectedResult(self.cal.evalRanges(
             "10:00:00 - 13:30:00", start), (targetStart, targetEnd, 2))
+
         targetStart = datetime.datetime(
             self.yr, self.mth, self.dy, 15, 0, 0).timetuple()
         targetEnd = datetime.datetime(
@@ -67,6 +68,9 @@ class test(unittest.TestCase):
 
         self.assertExpectedResult(
             self.cal.evalRanges("today 3-5:30 pm", start),
+            (targetStart, targetEnd, 2))
+        self.assertExpectedResult(
+            self.cal.evalRanges("today 3-5:30pm", start),
             (targetStart, targetEnd, 2))
         self.assertExpectedResult(
             self.cal.evalRanges("15:00 - 17:30", start),
@@ -78,9 +82,11 @@ class test(unittest.TestCase):
             self.yr, self.mth, self.dy, 17, 0, 0).timetuple()
 
         self.assertExpectedResult(
-            self.cal.evalRanges("today 3:45-5 pm", start),
+            self.cal.evalRanges("today 3:45 to 5 pm", start),
             (targetStart, targetEnd, 2))
-
+        self.assertExpectedResult(
+            self.cal.evalRanges("today 3:45-5pm", start),
+            (targetStart, targetEnd, 2))
         self.assertExpectedResult(
             self.cal.evalRanges("today 3:45-5:00 PM", start),
             (targetStart, targetEnd, 2))
@@ -96,6 +102,8 @@ class test(unittest.TestCase):
 
 
     def testDates(self):
+        start = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
 
         targetStart = datetime.datetime(
             2006, 8, 29, self.hr, self.mn, self.sec).timetuple()
@@ -254,8 +262,12 @@ class test(unittest.TestCase):
             self.cal.evalRanges("since 5 yrs", start),
             (targetStart, targetEnd, 1))
 
-        targetStart = datetime.datetime(
-            self.yr , 3, 13, self.hr, self.mn, self.sec)
+        if self.mth > 3 or (self.mth ==3 and self.dy > 13):
+            targetStart = datetime.datetime(
+                self.yr , 3, 13, self.hr, self.mn, self.sec)
+        else:
+            targetStart = datetime.datetime(
+                self.yr - 1, 3, 13, self.hr, self.mn, self.sec)
         targetStart = targetStart.timetuple()
         targetEnd = datetime.datetime(
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec)
@@ -264,12 +276,20 @@ class test(unittest.TestCase):
             self.cal.evalRanges("since 13th March", start),
             (targetStart, targetEnd, 1))
 
-        targetStart = datetime.datetime(
-            self.yr + 1, 3, 13, self.hr, self.mn, self.sec)
-        targetStart = targetStart.timetuple()
-        targetEnd = datetime.datetime(
-            self.yr + 1, 3, 14, self.hr, self.mn, self.sec)
-        targetEnd = targetEnd.timetuple()
+        if self.mth > 3 or (self.mth == 3 and self.dy > 13):
+            targetStart = datetime.datetime(
+                self.yr + 1, 3, 13, self.hr, self.mn, self.sec)
+            targetStart = targetStart.timetuple()
+            targetEnd = datetime.datetime(
+                self.yr + 1, 3, 14, self.hr, self.mn, self.sec)
+            targetEnd = targetEnd.timetuple()
+        else:
+            targetStart = datetime.datetime(
+                self.yr, 3, 13, self.hr, self.mn, self.sec)
+            targetStart = targetStart.timetuple()
+            targetEnd = datetime.datetime(
+                self.yr, 3, 14, self.hr, self.mn, self.sec)
+            targetEnd = targetEnd.timetuple()
         self.assertExpectedResult(
             self.cal.evalRanges("13th March", start),
             (targetStart, targetEnd, 1))
