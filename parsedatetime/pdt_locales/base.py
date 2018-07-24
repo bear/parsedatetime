@@ -101,7 +101,7 @@ re_values = {
     'specials': 'in|on|of|at',
     'timeseparator': ':',
     'of': 'of', # "eg. 3rd of march"
-    'rangeseparator': '-|to|til|till|until',
+    'rangeseparator': r'-|to |til|until',
     'daysuffix': 'rd|st|nd|th',
     'meridian': r'am|pm|a\.m\.|p\.m\.|a|p',
     'qunits': 'h|m|s|d|w|y',
@@ -131,10 +131,14 @@ Modifiers = {
     'previous': -1,
     'end of': 0,
     'this': 0,
+<<<<<<< HEAD
     'coming': 0,
     'upcoming': 1,
     'later': 1,
     'next': 1,
+=======
+    'coming':0,
+>>>>>>> master
     'eod': 1,
     'end of day': 1,
     'end of the day': 1,

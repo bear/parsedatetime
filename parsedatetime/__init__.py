@@ -563,7 +563,8 @@ class Calendar(object):
         @return: tuple of: start datetime, end datetime and the invalid flag
         """
 
-        rangeFlag = retFlag = Flag = 0
+
+        rangeFlag = retFlag = 0
         startStr = endStr = ''
 
         s = datetimeString.strip().lower()
@@ -572,12 +573,17 @@ class Calendar(object):
             s = s.replace(self.ptc.rangeSep, ' %s ' % self.ptc.rangeSep)
             s = s.replace('  ', ' ')
 
+        # order in which the string is matched to the pattern changes the outcome,
+        # since some strings may fit multiple patterns, but belongs to one of the patterns more accurately.
+        # example: 3rd march 2017 - 4th april 2017 fits into daterng5 and re_rdate4, but daterng5 is more accurate
+        # therefore daterng 5 is above in the list as compared to re_rdate4.
         for cre, rflag in [(self.ptc.CRE_COMINGRNG, 13), # coming tuesday
                            (self.ptc.CRE_INRNG, 15), # in 5 days
                            (self.ptc.CRE_SINCETIMERNG, 18), # since 4pm
                            (self.ptc.CRE_SINCERNG, 16), # since 4 hrs
-                           (self.ptc.CRE_SINCEDATERNG, 17), # since 4th July
-
+                           (self.ptc.CRE_SINCEDATERNG, 17),
+                           (self.ptc.CRE_AFTERRNG, 12), # after 4 days
+                           (self.ptc.CRE_FROMRNG, 14), # 2 days from now
                            (self.ptc.CRE_DAYRNG, 11), # monday - tuesday
 
                            (self.ptc.CRE_DATERNG4, 9),
@@ -585,10 +591,6 @@ class Calendar(object):
                            (self.ptc.CRE_DATERNG1, 6),
                            (self.ptc.CRE_DATERNG2, 7),
                            (self.ptc.CRE_DATERNG3, 8),
-
-                           (self.ptc.CRE_AFTERRNG, 12),  # after 4 days
-                           (self.ptc.CRE_FROMRNG, 14),  # 2 days from now
-
 
                            (self.ptc.CRE_TIMERNG1, 1),
                            (self.ptc.CRE_TIMERNG4, 4),
@@ -604,23 +606,19 @@ class Calendar(object):
                            (self.ptc.CRE_TIMERNG5, 5),
                            (self.ptc.CRE_TIMERNG2, 2),
 
-
-
                            ]:
-            # order matters
-
 
             m = cre.search(s)
             if m is not None:
                 rangeFlag = rflag
+                if datetimeString == 'desde 23 horas':
+                    print rangeFlag
                 break
 
         debug and log.debug('evalRanges: rangeFlag = %s [%s]', rangeFlag, s)
 
         if m is not None:
             if (m.group() != s):
-
-
                 # capture remaining string
                 parseStr = m.group()
                 chunk1 = s[:m.start()]
@@ -629,7 +627,6 @@ class Calendar(object):
 
                 sourceTime, ctx = self.parse(s, sourceTime,
                                              VERSION_CONTEXT_STYLE)
-
 
                 if not ctx.hasDateOrTime:
                     sourceTime = None
@@ -720,14 +717,12 @@ class Calendar(object):
                 startStr = startStr + ', ' + endYear
 
             retFlag = 1
+
         elif rangeFlag in (12, 13, 14, 19, 20, 21):
-            if parseStr == 'después de 4 días':
-                print 'GOT HERE'
             startDT, sctx = self.parse(parseStr, sourceTime, VERSION_CONTEXT_STYLE)
             target = datetime.datetime(*startDT[:6]) + datetime.timedelta(days=1)
             endDT = target.timetuple()
             retFlag = 1
-            Flag = 1
 
         elif rangeFlag == 15:
             startStr = self.ptc.re_values['now'][0]
@@ -750,24 +745,20 @@ class Calendar(object):
             elif rem[1] in self.ptc.units['minutes']:
                 target = target - datetime.timedelta(minutes=int(rem[0]))
             elif rem[1] in self.ptc.units['hours']:
+                if parseStr == 'desde 23 horas':
+                    print "here"
                 target = target - datetime.timedelta(hours=int(rem[0]))
             elif rem[1] in self.ptc.units['days']:
                 target = target - datetime.timedelta(days=int(rem[0]))
             elif rem[1] in self.ptc.units['weeks']:
                 target = target - datetime.timedelta(days=int(rem[0]) * 7)
             elif rem[1] in self.ptc.units['months']:
-                target = rem[0] + ' months ago'
-                flag = 0
+                target = self.inc(target, month=str(-1 * int(rem[0])))
             elif rem[1] in self.ptc.units['years']:
-                target = rem[0] + ' years ago'
-                flag = 0
+                target = self.inc(target, year=str(-1 * int(rem[0])))
 
-            if flag:
-                startDT = target.timetuple()
-            else:
-                startDT, sctx = self.parse(target, sourceTime, VERSION_CONTEXT_STYLE)
+            startDT = target.timetuple()
             retFlag = 1
-            Flag = 1
 
         elif rangeFlag == 17:
             endDT, ectx = self.parse(self.ptc.re_values['now'][0], sourceTime, VERSION_CONTEXT_STYLE)
@@ -776,6 +767,66 @@ class Calendar(object):
             for i in parse:
                 if i in self.ptc.since.split('|'):
                     rem = rem.replace(i,'')
+
+            # capturing the month from the end date
+            mth = self.ptc.CRE_DATE4.search(endStr)
+            mthName = mth.group('mthname')
+
+            startStr = parseStr[:m.start()] + mthName
+
+            endYear = self.ptc.CRE_DATE4.search(endStr)
+            endYear = endYear.group('year')
+
+            # appending the year to the start date if the start date
+            # does not have year information and the end date does.
+            # eg : "21 Aug - 4 Sep, 2007"
+            if endYear is not None:
+                startStr = startStr + ', ' + endYear
+
+            retFlag = 1
+        elif rangeFlag in (12, 13, 14):
+            startDT, sctx = self.parse(parseStr, sourceTime, VERSION_CONTEXT_STYLE)
+            target = datetime.datetime(*startDT[:6]) + datetime.timedelta(days=1)
+            endDT = target.timetuple()
+            retFlag = 1
+
+        elif rangeFlag == 15:
+            startStr = 'now'
+            endStr = parseStr
+            retFlag = 1
+
+        elif rangeFlag == 16:
+            endDT, ectx = self.parse('now', sourceTime, VERSION_CONTEXT_STYLE)
+            parse = parseStr.strip()
+            flag = 0
+            rem = ''
+            for i in parse:
+                if i.isdigit() or flag:
+                    flag = 1
+                    rem = rem + i
+            rem = rem.split()
+            target = datetime.datetime(*endDT[:6])
+            if rem[1] in self.ptc.units['seconds']:
+                target = target - datetime.timedelta(seconds=int(rem[0]))
+            elif rem[1] in self.ptc.units['minutes']:
+                target = target - datetime.timedelta(minutes=int(rem[0]))
+            elif rem[1] in self.ptc.units['hours']:
+                target = target - datetime.timedelta(hours=int(rem[0]))
+            elif rem[1] in self.ptc.units['days']:
+                target = target - datetime.timedelta(days=int(rem[0]))
+            elif rem[1] in self.ptc.units['weeks']:
+                target = target - datetime.timedelta(days=int(rem[0]) * 7)
+            elif rem[1] in self.ptc.units['months']:
+                target = self.inc(target, month=str(-1 * int(rem[0])))
+            elif rem[1] in self.ptc.units['years']:
+                target = self.inc(target, year=str(-1 * int(rem[0])))
+
+            startDT = target.timetuple()
+            retFlag = 1
+
+        elif rangeFlag == 17:
+            endDT, ectx = self.parse('now', sourceTime, VERSION_CONTEXT_STYLE)
+            rem = parseStr.replace('since', '')
             rem.strip()
             endYear1 = self.ptc.CRE_DATE4.search(rem)
             if endYear1 is not None:
@@ -797,7 +848,6 @@ class Calendar(object):
                 else:
                     startDT = target.timetuple()
             retFlag = 1
-            Flag = 1
         elif rangeFlag == 18:
             endDT, ectx = self.parse(self.ptc.re_values['now'][0], sourceTime, VERSION_CONTEXT_STYLE)
             parse = parseStr.split()
@@ -812,7 +862,6 @@ class Calendar(object):
                 target = target - datetime.timedelta(days=1)
             startDT = target.timetuple()
             retFlag = 1
-            Flag = 1
 
         elif rangeFlag == 22:
             startDT, sctx = self.parse(parseStr, sourceTime, VERSION_CONTEXT_STYLE)
@@ -844,20 +893,17 @@ class Calendar(object):
                     break
             endDT = target.timetuple()
             retFlag = 1
-            Flag = 1
 
         elif rangeFlag == 23:
             startDT, sctx = self.parse(parseStr, sourceTime, VERSION_CONTEXT_STYLE)
             time = datetime.datetime(*sourceTime[:6])
             endDT = datetime.datetime(time.year, 1, 1, 9, 0, 0).timetuple()
             retFlag = 1
-            Flag = 1
 
         else:
             # if range is not found
             startDT = endDT = time.localtime()
-
-        if retFlag and Flag == 0:
+        if retFlag and startStr != '':
             startDT, sctx = self.parse(startStr, sourceTime,
                                        VERSION_CONTEXT_STYLE)
             endDT, ectx = self.parse(endStr, sourceTime,
@@ -2538,7 +2584,6 @@ class Constants(object):
 
         self._DaysInMonthList = (31, 28, 31, 30, 31, 30,
                                  31, 31, 30, 31, 30, 31)
-        #self.rangeSep = '-|to'
 
         self.BirthdayEpoch = 50
 
@@ -2645,6 +2690,7 @@ class Constants(object):
             self.decimal_mark = self.locale.decimal_mark
             self.units = self.locale.units
             self.since = self.locale.re_values['since']
+            self.units = self.locale.units
 
             mths = _getLocaleDataAdjusted(self.locale.Months)
             smths = _getLocaleDataAdjusted(self.locale.shortMonths)
@@ -2872,15 +2918,14 @@ class Constants(object):
         self.RE_REMAINING = r'\s+'
 
         # Regex for date/time ranges
-
-        # '3:30', '4:45:55'
+        # dd:dd(:dd)? "4:45, 16:45"
         self.RE_RTIMEHMS = r'''(\s*|^)
                                (\d\d?)({timeseparator}
                                (\d\d))
                                ({timeseparator}(\d\d))?
                                (\s*|$)'''.format(**self.locale.re_values)
 
-        # '3 pm , 4: 40 pm, 7:00:00am, 3:00, 4:45:55'
+        # dd(:dd)?(:dd)? (am/pm)? "4 pm, 4:45 pm"
         self.RE_RTIMEHMS2 = (r'''(\s*|^)
                                  (\d\d?)
                                  ({timeseparator}(\d\d?))?
@@ -2895,6 +2940,9 @@ class Constants(object):
         self.RE_RDATE = r'(\d+([%s]\d+)+)' % dateSeps
 
         # 'month day year' 'july 6th 2017'
+        self.RE_RDATE = r'(\d+([%s]\d+)+)' % dateSeps
+
+        # month day year
         self.RE_RDATE3 = r'''(
                                         (
                                             (
@@ -2975,8 +3023,7 @@ class Constants(object):
         self.AFTERRNG = (r'({after})?\s*\d\d?\s*({units})\s*({ago})?'.format(**self.locale.re_values))
 
         # "next monday" "coming tuesday"
-        self.COMINGRNG = (r'({this}|{next}|{last})?\s*({0})'
-                         .format(self.RE_WEEKDAY, **self.locale.re_values))
+        self.COMINGRNG = (r'({this}|{next}|{last})?\s*({0})'.format(**self.locale.re_values))
 
         # "5 days from now" "2 months from Monday"
         self.FROMRNG = (r'\d\d?\s*({units})\s*({from})\s*(.*)'

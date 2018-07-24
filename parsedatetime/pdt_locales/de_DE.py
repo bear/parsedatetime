@@ -73,7 +73,6 @@ re_values.update({
     'last': 'letzter|letzten|letzte',
     'in': r'in',  # "in 5 days" #done (german same eng)
     'since': 'seit',  # since time, since date, since num unit
-
 })
 
 # Used to adjust the returned date before/after the source

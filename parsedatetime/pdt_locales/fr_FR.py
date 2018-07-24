@@ -120,7 +120,6 @@ re_values = {
     'last':'dernière|derniere|dernier|dernières|dernieres|derniers',
     'in': r'dans', # "in 5 days"
     'since': 'depuis', # since time, since date, since num unit
-
 }
 
 # Used to adjust the returned date before/after the source
