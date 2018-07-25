@@ -744,8 +744,6 @@ class Calendar(object):
             elif rem[1] in self.ptc.units['minutes']:
                 target = target - datetime.timedelta(minutes=int(rem[0]))
             elif rem[1] in self.ptc.units['hours']:
-                if parseStr == 'desde 23 horas':
-                    print "here"
                 target = target - datetime.timedelta(hours=int(rem[0]))
             elif rem[1] in self.ptc.units['days']:
                 target = target - datetime.timedelta(days=int(rem[0]))
@@ -1009,8 +1007,6 @@ class Calendar(object):
         @rtype:  tuple
         @return: tuple of: remaining text and the modified sourceTime
         """
-        if modifier == 'después de':
-            print "mod: "+ modifier + " c1: "+ chunk1+ " c2: "+ chunk2
         ctx = self.currentContext
         offset = self.ptc.Modifiers[modifier]
 
@@ -1396,7 +1392,6 @@ class Calendar(object):
 
         try:
             offset = self.ptc.dayOffsets[s]
-            print datetimeString + " " +str(offset)
         except KeyError:
             offset = 0
 
@@ -1822,7 +1817,6 @@ class Calendar(object):
         if parseStr:
             debug and log.debug(
                 'found (day) [%s][%s][%s]', parseStr, chunk1, chunk2)
-            print 'c1: '+ chunk1 + " c2: "+ chunk2 + " str: "+parseStr
             sourceTime = self._evalDayStr(parseStr, sourceTime)
 
         return s, sourceTime, bool(parseStr)
@@ -2112,8 +2106,6 @@ class Calendar(object):
                                   self._partialParseWeekday):
                     retS, retTime, matched = parseMeth(s, sourceTime)
                     if matched:
-                        if s == '4 days from today' or s =='4 días a partir de hoy':
-                            print parseMeth
                         s, sourceTime = retS.strip(), retTime
                         break
                 else:
@@ -2817,8 +2809,6 @@ class Constants(object):
         self.RE_NUMBER = (r'(\b(?:{numbers})\b|\d+(?:{decimal_mark}\d+|))'
                           .format(**self.locale.re_values))
 
-        self.RE_NUM = (r'{number}'.fomat(**self.locale.re_values))
-
         self.RE_SPECIAL = (r'(?P<special>^[{specials}]+)\s+'
                            .format(**self.locale.re_values))
 
@@ -3054,7 +3044,14 @@ class Constants(object):
         self.re_option = re.IGNORECASE + re.VERBOSE
         self.cre_source = {'CRE_SPECIAL': self.RE_SPECIAL,
                            'CRE_NUMBER': self.RE_NUMBER,
-                           'CRE_NUM': self.RE_NUM,
+                           'CRE_UNITS': self.RE_UNITS,
+                           'CRE_UNITS_ONLY': self.RE_UNITS_ONLY,
+                           'CRE_QUNITS': self.RE_QUNITS,
+                           'CRE_MODIFIER': self.RE_MODIFIER,
+                           'CRE_TIMEHMS': self.RE_TIMEHMS,
+                           'CRE_TIMEHMS2': self.RE_TIMEHMS2,
+                           'CRE_DATE': self.RE_DATE,
+                           'CRE_DATE2': self.RE_DATE2,
                            'CRE_DATE3': self.RE_DATE3,
                            'CRE_DATE4': self.RE_DATE4,
                            'CRE_MONTH': self.RE_MONTH,
