@@ -131,14 +131,10 @@ Modifiers = {
     'previous': -1,
     'end of': 0,
     'this': 0,
-<<<<<<< HEAD
     'coming': 0,
     'upcoming': 1,
     'later': 1,
     'next': 1,
-=======
-    'coming':0,
->>>>>>> master
     'eod': 1,
     'end of day': 1,
     'end of the day': 1,

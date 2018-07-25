@@ -582,7 +582,7 @@ class Calendar(object):
                            (self.ptc.CRE_SINCETIMERNG, 18), # since 4pm
                            (self.ptc.CRE_SINCERNG, 16), # since 4 hrs
                            (self.ptc.CRE_SINCEDATERNG, 17),
-                           (self.ptc.CRE_AFTERRNG, 12), # after 4 days
+
                            (self.ptc.CRE_FROMRNG, 14), # 2 days from now
                            (self.ptc.CRE_DAYRNG, 11), # monday - tuesday
 
@@ -591,6 +591,8 @@ class Calendar(object):
                            (self.ptc.CRE_DATERNG1, 6),
                            (self.ptc.CRE_DATERNG2, 7),
                            (self.ptc.CRE_DATERNG3, 8),
+
+                           (self.ptc.CRE_AFTERRNG, 12),  # after 4 days
 
                            (self.ptc.CRE_TIMERNG1, 1),
                            (self.ptc.CRE_TIMERNG4, 4),
@@ -611,14 +613,13 @@ class Calendar(object):
             m = cre.search(s)
             if m is not None:
                 rangeFlag = rflag
-                if datetimeString == 'desde 23 horas':
-                    print rangeFlag
                 break
 
         debug and log.debug('evalRanges: rangeFlag = %s [%s]', rangeFlag, s)
 
         if m is not None:
             if (m.group() != s):
+
                 # capture remaining string
                 parseStr = m.group()
                 chunk1 = s[:m.start()]
@@ -710,9 +711,7 @@ class Calendar(object):
             endYear = self.ptc.CRE_DATE4.search(endStr)
             endYear = endYear.group('year')
 
-            # appending the year to the start date if the start date
-            # does not have year information and the end date does.
-            # eg : "21 Aug - 4 Sep, 2007"
+            # appending the year to the start date if the end date has it
             if endYear is not None:
                 startStr = startStr + ', ' + endYear
 
@@ -848,6 +847,7 @@ class Calendar(object):
                 else:
                     startDT = target.timetuple()
             retFlag = 1
+
         elif rangeFlag == 18:
             endDT, ectx = self.parse(self.ptc.re_values['now'][0], sourceTime, VERSION_CONTEXT_STYLE)
             parse = parseStr.split()
@@ -1396,6 +1396,7 @@ class Calendar(object):
 
         try:
             offset = self.ptc.dayOffsets[s]
+            print datetimeString + " " +str(offset)
         except KeyError:
             offset = 0
 
@@ -1688,9 +1689,8 @@ class Calendar(object):
 
         """
         flag = 0
-        if s== '31st dec 1949' or s== '13 de junio':
-            print s
-            flag =1
+        if self.ptc.of is not None:
+            s = s.replace(' ' + self.ptc.of + ' ', ' ')
         parseStr = None
         chunk1 = chunk2 = ''
 
@@ -1708,9 +1708,6 @@ class Calendar(object):
         # String date format
 
         if m is not None:
-            if flag:
-                print 'HOW'
-
             if (m.group('date') != s):
                 # capture remaining string
                 mStart = m.start('date')
@@ -1733,7 +1730,6 @@ class Calendar(object):
                         fTime = True
                 if fTime:
                     hoursStart = mm.start('hours')
-
                     if hoursStart < m.end('year'):
                         mEnd = hoursStart
 
@@ -1749,8 +1745,6 @@ class Calendar(object):
         if parseStr:
             debug and log.debug(
                 'found (date3) [%s][%s][%s]', parseStr, chunk1, chunk2)
-            if flag:
-                print "parsestr: " + parseStr+ " c1: "+ chunk1 + " c2: "+chunk2
             sourceTime = self._evalDateStr(parseStr, sourceTime)
 
 
@@ -1828,6 +1822,7 @@ class Calendar(object):
         if parseStr:
             debug and log.debug(
                 'found (day) [%s][%s][%s]', parseStr, chunk1, chunk2)
+            print 'c1: '+ chunk1 + " c2: "+ chunk2 + " str: "+parseStr
             sourceTime = self._evalDayStr(parseStr, sourceTime)
 
         return s, sourceTime, bool(parseStr)
@@ -2117,7 +2112,7 @@ class Calendar(object):
                                   self._partialParseWeekday):
                     retS, retTime, matched = parseMeth(s, sourceTime)
                     if matched:
-                        if datetimeString=='31st Dec 1949' or s=='13 de junio':
+                        if s == '4 days from today' or s =='4 días a partir de hoy':
                             print parseMeth
                         s, sourceTime = retS.strip(), retTime
                         break
@@ -2690,7 +2685,7 @@ class Constants(object):
             self.decimal_mark = self.locale.decimal_mark
             self.units = self.locale.units
             self.since = self.locale.re_values['since']
-            self.units = self.locale.units
+            self.of = self.locale.re_values['of']
 
             mths = _getLocaleDataAdjusted(self.locale.Months)
             smths = _getLocaleDataAdjusted(self.locale.shortMonths)
@@ -2760,6 +2755,7 @@ class Constants(object):
                                                         (?P<day>\d\d?)
                                                         (?P<suffix>{daysuffix})?
                                                         (,)?
+                                                        ({of})?
                                                         \s*
                                                     )
                                                     (?P<mthname>
@@ -2820,6 +2816,8 @@ class Constants(object):
 
         self.RE_NUMBER = (r'(\b(?:{numbers})\b|\d+(?:{decimal_mark}\d+|))'
                           .format(**self.locale.re_values))
+
+        self.RE_NUM = (r'{number}'.fomat(**self.locale.re_values))
 
         self.RE_SPECIAL = (r'(?P<special>^[{specials}]+)\s+'
                            .format(**self.locale.re_values))
@@ -2962,7 +2960,7 @@ class Constants(object):
                                                     (
                                                         (\d\d?)
                                                         ({daysuffix})?
-                                                        (,)?
+                                                        (,)?\s*
                                                         ({of})?
                                                         \s*
                                                     )
@@ -3023,7 +3021,8 @@ class Constants(object):
         self.AFTERRNG = (r'({after})?\s*\d\d?\s*({units})\s*({ago})?'.format(**self.locale.re_values))
 
         # "next monday" "coming tuesday"
-        self.COMINGRNG = (r'({this}|{next}|{last})?\s*({0})'.format(**self.locale.re_values))
+        self.COMINGRNG = (r'({this}|{next}|{last})?\s*({0})'
+                          .format(self.RE_WEEKDAY, **self.locale.re_values))
 
         # "5 days from now" "2 months from Monday"
         self.FROMRNG = (r'\d\d?\s*({units})\s*({from})\s*(.*)'
@@ -3055,14 +3054,7 @@ class Constants(object):
         self.re_option = re.IGNORECASE + re.VERBOSE
         self.cre_source = {'CRE_SPECIAL': self.RE_SPECIAL,
                            'CRE_NUMBER': self.RE_NUMBER,
-                           'CRE_UNITS': self.RE_UNITS,
-                           'CRE_UNITS_ONLY': self.RE_UNITS_ONLY,
-                           'CRE_QUNITS': self.RE_QUNITS,
-                           'CRE_MODIFIER': self.RE_MODIFIER,
-                           'CRE_TIMEHMS': self.RE_TIMEHMS,
-                           'CRE_TIMEHMS2': self.RE_TIMEHMS2,
-                           'CRE_DATE': self.RE_DATE,
-                           'CRE_DATE2': self.RE_DATE2,
+                           'CRE_NUM': self.RE_NUM,
                            'CRE_DATE3': self.RE_DATE3,
                            'CRE_DATE4': self.RE_DATE4,
                            'CRE_MONTH': self.RE_MONTH,

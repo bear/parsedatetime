@@ -103,7 +103,7 @@ re_values = {
     'meridian': r'am|pm|a\.m\.|p\.m\.|a|p',
     'qunits': 'h|s|d',
     'now': ['ahora', 'ahora mismo', 'inmediatamente'],
-    'after': r'después\sde|despues\sde|hace', # imply after/later/ago but at the beginning of a phrase
+    'after': r'después\sde|despues\sde|hace|después|despues', # imply after/later/ago but at the beginning of a phrase
     'ago': 'después|despues', # imply after/later/ago but at the end of a phrase
     'from' : r'a\spartir\sde|de|desde\sel|desde|antes|antes\sde', # num unit from rel
     'this': 'este|esta|esto|viene|venidera|venidero|venideras|venideros|viniendo',
@@ -156,7 +156,7 @@ Modifiers = {
 }
 
 dayOffsets = {
-    'Pasado mañana': 2,
+    'pasado mañana': 2,
     'pasado manana': 2,
     'mañana': 1,
     'manana': 1,

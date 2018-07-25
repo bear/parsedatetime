@@ -69,13 +69,8 @@ class test(unittest.TestCase):
 
         self.assertExpectedResult(
             self.cal.parse('a day after tomorrow', start), (target, 1))
-<<<<<<< HEAD
         self.assertExpectedResult(
             self.cal.parse('day after tomorrow', start), (target, 1))
-=======
-        '''self.assertExpectedResult(
-            self.cal.parse('day after tomorrow', start), (target, 1))'''
->>>>>>> master
 
     def testPhraseWithDays_DOWStyle_1_False(self):
         s = datetime.datetime.now()

@@ -185,14 +185,14 @@ class test(unittest.TestCase):
             (targetStart, targetEnd, 1))
 
         targetStart = datetime.datetime(
-            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
+            self.yr, self.mth, self.dy, 9, 0, 0).timetuple()
         targetEnd = datetime.datetime(
             self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=1)
         targetEnd = targetEnd.timetuple()
 
         self.assertExpectedResult(
             self.cal.evalRanges("from today to tomorrow", start),
-            (targetStart, targetEnd, 0))
+            (targetStart, targetEnd, 1))
 
 
         targetStart = datetime.datetime(
@@ -246,6 +246,7 @@ class test(unittest.TestCase):
         self.assertExpectedResult(
             self.cal.evalRanges("in the next 5 days", start),
             (targetStart, targetEnd, 1))
+        self.assertExpectedResult(
             self.cal.evalRanges("in 5 days", start),
             (targetStart, targetEnd, 1))
         self.assertExpectedResult(
@@ -320,11 +321,6 @@ class test(unittest.TestCase):
         self.assertExpectedResult(
             self.cal.evalRanges("last year", start),
             (targetStart, targetEnd, 1))
-
-        # TEST CASE WORKS, BUT IS RELATIVE
-
-
-
 
     def relativeDates(self):
         start = datetime.datetime(
