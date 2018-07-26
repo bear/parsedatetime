@@ -57,6 +57,10 @@ dp_order = ['m', 'd', 'y']
 
 # Used to parse expressions like "in 5 hours"
 numbers = {
+    'sixteen': 16,
+    'seventeen': 17,
+    'eighteen': 18,
+    'nineteen': 19,
     'zero': 0,
     'one': 1,
     'a': 1,
@@ -74,11 +78,16 @@ numbers = {
     'thirteen': 13,
     'fourteen': 14,
     'fifteen': 15,
-    'sixteen': 16,
-    'seventeen': 17,
-    'eighteen': 18,
-    'nineteen': 19,
     'twenty': 20,
+    'thirty':30,
+    'forty':40,
+    'fifty':50,
+    'sixty':60,
+    'seventy':70,
+    'eighty':80,
+    'ninety':90,
+    'hundred':100,
+    'ignore': 'and',
 }
 
 decimal_mark = '.'
@@ -87,8 +96,8 @@ decimal_mark = '.'
 # this will be added to re_values later
 units = {
     'seconds': ['second', 'seconds', 'sec', 's'],
-    'minutes': ['minute', 'minutes', 'min', 'm'],
-    'hours': ['hour', 'hours', 'hr', 'h'],
+    'minutes': ['minute', 'minutes', 'min', 'mins', 'm'],
+    'hours': ['hour', 'hours', 'hr', 'hrs', 'h'],
     'days': ['day', 'days', 'dy', 'd'],
     'weeks': ['week', 'weeks', 'wk', 'w'],
     'months': ['month', 'months', 'mth'],
@@ -100,35 +109,58 @@ units = {
 re_values = {
     'specials': 'in|on|of|at',
     'timeseparator': ':',
-    'rangeseparator': '-',
+    'of': 'of', # "eg. 3rd of march"
+    'rangeseparator': r'-|to |til|until',
     'daysuffix': 'rd|st|nd|th',
     'meridian': r'am|pm|a\.m\.|p\.m\.|a|p',
     'qunits': 'h|m|s|d|w|y',
     'now': ['now', 'right now'],
+    'after': 'after|before',  # imply after/later/ago but at the beginning of a phrase
+    'ago': 'ago|later',  # imply after/later/ago but at the end of a phrase
+    'from': 'from',  # num unit from rel
+    'this': 'this',
+    'next': 'next|coming',
+    'last': 'last|previous',
+    'in': r'in',  # "in 5 days"
+    'since': 'since',  # since time, since date, since num unit
+
 }
 
 # Used to adjust the returned date before/after the source
 Modifiers = {
     'from': 1,
     'before': -1,
+    'earlier': -1,
     'after': 1,
     'ago': -1,
     'prior': -1,
+    'since': -1,
     'prev': -1,
     'last': -1,
-    'next': 1,
     'previous': -1,
     'end of': 0,
     'this': 0,
+    'coming': 0,
+    'upcoming': 1,
+    'later': 1,
+    'next': 1,
     'eod': 1,
+    'end of day': 1,
+    'end of the day': 1,
     'eom': 1,
+    'end of month': 1,
+    'end of the month': 1,
     'eoy': 1,
+    'end of year': 1,
+    'end of the year': 1,
 }
 
 dayOffsets = {
+    'day after tomorrow': 2,
     'tomorrow': 1,
     'today': 0,
     'yesterday': -1,
+    'day before yesterday': -2,
 }
 
 # special day and/or times, i.e. lunch, noon, evening

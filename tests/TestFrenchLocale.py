@@ -100,6 +100,12 @@ class test(unittest.TestCase):
         self.assertExpectedResult(
             self.cal.parse('25/08', start), (target, 1))
 
+        target = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) - datetime.timedelta(days=3)
+        target = target.timetuple()
+        self.assertExpectedResult(
+            self.cal.parse('il y a 3 jours', start), (target, 1))
+
     def testWeekDays(self):
         start = datetime.datetime(
             self.yr, self.mth, self.dy,
@@ -114,7 +120,7 @@ class test(unittest.TestCase):
 
         for i in range(0, 7):
             dow = self.ptc.shortWeekdays[i]
-            print(dow)
+            #print(dow)
 
             result = self.cal.parse(dow, start)
 
@@ -124,6 +130,87 @@ class test(unittest.TestCase):
 
         self.ptc.CurrentDOWParseStyle = o1
         self.ptc.DOWParseStyle = o2
+    def testRanges(self):
+        start = datetime.datetime(
+            self.yr, self.mth, self.dy,
+            self.hr, self.mn, self.sec).timetuple()
+
+        targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) + datetime.timedelta(days=4)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) + datetime.timedelta(days=5)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("apres 4 jours", start),
+            (targetStart, targetEnd, 1))
+        self.assertExpectedResult(
+            self.cal.evalRanges("4 jours", start),
+            (targetStart, targetEnd, 1))
+
+        targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) - datetime.timedelta(days=4)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) - datetime.timedelta(days=3)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("il y a 4 jours", start),
+            (targetStart, targetEnd, 1))
+
+        targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) - datetime.timedelta(days=1) \
+                      + datetime.timedelta(hours=1)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("depuis 23 heures", start),
+            (targetStart, targetEnd, 1))
+
+        targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=4)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=5)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("3 jours a partir de demain", start),
+            (targetStart, targetEnd, 1))
+        self.assertExpectedResult(
+            self.cal.evalRanges("5 jours d'hier", start),
+            (targetStart, targetEnd, 1))
+
+        '''targetStart = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) + datetime.timedelta(days=5)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("5 prochains jours", start),
+            (targetStart, targetEnd, 1))'''
+
+        targetStart = datetime.datetime(
+            self.yr + 1, 1, 1, 9, 0, 0)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr + 2, 1, 1, 9, 0, 0)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("l'année prochaine", start),
+            (targetStart, targetEnd, 1))
+
+        targetStart = datetime.datetime(
+            self.yr - 1, 1, 1, 9, 0, 0)
+        targetStart = targetStart.timetuple()
+        targetEnd = datetime.datetime(
+            self.yr, 1, 1, 9, 0, 0)
+        targetEnd = targetEnd.timetuple()
+        self.assertExpectedResult(
+            self.cal.evalRanges("l'année dernière", start),
+            (targetStart, targetEnd, 1))
 
 
 if __name__ == "__main__":

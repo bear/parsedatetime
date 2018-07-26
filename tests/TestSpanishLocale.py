@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Test parsing of simple date and times using the German locale
+Test parsing of simple date and times using the Spanish locale
 """
 from __future__ import unicode_literals
 
@@ -23,15 +23,15 @@ class test(unittest.TestCase):
         return utils.compareResultByTimeTuplesAndFlags(result, check, **kwargs)
 
     def setUp(self):
-        self.ptc = pdt.Constants('de_DE', usePyICU=False)
+        self.ptc = pdt.Constants('es', usePyICU=False)
         self.cal = pdt.Calendar(self.ptc)
 
         (self.yr, self.mth, self.dy, self.hr,
          self.mn, self.sec, self.wd, self.yd, self.isdst) = time.localtime()
 
-        if self.ptc.localeID != 'de_DE':
+        if self.ptc.localeID != 'es':
             raise unittest.SkipTest(
-                'Locale not set to de_DE - check if PyICU is installed')
+                'Locale not set to es - check if PyICU is installed')
 
     def testTimes(self):
         start = datetime.datetime(
@@ -75,9 +75,9 @@ class test(unittest.TestCase):
             2006, 8, 25, self.hr, self.mn, self.sec).timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('25.08.2006', start), (target, 1))
+            self.cal.parse('25/08/2006', start), (target, 1))
         self.assertExpectedResult(
-            self.cal.parse('25.8.06', start), (target, 1))
+            self.cal.parse('25/8/06', start), (target, 1))
 
         if self.mth > 8 or (self.mth == 8 and self.dy > 25):
             target = datetime.datetime(
@@ -87,9 +87,9 @@ class test(unittest.TestCase):
                 self.yr, 8, 25, self.hr, self.mn, self.sec).timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('25.8', start), (target, 1))
+            self.cal.parse('25-8', start), (target, 1))
         self.assertExpectedResult(
-            self.cal.parse('25.08', start), (target, 1))
+            self.cal.parse('25-08', start), (target, 1))
 
         if self.mth > 6 or (self.mth == 6 and self.dy > 13):
             target = datetime.datetime(
@@ -98,13 +98,13 @@ class test(unittest.TestCase):
             target = datetime.datetime(
                 self.yr, 6, 13, self.hr, self.mn, self.sec).timetuple()
         self.assertExpectedResult(
-            self.cal.parse('13. Juni', start), (target, 1))
+            self.cal.parse('13 de junio', start), (target, 1))
 
         target = datetime.datetime(
             self.yr, self.mth, self.dy, 9, 0, 0) - datetime.timedelta(days=2)
         target = target.timetuple()
         self.assertExpectedResult(
-            self.cal.parse('vorgestern', start), (target, 1))
+            self.cal.parse('anteayer', start), (target, 1))
 
     def testRanges(self):
         start = datetime.datetime(
@@ -117,12 +117,12 @@ class test(unittest.TestCase):
         targetEnd = datetime.datetime(
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) + datetime.timedelta(days=5)
         targetEnd = targetEnd.timetuple()
+        '''self.assertExpectedResult(
+            self.cal.evalRanges("después de 4 días", start), (targetStart, targetEnd, 1))'''
+        '''self.assertExpectedResult(
+            self.cal.evalRanges("despues de 4 días", start), (targetStart, targetEnd, 1))'''
         self.assertExpectedResult(
-            self.cal.evalRanges("nach 4 tagen", start),
-            (targetStart, targetEnd, 1))
-        self.assertExpectedResult(
-            self.cal.evalRanges("4 tagen", start),
-            (targetStart, targetEnd, 1))
+            self.cal.evalRanges("4 dias", start), (targetStart, targetEnd, 1))
 
         targetStart = datetime.datetime(
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) - datetime.timedelta(days=4)
@@ -130,9 +130,8 @@ class test(unittest.TestCase):
         targetEnd = datetime.datetime(
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) - datetime.timedelta(days=3)
         targetEnd = targetEnd.timetuple()
-        self.assertExpectedResult(
-            self.cal.evalRanges("4 tagen spater", start),
-            (targetStart, targetEnd, 1))
+        '''self.assertExpectedResult(
+            self.cal.evalRanges("4 días tarde", start), (targetStart, targetEnd, 1))'''
 
         targetStart = datetime.datetime(
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec)
@@ -140,12 +139,10 @@ class test(unittest.TestCase):
         targetEnd = datetime.datetime(
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) + datetime.timedelta(days=5)
         targetEnd = targetEnd.timetuple()
+        '''self.assertExpectedResult(
+            self.cal.evalRanges("los próximos 5 días", start), (targetStart, targetEnd, 1))
         self.assertExpectedResult(
-            self.cal.evalRanges("bis nächsten 5 tagen", start),
-            (targetStart, targetEnd, 1))
-        self.assertExpectedResult(
-            self.cal.evalRanges("nächsten 5 tagen", start),
-            (targetStart, targetEnd, 1))
+            self.cal.evalRanges("por los proximos 5 dias", start), (targetStart, targetEnd, 1))'''
 
         targetStart = datetime.datetime(
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) - datetime.timedelta(days=5)
@@ -154,8 +151,7 @@ class test(unittest.TestCase):
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec)
         targetEnd = targetEnd.timetuple()
         self.assertExpectedResult(
-            self.cal.evalRanges("seit 5 tagen", start),
-            (targetStart, targetEnd, 1))
+            self.cal.evalRanges("desde 5 dias", start),  (targetStart, targetEnd, 1))
 
         targetStart = datetime.datetime(
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec) - datetime.timedelta(days=1) \
@@ -164,9 +160,8 @@ class test(unittest.TestCase):
         targetEnd = datetime.datetime(
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec)
         targetEnd = targetEnd.timetuple()
-        self.assertExpectedResult(
-            self.cal.evalRanges("seit 23 stunden ", start),
-            (targetStart, targetEnd, 1))
+        '''self.assertExpectedResult(
+            self.cal.evalRanges("desde 23 horas ", start), (targetStart, targetEnd, 1))'''
 
         targetStart = datetime.datetime(
             self.yr + 1, 1, 1, 9, 0, 0)
@@ -175,7 +170,7 @@ class test(unittest.TestCase):
             self.yr + 2, 1, 1, 9, 0, 0)
         targetEnd = targetEnd.timetuple()
         self.assertExpectedResult(
-            self.cal.evalRanges("nächsten jahr", start),
+            self.cal.evalRanges("el próximo año", start),
             (targetStart, targetEnd, 1))
 
         targetStart = datetime.datetime(
@@ -184,9 +179,9 @@ class test(unittest.TestCase):
         targetEnd = datetime.datetime(
             self.yr, 1, 1, 9, 0, 0)
         targetEnd = targetEnd.timetuple()
-        self.assertExpectedResult(
-            self.cal.evalRanges("letzten jahr", start),
-            (targetStart, targetEnd, 1))
+        '''self.assertExpectedResult(
+            self.cal.evalRanges("el año pasado", start),
+            (targetStart, targetEnd, 1))'''
 
         targetStart = datetime.datetime(
             self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=4)
@@ -194,11 +189,23 @@ class test(unittest.TestCase):
         targetEnd = datetime.datetime(
             self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=5)
         targetEnd = targetEnd.timetuple()
-        self.assertExpectedResult(
-            self.cal.evalRanges("3 tage von morgen", start),
+        '''self.assertExpectedResult(
+            self.cal.evalRanges("3 días a partir de mañana", start),
             (targetStart, targetEnd, 1))
         self.assertExpectedResult(
-            self.cal.evalRanges("6 tage von vorgestern", start),
+            self.cal.evalRanges("4 días a partir de hoy", start),
+            (targetStart, targetEnd, 1))
+        self.assertExpectedResult(
+            self.cal.evalRanges("6 días a partir de anteayer", start),
+            (targetStart, targetEnd, 1))'''
+        self.assertExpectedResult(
+            self.cal.evalRanges("3 dias a partir de mañana", start),
+            (targetStart, targetEnd, 1))
+        self.assertExpectedResult(
+            self.cal.evalRanges("4 dias a partir de hoy", start),
+            (targetStart, targetEnd, 1))
+        self.assertExpectedResult(
+            self.cal.evalRanges("6 dias a partir de anteayer", start),
             (targetStart, targetEnd, 1))
 
 

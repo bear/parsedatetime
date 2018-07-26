@@ -55,13 +55,22 @@ class test(unittest.TestCase):
             self.cal.parse('eod meeting', start), (target, 2))
 
         target = datetime.datetime(
-            self.yr, self.mth, self.dy, 17, 0, 0) + datetime.timedelta(days=1)
+            self.yr, self.mth,  self.dy, 17, 0, 0) + datetime.timedelta(days=1)
         target = target.timetuple()
 
         self.assertExpectedResult(
             self.cal.parse('tomorrow eod', start), (target, 3))
         self.assertExpectedResult(
             self.cal.parse('eod tomorrow', start), (target, 3))
+
+        target = datetime.datetime(
+            self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=2)
+        target = target.timetuple()
+
+        self.assertExpectedResult(
+            self.cal.parse('a day after tomorrow', start), (target, 1))
+        self.assertExpectedResult(
+            self.cal.parse('day after tomorrow', start), (target, 1))
 
     def testPhraseWithDays_DOWStyle_1_False(self):
         s = datetime.datetime.now()
