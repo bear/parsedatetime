@@ -53,7 +53,10 @@ dp_order = ['d', 'm', 'y']
 
 # Used to parse expressions like "in 5 hours"
 numbers = {
-    'zéro': 0,
+    'soixante dix': 70,
+    'quatre vingts': 80,
+    'quatre vingt': 80,
+    'quatre vingt dix': 90,
     'zero': 0,
     'un': 1,
     'une': 1,
@@ -72,21 +75,12 @@ numbers = {
     'quatorze': 14,
     'quinze': 15,
     'seize': 16,
-    'dix-sept': 17,
-    'dix sept': 17,
-    'dix-huit': 18,
-    'dix huit': 18,
-    'dix-neuf': 19,
-    'dix neuf': 19,
     'vingt': 20,
-    'vingt-et-un': 21,
-    'vingt et un': 21,
-    'vingt-deux': 22,
-    'vingt deux': 22,
-    'vingt-trois': 23,
-    'vingt trois': 23,
-    'vingt-quatre': 24,
-    'vingt quatre': 24,
+    'trente': 30,
+    'quarante': 40,
+    'cinquante': 50,
+    'soixante': 60,
+    'cent': 100,
 }
 
 decimal_mark = ','

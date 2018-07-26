@@ -57,6 +57,10 @@ dp_order = ['m', 'd', 'y']
 
 # Used to parse expressions like "in 5 hours"
 numbers = {
+    'sixteen': 16,
+    'seventeen': 17,
+    'eighteen': 18,
+    'nineteen': 19,
     'zero': 0,
     'one': 1,
     'a': 1,
@@ -74,11 +78,16 @@ numbers = {
     'thirteen': 13,
     'fourteen': 14,
     'fifteen': 15,
-    'sixteen': 16,
-    'seventeen': 17,
-    'eighteen': 18,
-    'nineteen': 19,
     'twenty': 20,
+    'thirty':30,
+    'forty':40,
+    'fifty':50,
+    'sixty':60,
+    'seventy':70,
+    'eighty':80,
+    'ninety':90,
+    'hundred':100,
+    'ignore': 'and',
 }
 
 decimal_mark = '.'

@@ -55,7 +55,37 @@ units = {
     'months': ['monat', 'monate'],
     'years': ['jahren', 'jahr', 'jahre', 'j'],
 }
+numbers = {
+    'null': 0,
+    'eins': 1,
+    'ein': 1,
+    'zwei': 2,
+    'drei': 3,
+    'vier': 4,
+    'fünf': 5,
+    'funf': 5,
+    'sechs': 6,
+    'sieben': 7,
+    'acht': 8,
+    'neun': 9,
+    'zehn': 10,
+    'elf': 11,
+    'zwölf':12,
+    'zwolf': 12,
+    'zwanzig': 20,
+    'dreißig': 30,
+    'dreibig': 30,
+    'vierzig': 40,
+    'fünfzig': 50,
+    'funfzig': 50,
+    'sechzig': 60,
+    'siebzig': 70,
+    'achtzig': 80,
+    'neunzig': 90,
+    'hundert': 100,
+    'ignore': 'und'
 
+}
 re_values = re_values.copy()
 re_values.update({
     'specials': 'am|dem|der|im|in|den|zum',

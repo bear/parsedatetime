@@ -989,6 +989,122 @@ class Calendar(object):
 
         return 0.0
 
+    def number_formation(self, number_words):
+        numbers = []
+        for number_word in number_words:
+            numbers.append(self.ptc.numbers[number_word])
+        if len(numbers) == 4:
+            return (numbers[0] * numbers[1]) + numbers[2] + numbers[3]
+        elif len(numbers) == 3:
+            if numbers[0] % 100 == 0:
+                return numbers[0] + numbers[1] + numbers[2]
+            else:
+                return numbers[0] * numbers[1] + numbers[2]
+        elif len(numbers) == 2:
+            if numbers[1] % 100 == 0:
+                return numbers[0] * numbers[1]
+            else:
+                return numbers[0] + numbers[1]
+        else:
+            return numbers[0]
+
+    def word_to_num(self, number_sentence):
+        '''if type(number_sentence) is not str:
+            raise ValueError(
+                "Type of input is not string! Please enter a valid number word (eg. \'two million twenty three thousand and forty nine\')")'''
+
+        number_sentence = number_sentence.replace('-', ' ')
+        number_sentence = number_sentence.lower()  # converting input to lowercase
+        if 'ignore' in self.ptc.numbers:
+            number_sentence = number_sentence.replace(' '+self.ptc.numbers['ignore']+ ' ', ' ')
+
+        if (number_sentence.isdigit()):  # return the number if user enters a number string
+            return int(number_sentence)
+
+        clean_numbers = []
+        clean_decimal_numbers = []
+
+        # removing and, & etc.
+
+        str = number_sentence.strip()
+        while 1:
+            m = self.ptc.CRE_NUM.search(str)
+            if m is not None:
+                clean_numbers.append(m.group())
+                str = str[m.end():].strip()
+            else:
+                break
+
+        # Error message if the user enters invalid input!
+        if len(clean_numbers) == 0:
+            raise ValueError("No valid number words found! Please enter a valid number word (eg. two million twenty three thousand and forty nine)")
+
+        # Error if user enters million,billion, thousand or decimal point twice
+        if clean_numbers.count('thousand') > 1 or clean_numbers.count('million') > 1 or clean_numbers.count(
+            'billion') > 1 or clean_numbers.count('point') > 1:
+            raise ValueError("Redundant number word! Please enter a valid number word (eg. two million twenty three thousand and forty nine)")
+
+        # separate decimal part of number (if exists)
+        if clean_numbers.count('point') == 1:
+            clean_decimal_numbers = clean_numbers[clean_numbers.index('point') + 1:]
+            clean_numbers = clean_numbers[:clean_numbers.index('point')]
+
+        billion_index = clean_numbers.index('billion') if 'billion' in clean_numbers else -1
+        million_index = clean_numbers.index('million') if 'million' in clean_numbers else -1
+        thousand_index = clean_numbers.index('thousand') if 'thousand' in clean_numbers else -1
+
+        if (thousand_index > -1 and (thousand_index < million_index or thousand_index < billion_index)) or (
+            million_index > -1 and million_index < billion_index):
+            raise ValueError(
+                "Malformed number! Please enter a valid number word (eg. two million twenty three thousand and forty nine)")
+
+        total_sum = 0  # storing the number to be returned
+
+        if len(clean_numbers) > 0:
+            # hack for now, better way TODO
+            if len(clean_numbers) == 1:
+                total_sum += self.ptc.numbers[clean_numbers[0]]
+
+            else:
+                if billion_index > -1:
+                    billion_multiplier = self.number_formation(clean_numbers[0:billion_index])
+                    total_sum += billion_multiplier * 1000000000
+
+                if million_index > -1:
+                    if billion_index > -1:
+                        million_multiplier = self.number_formation(clean_numbers[billion_index + 1:million_index])
+                    else:
+                        million_multiplier = self.number_formation(clean_numbers[0:million_index])
+                    total_sum += million_multiplier * 1000000
+
+                if thousand_index > -1:
+                    if million_index > -1:
+                        thousand_multiplier = self.number_formation(clean_numbers[million_index + 1:thousand_index])
+                    elif billion_index > -1 and million_index == -1:
+                        thousand_multiplier = self.number_formation(clean_numbers[billion_index + 1:thousand_index])
+                    else:
+                        thousand_multiplier = self.number_formation(clean_numbers[0:thousand_index])
+                    total_sum += thousand_multiplier * 1000
+
+                if thousand_index > -1 and thousand_index != len(clean_numbers) - 1:
+                    hundreds = self.number_formation(clean_numbers[thousand_index + 1:])
+                elif million_index > -1 and million_index != len(clean_numbers) - 1:
+                    hundreds = self.number_formation(clean_numbers[million_index + 1:])
+                elif billion_index > -1 and billion_index != len(clean_numbers) - 1:
+                    hundreds = self.number_formation(clean_numbers[billion_index + 1:])
+                elif thousand_index == -1 and million_index == -1 and billion_index == -1:
+                    hundreds = self.number_formation(clean_numbers)
+                else:
+                    hundreds = 0
+                total_sum += hundreds
+
+        # adding decimal part to total_sum (if exists)
+        if len(clean_decimal_numbers) > 0:
+            decimal_sum = get_decimal_sum(clean_decimal_numbers)
+            total_sum += decimal_sum
+
+        return total_sum
+
     def _evalModifier(self, modifier, chunk1, chunk2, sourceTime):
         """
         Evaluate the C{modifier} string and following text (passed in
@@ -2678,6 +2794,7 @@ class Constants(object):
             self.units = self.locale.units
             self.since = self.locale.re_values['since']
             self.of = self.locale.re_values['of']
+            self.numbers = self.locale.numbers
 
             mths = _getLocaleDataAdjusted(self.locale.Months)
             smths = _getLocaleDataAdjusted(self.locale.shortMonths)
@@ -2808,6 +2925,8 @@ class Constants(object):
 
         self.RE_NUMBER = (r'(\b(?:{numbers})\b|\d+(?:{decimal_mark}\d+|))'
                           .format(**self.locale.re_values))
+
+        self.RE_NUM = (r'({numbers})'.format(**self.locale.re_values))
 
         self.RE_SPECIAL = (r'(?P<special>^[{specials}]+)\s+'
                            .format(**self.locale.re_values))
@@ -3044,6 +3163,7 @@ class Constants(object):
         self.re_option = re.IGNORECASE + re.VERBOSE
         self.cre_source = {'CRE_SPECIAL': self.RE_SPECIAL,
                            'CRE_NUMBER': self.RE_NUMBER,
+                           'CRE_NUM': self.RE_NUM,
                            'CRE_UNITS': self.RE_UNITS,
                            'CRE_UNITS_ONLY': self.RE_UNITS_ONLY,
                            'CRE_QUNITS': self.RE_QUNITS,
