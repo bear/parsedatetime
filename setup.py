@@ -35,7 +35,6 @@ setup(
     packages=find_packages(exclude=['tests', 'docs']),
     platforms=['Any'],
     long_description=read('README.rst'),
-    install_requires=['future'],
     tests_require=['pytest'],
     test_suite='tests',
     classifiers=[
