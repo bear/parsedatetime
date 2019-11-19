@@ -790,7 +790,7 @@ class Calendar(object):
             startMinute = mn
             startSecond = sec
         else:
-            startHour = 9
+            startHour = self.ptc.StartHour
             startMinute = 0
             startSecond = 0
 
@@ -1142,7 +1142,7 @@ class Calendar(object):
             startMinute = mn
             startSecond = sec
         else:
-            startHour = 9
+            startHour = self.ptc.StartHour
             startMinute = 0
             startSecond = 0
 
@@ -2313,9 +2313,14 @@ class Constants(object):
         self.BirthdayEpoch = 50
 
         # When True the starting time for all relative calculations will come
-        # from the given SourceTime, otherwise it will be 9am
+        # from the given SourceTime, otherwise it will be self.StartHour
 
         self.StartTimeFromSourceTime = False
+
+        # The hour of the day that will be used as the starting time for all
+        # relative calculations when self.StartTimeFromSourceTime is False
+
+        self.StartHour = 9
 
         # YearParseStyle controls how we parse "Jun 12", i.e. dates that do
         # not have a year present.  The default is to compare the date given
