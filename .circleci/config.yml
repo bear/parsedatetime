@@ -1,12 +1,13 @@
-dependencies:
-  override:
-    - pip install -U pip
-    - make dev
 
-test:
-  pre:
-    - make info
-    - uname -a
-    - lsb_release -a
-  override:
-    - make ci
+version: 2
+ jobs:
+   build:
+     docker:
+       - image: circleci/ruby:2.4.1
+     steps:
+       - checkout
+       - run: make dev
+       - make info
+       - uname -a
+       - lsb_release -a
+       - make ci
