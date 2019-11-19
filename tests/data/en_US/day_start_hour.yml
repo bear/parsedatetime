@@ -1,0 +1,87 @@
+constants:
+    - &next_day_phrases
+        - "tomorrow"
+        - "next day"
+    - &previous_day_phrases
+        - "yesterday"
+    - &same_day_phrases
+        - "today"
+    - &default_day_start_hour !replace xxxx-xx-xx 09:00:00
+
+default_day_start_hour:
+    cases:
+        - target: !datedelta
+            sourceTime: *default_day_start_hour
+            days: 1
+          context: !pdtContext day
+          phrases: *next_day_phrases
+        - target: !datedelta
+            sourceTime: *default_day_start_hour
+            days: -1
+          context: !pdtContext day
+          phrases: *previous_day_phrases
+        - target: !datedelta
+            sourceTime: *default_day_start_hour
+            days: 0
+          context: !pdtContext day
+          phrases: *same_day_phrases
+
+midnight_day_start_hour:
+    options:
+        day_start_hour: 0
+    cases:
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 00:00:00
+            days: 1
+          context: !pdtContext day
+          phrases: *next_day_phrases
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 00:00:00
+            days: -1
+          context: !pdtContext day
+          phrases: *previous_day_phrases
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 00:00:00
+            days: 0
+          context: !pdtContext day
+          phrases: *same_day_phrases
+
+morning_day_start_hour:
+    options:
+        day_start_hour: 3
+    cases:
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 03:00:00
+            days: 1
+          context: !pdtContext day
+          phrases: *next_day_phrases
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 03:00:00
+            days: -1
+          context: !pdtContext day
+          phrases: *previous_day_phrases
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 03:00:00
+            days: 0
+          context: !pdtContext day
+          phrases: *same_day_phrases
+
+evening_day_start_hour:
+    options:
+        day_start_hour: 19
+    cases:
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 19:00:00
+            days: 1
+          context: !pdtContext day
+          phrases: *next_day_phrases
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 19:00:00
+            days: -1
+          context: !pdtContext day
+          phrases: *previous_day_phrases
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 19:00:00
+            days: 0
+          context: !pdtContext day
+          phrases: *same_day_phrases

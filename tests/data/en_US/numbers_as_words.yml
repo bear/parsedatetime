@@ -1,0 +1,53 @@
+# Target values as expected from Calendar._convertUnitAsWords
+numbers_as_words:
+    cases:
+        - target: 0
+          phrases: 
+            - "zero"
+        - target: 1
+          phrases:
+            - "one"
+        - target: 11
+          phrases:
+            - "eleven"
+        - target: 42
+          phrases:
+            - "forty two"
+            - "forty-two"
+        - target: 100
+          phrases:
+            - "a hundred"
+            - "one hundred"
+        - target: 415
+          phrases:
+            - "four hundred and fifteen"
+            - "four hundred fifteen"
+        - target: 12020
+          phrases:
+            - "twelve thousand twenty"
+        - target: 33100
+          phrases:
+            - "thirty three thousand one hundred"
+            - "thirty-three thousand and a hundred"
+        - target: 999
+          phrases:
+            - "nine hundred and ninety nine"
+            - "nine hundred and ninety-nine"
+            - "nine hundred ninety nine"
+        - target: 3000000004000000000
+          phrases:
+            - "three quintillion four billion"
+            - "three quintillion and four billion"
+        - target: 43999
+          phrases:
+            - "forty three thousand, nine hundred and ninety nine"
+            - "forty-three thousand nine hundred and ninety-nine"
+            - "forty three thousand nine hundred ninety nine"
+        - target: 133000400314
+          phrases:
+            - "one hundred thirty three billion, four hundred thousand three hundred fourteen"
+            - "one hundred thirty-three billion four hundred thousand three hundred and fourteen"
+        - target: 1000000000000000000000000000
+          phrases:
+            - "an octillion"
+            - "one octillion"

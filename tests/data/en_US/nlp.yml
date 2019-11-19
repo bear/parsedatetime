@@ -1,0 +1,106 @@
+constants:
+  - &saturdays
+    - 2016-08-06 08:30:00
+    - 2016-02-27 11:11:11
+  - &sundays_before_august_5
+    - 2013-08-04 21:25:00
+    - 2016-07-31 02:04:06
+  - &default_day_start_time !replace xxxx-xx-xx 09:00:00
+
+long_phrases:
+    sourceTime: *sundays_before_august_5
+    cases:
+        - target: !nlpTarget
+            - phrase: "At 8PM on August 5th"
+              target: !replace xxxx-08-05 20:00:00
+              context: !pdtContext month | day | hour
+            - phrase: "next Friday at 9PM"
+              target: !datedelta
+                sourceTime: !replace xxxx-xx-xx 21:00:00
+                days: 5
+              context: !pdtContext day | hour
+            - phrase: "in 5 minutes"
+              target: !datedelta
+                minutes: 5
+              context: !pdtContext minute
+            - phrase: "next week"
+              target: !datedelta
+                sourceTime: *default_day_start_time
+                days: 7
+              context: !pdtContext week
+          phrases:
+            - >
+                I'm so excited!! At 8PM on August 5th i'm going to fly to 
+                Florida. Then next Friday at 9PM i'm going to Dog n Bone! 
+                And in 5 minutes I'm going to eat some food! Talk to you 
+                next week.
+
+long_phrases_with_quotes:
+    sourceTime: *sundays_before_august_5
+    cases:
+        - target: !nlpTarget
+            - phrase: "At '8PM on August 5th"
+              target: !replace xxxx-08-05 20:00:00
+              context: !pdtContext month | day | hour
+            - phrase: "next Friday at 9PM"
+              target: !datedelta
+                sourceTime: !replace xxxx-xx-xx 21:00:00
+                days: 5
+              context: !pdtContext day | hour
+            - phrase: "in '5 minutes"
+              target: !datedelta
+                minutes: 5
+              context: !pdtContext minute
+            - phrase: "next week"
+              target: !datedelta
+                sourceTime: *default_day_start_time
+                days: 7
+              context: !pdtContext week
+          phrases:
+            - >
+                I'm so excited!! At '8PM on August 5th' i'm going to fly to 
+                Florida. Then 'next Friday at 9PM' i'm going to Dog n Bone! 
+                And in '5 minutes' I'm going to eat some food! Talk to you 
+                "next week"
+
+prefixes:
+    sourceTime: *saturdays
+    cases:
+        - target: !nlpTarget
+            - phrase: "on Monday"
+              target: !datedelta
+                days: 2
+              context: !pdtContext day
+          phrases: 
+            - "Buy a balloon on Monday"
+        - target: !nlpTarget
+            - phrase: "at noon"
+              target: !replace xxxx-xx-xx 12:00:00
+              context: !pdtContext halfday
+          phrases: 
+            - "Buy a balloon at noon"
+        - target: !nlpTarget
+            - phrase: "in a month"
+              target: !datedelta
+                months: 1
+              context: !pdtContext month
+          phrases: 
+            - "Buy a balloon in a month"
+        - target: !nlpTarget
+            - phrase: "Monday"
+              target: !datedelta
+                days: 2
+              context: !pdtContext day
+          phrases:
+            - "Buy a balloon Monday" # Should not pull "on" from the end of "balloon"
+
+invalid_phrases:
+    cases:
+        - target: null
+          phrases:
+            - >
+                Next, I'm so excited!! So many things that are going to 
+                happen every week!!
+            - "$300"
+            - "300mL"
+            - "nice ass"

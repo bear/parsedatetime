@@ -1,0 +1,153 @@
+constants:
+    - &saturdays
+        - 2011-01-01 01:02:03
+        - 2016-02-27 04:05:06
+    - &sunday !datedelta
+      days: 1
+    - &monday !datedelta
+      days: 2
+    - &tuesday !datedelta
+      days: 3
+    - &wednesday !datedelta
+      days: 4
+    - &thursday !datedelta
+      days: 5
+    - &friday !datedelta
+      days: 6
+    - &saturday !datedelta
+      days: 7
+    - &january   !replace xxxx-01-01 xx:xx:xx
+    - &february  !replace xxxx-02-01 xx:xx:xx
+    - &march     !replace xxxx-03-01 xx:xx:xx
+    - &april     !replace xxxx-04-01 xx:xx:xx
+    - &may       !replace xxxx-05-01 xx:xx:xx
+    - &june      !replace xxxx-06-01 xx:xx:xx
+    - &july      !replace xxxx-07-01 xx:xx:xx
+    - &august    !replace xxxx-08-01 xx:xx:xx
+    - &september !replace xxxx-09-01 xx:xx:xx
+    - &october   !replace xxxx-10-01 xx:xx:xx
+    - &november  !replace xxxx-11-01 xx:xx:xx
+    - &december  !replace xxxx-12-01 xx:xx:xx
+
+#
+# Single unit deltas
+#
+
+week_day_names:
+    sourceTime: *saturdays
+    context: !pdtContext day
+    cases:
+        - target: *sunday
+          phrases:
+            - "Sunday"
+            - "Sun"
+        - target: *monday
+          phrases:
+            - "Monday"
+            - "Mon"
+        - target: *tuesday
+          phrases:
+            - "Tuesday"
+            - "Tues"
+            - "Tue"
+        - target: *wednesday
+          phrases:
+            - "Wednesday"
+            - "Wed"
+        - target: *thursday
+          phrases:
+            - "Thursday"
+            - "Thu"
+        - target: *friday
+          phrases:
+            - "Friday"
+            - "Fri"
+        - target: *saturday
+          phrases:
+            - "Saturday"
+            - "Sat"
+
+month_names:
+    # This could be any date from Dec 2 of the previous year to Jan 1 in order
+    # for all tests to pass, otherwise we have to deal with different years
+    sourceTime: *january
+    context: !pdtContext month
+    cases:
+        - target: *january
+          phrases:
+            - "January"
+            - "Jan"
+        - target: *february
+          phrases:
+            - "February"
+            - "Feb"
+        - target: *march
+          phrases:
+            - "March"
+            - "Mar"
+        - target: *april
+          phrases:
+            - "April"
+            - "Apr"
+        - target: *may
+          phrases:
+            - "May"
+        - target: *june
+          phrases:
+            - "June"
+            - "Jun"
+        - target: *july
+          phrases:
+            - "July"
+            - "Jul"
+        - target: *august
+          phrases:
+            - "August"
+            - "Aug"
+        - target: *september
+          phrases:
+            - "September"
+            - "Sep"
+        - target: *october
+          phrases:
+            - "October"
+            - "Oct"
+        - target: *november
+          phrases:
+            - "November"
+            - "Nov"
+        - target: *december
+          phrases:
+            - "December"
+            - "Dec"
+
+invalid_week_day_names:
+    context: !pdtContext
+    cases:
+        - target: null
+          phrases:
+            - "Sund"
+            - "Suna"
+            - "Money"
+            - "Tuesd"
+            - "atues"
+            - "Wednesdaying"
+            - "onthursday"
+            - "th. ursday"
+            - "fr iday"
+            - "Fríday"
+            - "satur-day"
+            - "sun_day"  # _ is not a word boundary; most characters would match "sun" here
+
+invalid_month_names:
+    context: !pdtContext
+    cases:
+        - target: null
+          phrases:
+            - "Janu"
+            - "aFebruary"
+            - "Ma rch"
+            - "A_pril"
+            - "Mayjune"
+            - "Ju"
+            - "augu.st"

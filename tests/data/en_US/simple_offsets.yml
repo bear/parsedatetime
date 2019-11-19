@@ -1,0 +1,255 @@
+constants:
+    - &tuesdays
+        - 2016-05-31 12:11:10
+        - 2016-03-01 00:00:00
+    - &default_day_start_time !replace xxxx-xx-xx 09:00:00
+
+now:
+    cases:
+        - target: !datedelta
+            seconds: 0
+          context: !pdtContext now
+          phrases:
+            - "now"
+            - "right now"
+
+offset_from_day_of_week:
+    sourceTime: *tuesdays
+    cases:
+        - target: !datedelta
+            days: 2
+          context: !pdtContext day
+          phrases:
+            - "Thursday"
+        - target: !datedelta
+            # TODO: Handling this as Thursday at 9 plus 1 hour seems
+            # unexpected.
+            sourceTime: *default_day_start_time
+            days: 2
+            hours: 1
+          context: !pdtContext day | hour
+          phrases:
+            - "one hour from Thursday"
+            - "1h from Thursday"
+        - target: !datedelta
+            # TODO: Handling this as Thursday at 9 minus 1 hour seems
+            # unexpected.
+            sourceTime: *default_day_start_time
+            days: 2
+            hours: -1
+          context: !pdtContext day | hour
+          phrases:
+            - "an hour before Thursday"
+            - "1 hr before Thursday"
+
+offset_from_day_of_week_matching_source_time:
+    sourceTime: *tuesdays
+    options:
+        StartTimeFromSourceTime: True
+    cases:
+        - target: !datedelta
+            # TODO: Handling this as Thursday at the current time plus 1 hour
+            # seems unexpected.
+            days: 2
+            hours: 1
+          context: !pdtContext day | hour
+          phrases:
+            - "one hour from Thursday"
+        - target: !datedelta
+            # TODO: Handling this is Thursday at the current time minus 1 hour
+            # seems unexpected.
+            days: 2
+            hours: -1
+          context: !pdtContext day | hour
+          phrases:
+            - "one hour before Thursday"
+
+minutes_from_now:
+    cases:
+        - target: !datedelta
+            minutes: 5
+          context: !pdtContext minutes | now
+          phrases:
+            - "5 minutes from now"
+            - "5 min from now"
+            - "5m from now"
+            - "five minutes from now"
+            - "five min from now"
+        - target: !datedelta
+            minutes: 5
+          context: !pdtContext minutes
+          phrases:
+            - "in 5 minutes"
+            - "in 5 min"
+            - "5m"
+            - "in five minutes"
+            - "in five min"
+            - "five minutes"
+            - "five min"
+
+minutes_before_now:
+    cases:
+        - target: !datedelta
+            minutes: -5
+          context: !pdtContext minutes | now
+          phrases:
+            - "5 minutes before now"
+            - "5 min before now"
+            - "5m before now"
+            - "five minutes before now"
+            - "five min before now"
+        - target: !datedelta
+            minutes: -5
+          context: !pdtContext minutes
+          phrases:
+            - "5 minutes ago"
+
+week_from_now:
+    cases:
+        - target: !datedelta
+            weeks: 1
+          context: !pdtContext weeks | now
+          phrases:
+            - "1 week from now"
+            - "one week from now"
+            - "a week from now"
+        - target: !datedelta
+            weeks: 1
+          context: !pdtContext days | now
+          phrases:
+            - "7 days from now"
+            - "seven days from now"
+        - target: !datedelta
+            weeks: 1
+          context: !pdtContext weeks
+          phrases:
+            - "in 1 week"
+            - "in one week"
+            - "in a week"
+        - target: !datedelta
+            sourceTime: *default_day_start_time
+            weeks: 1
+          context: !pdtContext weeks
+          phrases:
+            - "next week"
+        - target: !datedelta
+            weeks: 1
+          context: !pdtContext days
+          phrases:
+            - "in 7 days"
+            - "in seven days"
+
+week_before_now:
+    cases:
+        - target: !datedelta
+            weeks: -1
+          context: !pdtContext weeks | now
+          phrases:
+            - "1 week before now"
+            - "one week before now"
+            - "a week before now"
+        - target: !datedelta
+            weeks: -1
+          context: !pdtContext days | now
+          phrases:
+            - "7 days before now"
+            - "seven days before now"
+        - target: !datedelta
+            weeks: -1
+          context: !pdtContext weeks
+          phrases:
+            - "1 week ago"
+            - "a week ago"
+        - target: !datedelta
+            sourceTime: *default_day_start_time
+            weeks: -1
+          context: !pdtContext weeks
+          phrases:
+            - "last week"
+
+next_month:
+    cases:
+        - target: !datedelta
+            sourceTime: !replace xxxx-12-31 xx:xx:xx
+            years: 1
+          context: !pdtContext month | day
+          phrases:
+            - "next December 31"
+        - sourceTime: !replace xxxx-02-03 xx:xx:xx
+          target: !datedelta
+            years: 1
+            days: 1
+          context: !pdtContext month | day
+          phrases:
+            - "next February 4"
+        # FIXME: February 29 is ignored even in leap years
+        # - sourceTime: !replace xxxx-02-27 xx:xx:xx
+        #   target: !datedelta
+        #     years: 1
+        #     days: 2
+        #   context: !pdtContext month | day
+        #   phrases:
+        #     - "next February 29"
+
+next_weekday:
+    sourceTime: *tuesdays
+    cases:
+        - target: !datedelta
+            sourceTime: *default_day_start_time
+            days: 10
+          context: !pdtContext day
+          phrases:
+            - "next friday"
+            - "next friday?"
+
+next_weekday_matching_source_time:
+    options:
+        StartTimeFromSourceTime: True
+    sourceTime: *tuesdays
+    cases:
+        - target: !datedelta
+            days: 10
+          context: !pdtContext day
+          phrases:
+            - "next friday"
+
+next_weekday_with_time:
+    sourceTime: *tuesdays
+    cases:
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 13:00:00
+            days: 10
+          context: !pdtContext day | hour
+          phrases:
+            - "next friday at 1pm"
+            - "1pm next friday"
+    sourceTime: *tuesdays
+    cases:
+        - target: !datedelta
+            sourceTime: !replace xxxx-xx-xx 13:00:00
+            days: 3
+          context: !pdtContext day | hour
+          phrases:
+            - "1pm this friday"
+
+specials:
+    cases:
+        - target: !datedelta
+            sourceTime: *default_day_start_time
+            days: 1
+          context: !pdtContext days
+          phrases:
+            - "tomorrow"
+            - "next day"
+        - target: !datedelta
+            sourceTime: *default_day_start_time
+            days: -1
+          context: !pdtContext days
+          phrases:
+            - "yesterday"
+        - target: !datedelta
+            sourceTime: *default_day_start_time
+            days: 0
+          context: !pdtContext days
+          phrases:
+            - "today"

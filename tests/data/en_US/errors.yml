@@ -1,0 +1,52 @@
+out_of_range:
+    cases:
+        - target: null
+          phrases:
+            # TODO: parse returns the current time rather than sourceTime for these
+            #- "01/0"
+            #- "08/35"
+            #- "18/35"
+            - "1799"
+            - "781"
+            - "2702"
+
+plain_numbers:
+    cases:
+        - target: null
+          phrases:
+            - "78"
+            - "11"
+            - "1"
+            - "174565"
+            - "177505"
+
+# These phrases contain text like month names or day abbreviations but should
+# not be matched since they are part of a longer word.
+substring_phrases:
+    cases:
+        - target: null
+          phrases:
+            - "injunction" # jun
+            - "julius"     # jul
+            - "lamar"      # mar
+            - "demonize"   # mon
+            - "money"      # mon
+            - "month"      # mon
+
+# These phrases contain date representations within longer words
+substring_dates:
+    cases:
+        - target: null
+          phrases:
+            - "30/030/01/071/07"
+
+# Python's datetime is not capable of representing dates this far in the future
+# due to an overflow
+overflow:
+    cases:
+        - target: null
+          phrases:
+            - "12345 y"
+            - "654321 w"
+            - "3700000 d"
+        

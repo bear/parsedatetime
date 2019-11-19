@@ -1,12 +1,13 @@
 pytest
 pytest-cov
+pytest-mock
 pytest-runner
+pyyaml
 mccabe
 flake8
 coverage
 coveralls
 codecov
 check-manifest
-unittest2
 tox
 tox-pyenv

@@ -1,3 +1,7 @@
 [run]
 branch = True
-source = parsedatetime
+include =
+  parsedatetime/*
+  tests/lib/*
+omit =
+  tests/*/test_*

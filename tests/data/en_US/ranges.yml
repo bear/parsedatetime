@@ -1,0 +1,49 @@
+times:
+    cases:
+        - target: 
+            - !replace xxxx-xx-xx 14:00:00
+            - !replace xxxx-xx-xx 17:30:00
+          # FIXME: evalRanges does not yet support pdtContext
+          context: 2
+          phrases:
+            - "2 pm - 5:30 pm"
+            - "2pm - 5:30pm"
+            - "2:00:00 pm - 5:30:00 pm"
+            - "2 - 5:30pm"
+            - "14:00 - 17:30"
+        - target:
+            - !replace xxxx-xx-xx 10:00:00
+            - !replace xxxx-xx-xx 13:30:00
+          context: 2
+          phrases:
+            - "10AM - 1:30PM"
+            - "10:00:00 am - 1:30:00 pm"
+            - "10:00 - 13:30"
+        - target:
+            - !replace xxxx-xx-xx 15:30:00
+            - !replace xxxx-xx-xx 17:00:00
+          context: 2
+          phrases:
+            - "today 3:30-5PM"
+
+dates:
+    cases:
+        - target:
+            - !replace 2006-08-29 xx:xx:xx
+            - !replace 2006-09-02 xx:xx:xx
+          context: 1
+          phrases:
+            - "August 29, 2006 - September 2, 2006"
+            - "August 29 - September 2, 2006"
+            - "08/29/06 - 09/02/06"
+
+# FIXME: Subrange functionality does not work and this test was disabled in
+# TestRanges
+sub_ranges:
+    cases:
+        - target:
+            - 2006-08-01 09:00:00
+            - 2006-08-15 09:00:00
+          context: 1
+          phrases:
+            - "August 1-15, 2006"
