@@ -22,22 +22,17 @@ help:
 	@echo "  upload      generate source and wheel dist files and upload them"
 
 env:
-	pip install -U pip
+	pipenv install
 
 dev: env
-	pip install -Uqr requirements.testing.txt | tee
 	@echo "on OS X use homebrew to install icu4c"
 	LDFLAGS=${PYICU_LD} CPPFLAGS=${PYICU_CPP} ICU_VERSION=${ICU_VER} \
-    #pip install -U pyicu
-	pyenv install -s 2.7.11
-	pyenv install -s 3.6.1
-	pyenv install -s pypy-5.3
-	pyenv local 2.7.11 3.6.1 pypy-5.3
+	pipenv --python 2.7
+	pipenv --python 3.7
 
 info:
 	@python --version
-	@pyenv --version
-	@pip --version
+	@pipenv --version
 
 clean:
 	rm -fr build
@@ -47,30 +42,30 @@ clean:
 	find . -name '*~' -exec rm -f {} \;
 
 docs:
-	epydoc --html --config epydoc.conf
+	pipenv run epydoc --html --config epydoc.conf
 
 lint:
-	flake8 parsedatetime > violations.flake8.txt
+	pipenv run flake8 parsedatetime > violations.flake8.txt
 
 test: lint
-	python setup.py test
+	pipenv run python setup.py test
 
 tox: clean
-	tox
+	pipenv run tox
 
 coverage: clean
-	@coverage run --source=parsedatetime setup.py test
-	@coverage html
-	@coverage report
+	@pipenv run coverage run --source=parsedatetime setup.py test
+	@pipenv run coverage html
+	@pipenv run coverage report
 
 ci: tox coverage
-	CODECOV_TOKEN=`cat .codecov-token` codecov
+	CODECOV_TOKEN=`cat .codecov-token` pipenv run codecov
 
 build: clean
-	python setup.py check
-	python setup.py sdist
-	python setup.py bdist_wheel
+	pipenv run python setup.py check
+	pipenv run python setup.py sdist
+	pipenv run python setup.py bdist_wheel
 
 upload: clean
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	pipenv run python setup.py sdist upload
+	pipenv run python setup.py bdist_wheel upload
