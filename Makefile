@@ -3,8 +3,8 @@
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
     BREWPATH = $(shell brew --prefix)
-    PYICU_LD = -L${BREWPATH}/opt/icu4c/lib
-    PYICU_CPP = -I${BREWPATH}/opt/icu4c/include
+    PYICU_LD = "-L${BREWPATH}/opt/icu4c/lib -L${BREWPATH}/opt/openssl@1.1/lib"
+    PYICU_CPP = "-I${BREWPATH}/opt/icu4c/include -I${BREWPATH}/opt/openssl@1.1/include"
 	ICU_VER = 58.2
 else
     PYICU_LD =
@@ -28,12 +28,11 @@ dev: env
 	pip install -Uqr requirements.testing.txt | tee
 	@echo "on OS X use homebrew to install icu4c"
 	LDFLAGS=${PYICU_LD} CPPFLAGS=${PYICU_CPP} ICU_VERSION=${ICU_VER} \
-    pip install -U pyicu
-	pyenv install -s 2.6.9
+    #pip install -U pyicu
 	pyenv install -s 2.7.11
 	pyenv install -s 3.6.1
 	pyenv install -s pypy-5.3
-	pyenv local 2.6.9 2.7.11 3.6.1 pypy-5.3
+	pyenv local 2.7.11 3.6.1 pypy-5.3
 
 info:
 	@python --version

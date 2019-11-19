@@ -1,3 +1,13 @@
+18 Nov 2019 - bear
+   v2.5 release
+
+   PR #222 Fix to sanitize abbreviated months from icu
+   PR #223 typo in RU locale in abbreviation for January
+   PR #224 Fix lint errors for flake8 v3.5.0
+   PR #225 Add a constant for start hour
+   PR #233 Add 'secs' and 'mins' into base units
+   PR #226 Remove unused dependency on future
+
 14 May 2017 - bear
     v2.4 release
     v2.5 bump

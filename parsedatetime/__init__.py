@@ -2,7 +2,7 @@
 #
 # vim: sw=2 ts=2 sts=2
 #
-# Copyright 2004-2016 Mike Taylor
+# Copyright 2004-2019 Mike Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 Parse human-readable date/time text.
 
-Requires Python 2.6 or later
+Requires Python 2.7 or later
 """
 
 from __future__ import with_statement, absolute_import, unicode_literals
@@ -193,8 +193,7 @@ def __closure_parse_date_w3dtf():
     __tzd_re = r'(?P<tzd>[-+](?P<tzdhours>\d\d)(?::?(?P<tzdminutes>\d\d))|Z)'
     # __tzd_rx = re.compile(__tzd_re)
     __time_re = (r'(?P<hours>\d\d)(?P<tsep>:|)(?P<minutes>\d\d)'
-                 r'(?:(?P=tsep)(?P<seconds>\d\d(?:[.,]\d+)?))?' +
-                 __tzd_re)
+                 r'(?:(?P=tsep)(?P<seconds>\d\d(?:[.,]\d+)?))?' + __tzd_re)
     __datetime_re = '%s(?:T%s)?' % (__date_re, __time_re)
     __datetime_rx = re.compile(__datetime_re)
 
@@ -2134,8 +2133,7 @@ class Calendar(object):
                 # modifier. "Next is the word 'month'" should not parse as a
                 # date while "next month" should
                 if m is not None and \
-                        inputString[startpos:startpos +
-                                    m.start()].strip() == '':
+                        inputString[startpos:startpos + m.start()].strip() == '':
                     debug and log.debug('CRE_UNITS_ONLY matched [%s]',
                                         m.group())
                     if leftmost_match[1] == 0 or \
@@ -2156,8 +2154,7 @@ class Calendar(object):
             else:
                 if leftmost_match[3] > 0:
                     m = self.ptc.CRE_NLP_PREFIX.search(
-                        inputString[:leftmost_match[0]] +
-                        ' ' + str(leftmost_match[3]))
+                        inputString[:leftmost_match[0]] + ' ' + str(leftmost_match[3]))
                     if m is not None:
                         leftmost_match[0] = m.start('nlp_prefix')
                         leftmost_match[2] = inputString[leftmost_match[0]:
