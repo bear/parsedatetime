@@ -6,8 +6,13 @@ jobs:
       - image: circleci/python:latest
     steps:
       - checkout
-      - run: make dev
-      - make info
-      - uname -a
-      - lsb_release -a
-      - make ci
+      - run:
+          name: setup environment
+          command: |
+            make dev
+            make info
+            uname -a
+            lsb_release -a
+      - run:
+          name: build and test
+          command: make ci
