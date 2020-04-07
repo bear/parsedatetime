@@ -1,4 +1,5 @@
 parsedatetime
+=============
 
 Parse human-readable date/time strings.
 
@@ -58,7 +59,7 @@ PyEnv environment::
     pyenv install -s pypy-5.3
     pyenv global 2.7.11 3.5.2 2.6.9 pypy-5.3
 
-The tests depend on PyICU being installed. PyICU depends on icu4c which on OS X requires homebrew::
+The tests depend on PyICU being installed. PyICU depends on icu4c which on macOS requires homebrew::
 
     brew install icu4c
 
@@ -67,28 +68,37 @@ The tests depend on PyICU being installed. PyICU depends on icu4c which on OS X 
     LDFLAGS:  -L/usr/local/opt/icu4c/lib
     CPPFLAGS: -I/usr/local/opt/icu4c/include
 
-The Makefile contains the OS X default values for them so you may need to tweak them.
+The Makefile contains the macOS default values for them so you may need to tweak them.
 
 ===================
 Using parsedatetime
 ===================
 
-An example of how to use parsedatetime::
+An example of how to use parsedatetime:
+
+
+.. code:: python
 
     import parsedatetime
-
+    
     cal = parsedatetime.Calendar()
-
+    
     cal.parse("tomorrow")
 
-To get it to a Python ``datetime`` object::
+To get it to a Python ``datetime`` object:
+
+
+.. code:: python
 
     from datetime import datetime
 
     time_struct, parse_status = cal.parse("tomorrow")
+    
     datetime(*time_struct[:6])
 
-Parse datetime with timezone support (using pytz package)::
+Parse datetime with timezone support (using pytz package):
+
+.. code:: python
 
     import parsedatetime
     import pytz
