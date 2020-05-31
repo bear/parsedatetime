@@ -13,9 +13,12 @@ except NameError:
     pass
 
 try:
-    import PyICU as pyicu
+    import icu as pyicu
 except ImportError:
-    pyicu = None
+    try:
+        import PyICU as pyicu
+    except ImportError:
+        pyicu = None
 
 
 def icu_object(mapping):
