@@ -12,7 +12,7 @@ jobs:
             make dev
             make info
       - run:
-          name: test
+          name: lint and test
           command: |
             make lint
             make coverage
