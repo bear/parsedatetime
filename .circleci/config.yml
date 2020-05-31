@@ -11,8 +11,8 @@ jobs:
           command: |
             make dev
             make info
-            uname -a
-            lsb_release -a
       - run:
-          name: build and test
-          command: make ci
+          name: test
+          command: |
+            make lint
+            make coverage

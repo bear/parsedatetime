@@ -4,6 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+tox = "*"
 tox-pipenv = "*"
 pytest = "*"
 pytest-cov = "*"
@@ -15,8 +16,7 @@ coveralls = "*"
 codecov = "*"
 check-manifest = "*"
 unittest2 = "*"
-tox = "*"
-tox-pyenv = "*"
+pyicu-binary = "*"
 
 [packages]
 

@@ -59,14 +59,9 @@ PyEnv environment::
     pyenv install -s pypy-5.3
     pyenv global 2.7.11 3.5.2 2.6.9 pypy-5.3
 
-The tests depend on PyICU being installed. PyICU depends on icu4c which on macOS requires homebrew::
+The tests depend on PyICU being installed using the `pyicu-binary` package which removes the source build step. PyICU depends on icu4c which on macOS requires homebrew::
 
     brew install icu4c
-
-*and* then will require that you pass in the ``LDFLAGS`` and ``CPPFLAGS`` that homebrew will display after the install::
-
-    LDFLAGS:  -L/usr/local/opt/icu4c/lib
-    CPPFLAGS: -I/usr/local/opt/icu4c/include
 
 The Makefile contains the macOS default values for them so you may need to tweak them.
 

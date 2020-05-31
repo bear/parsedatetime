@@ -1,3 +1,17 @@
+31 May 2020 - bear
+   PR #244 Polished README.rst 
+   PR #242 fix pyicu import to suppress warnings 
+   PR #239 Fixed missing comma in seconds strings
+
+   Updated Pipfile and Makefile to:
+     - update and move packages to the "dev" section
+     - use Python 3.7 for pipenv
+     - install tox-pipenv plugin to try and fix Tox (currently doesn't)
+     - simplify tox.ini to try and fix Tox (didn't)
+     - move ci makefile target to the circle config
+
+   Currently Tox is broken (see https://github.com/tox-dev/tox-pipenv/issues/61)
+
 18 Nov 2019 - bear
    v2.5 release
 
