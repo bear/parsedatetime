@@ -1,6 +1,7 @@
 include *.rst
 include *.txt
 include Makefile
+include pytest.ini
 recursive-include examples *.py
 recursive-include examples *.txt
 recursive-include tests *.py
