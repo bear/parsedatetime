@@ -948,6 +948,63 @@ class Calendar(object):
             start = datetime.datetime(yr, mth, dy, hr, mn, sec)
             target = start + datetime.timedelta(days=offset)
             sourceTime = target.timetuple()
+        elif unit.isdigit() and chunk2 in self.ptc.units['days']:
+            offsetByUnit = int(unit)
+            if offset == 0 and offsetByUnit == 0:
+                sourceTime = (yr, mth, dy, 17, 0, 0, wd, yd, isdst)
+                ctx.updateAccuracy(ctx.ACU_HALFDAY)
+            elif offset == 2:
+                start = datetime.datetime(yr, mth, dy, hr, mn, sec)
+                target = start + datetime.timedelta(days=offsetByUnit)
+                sourceTime = target.timetuple()
+            else:
+                start = datetime.datetime(yr, mth, dy, startHour,
+                                          startMinute, startSecond)
+                target = start + datetime.timedelta(days=offset*offsetByUnit)
+                sourceTime = target.timetuple()
+            ctx.updateAccuracy(ctx.ACU_DAY)
+
+        elif unit.isdigit() and  chunk2 in self.ptc.units['weeks'] :
+            offsetByUnit = int(unit)
+            if offset == 0:
+                start = datetime.datetime(yr, mth, dy, 17, 0, 0)
+                target = start + datetime.timedelta(days=(4 - wd))
+                sourceTime = target.timetuple()
+            elif offset == 2:
+                start = datetime.datetime(yr, mth, dy, startHour,
+                                          startMinute, startSecond)
+                target = start + datetime.timedelta(days=7+offsetByUnit)
+                sourceTime = target.timetuple()
+            else:
+                start = datetime.datetime(yr, mth, dy, startHour,
+                                          startMinute, startSecond)
+                target = start + offset * datetime.timedelta(weeks=1+offsetByUnit)
+                sourceTime = target.timetuple()
+            ctx.updateAccuracy(ctx.ACU_WEEK)
+
+        elif unit.isdigit() and chunk2 in self.ptc.units['months']:
+            offsetByUnit = int(unit)
+            currentDaysInMonth = self.ptc.daysInMonth(mth, yr)
+            if offset == 0:
+                dy = currentDaysInMonth
+                sourceTime = (yr, mth, dy, startHour, startMinute,
+                              startSecond, wd, yd, isdst)
+            elif offset == 2:
+                # if day is the last day of the month, calculate the last day
+                # of the next month
+                if dy == currentDaysInMonth:
+                    dy = self.ptc.daysInMonth(mth + 1, yr)
+
+                start = datetime.datetime(yr, mth, dy, startHour,
+                                          startMinute, startSecond)
+                target = self.inc(start, month=1)
+                sourceTime = target.timetuple()
+            else:
+                start = datetime.datetime(yr, mth, 1, startHour,
+                                          startMinute, startSecond)
+                target = self.inc(start, month=offset*offsetByUnit)
+                sourceTime = target.timetuple()
+            ctx.updateAccuracy(ctx.ACU_MONTH)
 
         else:
             # check if the remaining text is parsable and if so,
