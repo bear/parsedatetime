@@ -62,17 +62,17 @@ class pdtContext(object):
 
     """
 
-    __slots__ = ('accuracy', )
+    __slots__ = ('accuracy',)
 
-    ACU_YEAR = 2**0
-    ACU_MONTH = 2**1
-    ACU_WEEK = 2**2
-    ACU_DAY = 2**3
-    ACU_HALFDAY = 2**4
-    ACU_HOUR = 2**5
-    ACU_MIN = 2**6
-    ACU_SEC = 2**7
-    ACU_NOW = 2**8
+    ACU_YEAR = 2 ** 0
+    ACU_MONTH = 2 ** 1
+    ACU_WEEK = 2 ** 2
+    ACU_DAY = 2 ** 3
+    ACU_HALFDAY = 2 ** 4
+    ACU_HOUR = 2 ** 5
+    ACU_MIN = 2 ** 6
+    ACU_SEC = 2 ** 7
+    ACU_NOW = 2 ** 8
 
     ACU_DATE = ACU_YEAR | ACU_MONTH | ACU_WEEK | ACU_DAY
     ACU_TIME = ACU_HALFDAY | ACU_HOUR | ACU_MIN | ACU_SEC | ACU_NOW

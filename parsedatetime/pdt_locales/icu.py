@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import
 
 """
 pdt_locales
@@ -7,118 +8,151 @@ All of the included locale classes shipped with pdt.
 """
 import datetime
 
-from six.moves import range
+try:
+    range = xrange
+except NameError:
+    pass
 
 try:
-    import PyICU as pyicu
-except:
-    pyicu = None
+    import icu as pyicu
+except ImportError:
+    try:
+        import PyICU as pyicu
+    except ImportError:
+        pyicu = None
 
-__all__ = [
-    'get_icu',
-]
+
+def icu_object(mapping):
+    return type('_icu', (object,), mapping)
 
 
-def lcase(x):
-    return x.lower()
+def merge_weekdays(base_wd, icu_wd):
+    result = []
+    for left, right in zip(base_wd, icu_wd):
+        if left == right:
+            result.append(left)
+            continue
+        left = set(left.split('|'))
+        right = set(right.split('|'))
+        result.append('|'.join(left | right))
+    return result
 
 
 def get_icu(locale):
-    result = {}
-    icu = None
-    if pyicu is not None:
-        if locale is None:
-            locale = 'en_US'
-        icu = pyicu.Locale(locale)
 
-    if icu is not None:
+    def _sanitize_key(k):
+        import re
+        return re.sub("\\.(\\||$)", "\\1", k)
 
-        # grab spelled out format of all numbers from 0 to 100
-        rbnf = pyicu.RuleBasedNumberFormat(pyicu.URBNFRuleSetTag.SPELLOUT, icu)
-        result['numbers'] = dict([(rbnf.format(i), i) for i in range(0, 100)])
+    from . import base
+    result = dict([(key, getattr(base, key))
+                   for key in dir(base) if not key.startswith('_')])
+    result['icu'] = None
 
-        symbols = result['symbols'] = pyicu.DateFormatSymbols(icu)
+    if pyicu is None:
+        return icu_object(result)
 
-        # grab ICU list of weekdays, skipping first entry which
-        # is always blank
-        wd = list(map(lcase, symbols.getWeekdays()[1:]))
-        swd = list(map(lcase, symbols.getShortWeekdays()[1:]))
+    if locale is None:
+        locale = 'en_US'
+    result['icu'] = icu = pyicu.Locale(locale)
 
-        # store them in our list with Monday first (ICU puts Sunday first)
-        result['Weekdays'] = wd[1:] + wd[0:1]
-        result['shortWeekdays'] = swd[1:] + swd[0:1]
-        result['Months'] = list(map(lcase, symbols.getMonths()))
-        result['shortMonths'] = list(map(lcase, symbols.getShortMonths()))
-        keys = ['full', 'long', 'medium', 'short']
+    if icu is None:
+        return icu_object(result)
 
-        icu_df = result['icu_df'] = {'full': pyicu.DateFormat.createDateInstance(pyicu.DateFormat.kFull, icu),
-                                     'long': pyicu.DateFormat.createDateInstance(pyicu.DateFormat.kLong, icu),
-                                     'medium': pyicu.DateFormat.createDateInstance(pyicu.DateFormat.kMedium, icu),
-                                     'short': pyicu.DateFormat.createDateInstance(pyicu.DateFormat.kShort, icu),
-                                     }
-        icu_tf = result['icu_tf'] = {'full': pyicu.DateFormat.createTimeInstance(pyicu.DateFormat.kFull, icu),
-                                     'long': pyicu.DateFormat.createTimeInstance(pyicu.DateFormat.kLong, icu),
-                                     'medium': pyicu.DateFormat.createTimeInstance(pyicu.DateFormat.kMedium, icu),
-                                     'short': pyicu.DateFormat.createTimeInstance(pyicu.DateFormat.kShort, icu),
-                                     }
+    # grab spelled out format of all numbers from 0 to 100
+    rbnf = pyicu.RuleBasedNumberFormat(pyicu.URBNFRuleSetTag.SPELLOUT, icu)
+    result['numbers'].update([(rbnf.format(i), i) for i in range(0, 100)])
 
-        result['dateFormats'] = {x: icu_df[x].toPattern() for x in keys}
-        result['timeFormats'] = {x: icu_tf[x].toPattern() for x in keys}
+    symbols = result['symbols'] = pyicu.DateFormatSymbols(icu)
 
-        am = ''
-        pm = ''
-        ts = ''
+    # grab ICU list of weekdays, skipping first entry which
+    # is always blank
+    wd = [_sanitize_key(w.lower()) for w in symbols.getWeekdays()[1:]]
+    swd = [_sanitize_key(sw.lower()) for sw in symbols.getShortWeekdays()[1:]]
 
-        # ICU doesn't seem to provide directly the date or time separator
-        # so we have to figure it out
-        o = result['icu_tf']['short']
-        s = result['timeFormats']['short']
+    # store them in our list with Monday first (ICU puts Sunday first)
+    result['Weekdays'] = merge_weekdays(result['Weekdays'],
+                                        wd[1:] + wd[0:1])
+    result['shortWeekdays'] = merge_weekdays(result['shortWeekdays'],
+                                             swd[1:] + swd[0:1])
+    result['Months'] = [_sanitize_key(m.lower()) for m in symbols.getMonths()]
+    result['shortMonths'] = [_sanitize_key(sm.lower()) for sm in symbols.getShortMonths()]
+    keys = ['full', 'long', 'medium', 'short']
 
-        result['usesMeridian'] = 'a' in s
-        result['uses24'] = 'H' in s
+    createDateInstance = pyicu.DateFormat.createDateInstance
+    createTimeInstance = pyicu.DateFormat.createTimeInstance
+    icu_df = result['icu_df'] = {
+        'full': createDateInstance(pyicu.DateFormat.kFull, icu),
+        'long': createDateInstance(pyicu.DateFormat.kLong, icu),
+        'medium': createDateInstance(pyicu.DateFormat.kMedium, icu),
+        'short': createDateInstance(pyicu.DateFormat.kShort, icu),
+    }
+    icu_tf = result['icu_tf'] = {
+        'full': createTimeInstance(pyicu.DateFormat.kFull, icu),
+        'long': createTimeInstance(pyicu.DateFormat.kLong, icu),
+        'medium': createTimeInstance(pyicu.DateFormat.kMedium, icu),
+        'short': createTimeInstance(pyicu.DateFormat.kShort, icu),
+    }
 
-        # '11:45 AM' or '11:45'
-        s = o.format(datetime.datetime(2003, 10, 30, 11, 45))
+    result['dateFormats'] = {}
+    result['timeFormats'] = {}
+    for x in keys:
+        result['dateFormats'][x] = icu_df[x].toPattern()
+        result['timeFormats'][x] = icu_tf[x].toPattern()
 
-        # ': AM' or ':'
-        s = s.replace('11', '').replace('45', '')
+    am = pm = ts = ''
 
-        if len(s) > 0:
-            ts = s[0]
+    # ICU doesn't seem to provide directly the date or time separator
+    # so we have to figure it out
+    o = result['icu_tf']['short']
+    s = result['timeFormats']['short']
 
-        if result['usesMeridian']:
-            # '23:45 AM' or '23:45'
-            am = s[1:].strip()
-            s = o.format(datetime.datetime(2003, 10, 30, 23, 45))
+    result['usesMeridian'] = 'a' in s
+    result['uses24'] = 'H' in s
 
-            if result['uses24']:
-                s = s.replace('23', '')
-            else:
-                s = s.replace('11', '')
+    # '11:45 AM' or '11:45'
+    s = o.format(datetime.datetime(2003, 10, 30, 11, 45))
 
-                # 'PM' or ''
-            pm = s.replace('45', '').replace(ts, '').strip()
+    # ': AM' or ':'
+    s = s.replace('11', '').replace('45', '')
 
-        result['timeSep'] = [ts]
-        result['meridian'] = [am, pm]
+    if len(s) > 0:
+        ts = s[0]
 
-        o = result['icu_df']['short']
-        s = o.format(datetime.datetime(2003, 10, 30, 11, 45))
-        s = s.replace('10', '').replace('30', '').replace('03', '').replace('2003', '')
+    if result['usesMeridian']:
+        # '23:45 AM' or '23:45'
+        am = s[1:].strip()
+        s = o.format(datetime.datetime(2003, 10, 30, 23, 45))
 
-        if len(s) > 0:
-            ds = s[0]
+        if result['uses24']:
+            s = s.replace('23', '')
         else:
-            ds = '/'
+            s = s.replace('11', '')
 
-        result['dateSep'] = [ds]
-        s = result['dateFormats']['short']
-        l = s.lower().split(ds)
-        dp_order = []
+            # 'PM' or ''
+        pm = s.replace('45', '').replace(ts, '').strip()
 
-        for s in l:
-            if len(s) > 0:
-                dp_order.append(s[:1])
+    result['timeSep'] = [ts]
+    result['meridian'] = [am, pm] if am and pm else []
 
-        result['dp_order'] = dp_order
-    return result
+    o = result['icu_df']['short']
+    s = o.format(datetime.datetime(2003, 10, 30, 11, 45))
+    s = s.replace('10', '').replace('30', '').replace(
+        '03', '').replace('2003', '')
+
+    if len(s) > 0:
+        ds = s[0]
+    else:
+        ds = '/'
+
+    result['dateSep'] = [ds]
+    s = result['dateFormats']['short']
+    ll = s.lower().split(ds)
+    dp_order = []
+
+    for s in ll:
+        if len(s) > 0:
+            dp_order.append(s[:1])
+
+    result['dp_order'] = dp_order
+    return icu_object(result)

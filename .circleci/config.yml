@@ -1,0 +1,18 @@
+
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:latest
+    steps:
+      - checkout
+      - run:
+          name: setup environment
+          command: |
+            make dev
+            make info
+      - run:
+          name: lint and test
+          command: |
+            make lint
+            make coverage

@@ -5,11 +5,16 @@ ptc.StartTimeFromSourceTime flag set to True
 """
 from __future__ import unicode_literals
 
+import sys
 import time
 import datetime
-import unittest
 import parsedatetime as pdt
 from . import utils
+
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 
 class test(unittest.TestCase):
@@ -32,13 +37,12 @@ class test(unittest.TestCase):
         # to get the end of the current month
         (yr, mth, dy, hr, mn, sec, _, _, _) = s.timetuple()
 
-        m = mth
+        s = datetime.datetime(yr, mth, dy, 13, 14, 15)
+
         mth += 1
         if mth > 12:
             mth = 1
             yr += 1
-
-        s = datetime.datetime(yr, m, dy, 13, 14, 15)
         t = datetime.datetime(
             yr, mth, 1, 13, 14, 15) + datetime.timedelta(days=-1)
 

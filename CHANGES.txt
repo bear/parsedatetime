@@ -1,3 +1,72 @@
+31 May 2020 - bear
+   PR #244 Polished README.rst 
+   PR #242 fix pyicu import to suppress warnings 
+   PR #239 Fixed missing comma in seconds strings
+
+   Updated Pipfile and Makefile to:
+     - update and move packages to the "dev" section
+     - use Python 3.7 for pipenv
+     - install tox-pipenv plugin to try and fix Tox (currently doesn't)
+     - simplify tox.ini to try and fix Tox (didn't)
+     - move ci makefile target to the circle config
+
+   Currently Tox is broken (see https://github.com/tox-dev/tox-pipenv/issues/61)
+
+18 Nov 2019 - bear
+   v2.5 release
+
+   PR #222 Fix to sanitize abbreviated months from icu
+   PR #223 typo in RU locale in abbreviation for January
+   PR #224 Fix lint errors for flake8 v3.5.0
+   PR #225 Add a constant for start hour
+   PR #233 Add 'secs' and 'mins' into base units
+   PR #226 Remove unused dependency on future
+
+14 May 2017 - bear
+    v2.4 release
+    v2.5 bump
+
+    Issue #219 - remove 'setup_requires' from setup.py
+
+10 Mar 2017 - bear
+    v2.3 release
+    v2.4 bump
+
+    Issue #215 - tests fail in March
+
+02 Mar 2016 - bear
+    v2.1 released
+    v2.2 bump
+
+    Issue #156 parsedatetime 2.0 doesn't work on py26
+
+    PR 157 unwrap dictionary comprehensions to allow for python 2.6 to work - Issue #156
+
+29 Feb 2016 - bear
+    v2.0 released
+
+    Issue #155 Relative times containing years fail when computed from a leap day
+    Issue #145 cal.parse('2015-11-18') returns November 19th 2015
+    Issue #143 What is the second value returned by `parse`?
+    Issue #141 Bad test case in TestComplexDateTimes
+    Issue #123 update supporting files for v2.0 release
+    Issue #124 Put locales into config-files (yaml)
+    Issue #125 Remove extra files
+    Issue #137 Year is parsed wrongly if the date is of format MMM DD, YYxx xx:SS bug
+    Issue #136 Why I see 2016 instead of 2015?
+    Issue #133 Bug: "2015-01-01" is parsed as the current date.
+    Issue #126 "Unresolved attribute reference 'parse' for class 'object'... " in Pycharm IDE. bug
+
+    PR #153 Fix/day of week offsets
+    PR #146 Test failure: eom is correct, but expectation is wrong
+    PR #142 Fixed all PyICU test failure
+    PR #138 bug(date3): rely on comparison of hour and year strings but not strict char position
+    PR #135 update manifest, clean up setup.py and move historical text files
+    PR #130 Refactoring of pdt_locales
+    PR #134 Uses `codecov` to generate coverage report
+    PR #128 Master
+    PR #127 Issue #126 - removed inheritance from object and removed return value…
+
 20 Sep 2015 - bear
     bump version to v2.0 because of the fix for Issue #120
 

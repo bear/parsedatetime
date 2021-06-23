@@ -3,6 +3,7 @@ foo.py
 
 # IDE
 .idea/
+.vscode
 
 # Packages
 *.egg
@@ -22,8 +23,11 @@ pip-log.txt
 
 # Unit test / coverage reports
 .coverage
+.codecov-token
 .tox
-tests/htmlcov/
+nosetests.xml
+htmlcov
+coverage.xml
 
 #Translations
 *.mo
@@ -34,3 +38,9 @@ tests/htmlcov/
 # vim
 *.swp
 *.swo
+
+.cache
+.eggs
+
+violations.flake8.txt
+.python-version

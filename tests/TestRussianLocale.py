@@ -3,13 +3,17 @@
 Test parsing of simple date and times using the Russian locale
 """
 from __future__ import unicode_literals
+
 import sys
 import time
 import datetime
-import unittest
 import parsedatetime as pdt
-
 from . import utils
+
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 
 class test(unittest.TestCase):
@@ -128,6 +132,7 @@ class test(unittest.TestCase):
     #         get_datetime(self.cal.parse("послезавтра")[0]),
     #         now + datetime.timedelta(days=2)
     #     )
+
 
 if __name__ == "__main__":
     unittest.main()
