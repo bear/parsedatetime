@@ -8,12 +8,16 @@ help:
 	@echo "  build       generate source and wheel dist files"
 	@echo "  upload      generate source and wheel dist files and upload them"
 
-dev:
-	pipenv install --dev --python 3.7
-
 info:
 	@pipenv --version
 	@pipenv run python --version
+
+env: info
+	pipenv install --dev --python 3.9
+	pipenv install black --pre --dev
+
+dev: info
+	pipenv install --dev
 
 clean:
 	rm -fr build
@@ -25,10 +29,10 @@ clean:
 docs:
 	pipenv run epydoc --html --config epydoc.conf
 
-lint:
+lint: clean
 	pipenv run flake8 parsedatetime > violations.flake8.txt
 
-test:
+test: clean
 	pipenv run python setup.py test
 
 tox: clean
@@ -39,8 +43,10 @@ coverage: clean
 	@pipenv run coverage html
 	@pipenv run coverage report
 
-build: clean
+check: clean lint
 	pipenv run python setup.py check
+
+build: check
 	pipenv run python setup.py sdist bdist_wheel
 
 # requires PyPI Twine - brew install pypi-twine

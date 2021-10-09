@@ -2,7 +2,7 @@
 #
 # vim: sw=2 ts=2 sts=2
 #
-# Copyright 2004-2019 Mike Taylor
+# Copyright 2004-2021 Mike Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -960,11 +960,11 @@ class Calendar(object):
             else:
                 start = datetime.datetime(yr, mth, dy, startHour,
                                           startMinute, startSecond)
-                target = start + datetime.timedelta(days=offset*offsetByUnit)
+                target = start + datetime.timedelta(days=offset * offsetByUnit)
                 sourceTime = target.timetuple()
             ctx.updateAccuracy(ctx.ACU_DAY)
 
-        elif unit.isdigit() and  chunk2 in self.ptc.units['weeks'] :
+        elif unit.isdigit() and chunk2 in self.ptc.units['weeks']:
             offsetByUnit = int(unit)
             if offset == 0:
                 start = datetime.datetime(yr, mth, dy, 17, 0, 0)
@@ -973,12 +973,12 @@ class Calendar(object):
             elif offset == 2:
                 start = datetime.datetime(yr, mth, dy, startHour,
                                           startMinute, startSecond)
-                target = start + datetime.timedelta(days=7+offsetByUnit)
+                target = start + datetime.timedelta(days=7 + offsetByUnit)
                 sourceTime = target.timetuple()
             else:
                 start = datetime.datetime(yr, mth, dy, startHour,
                                           startMinute, startSecond)
-                target = start + offset * datetime.timedelta(weeks=1+offsetByUnit)
+                target = start + offset * datetime.timedelta(weeks=1 + offsetByUnit)
                 sourceTime = target.timetuple()
             ctx.updateAccuracy(ctx.ACU_WEEK)
 
@@ -1002,7 +1002,7 @@ class Calendar(object):
             else:
                 start = datetime.datetime(yr, mth, 1, startHour,
                                           startMinute, startSecond)
-                target = self.inc(start, month=offset*offsetByUnit)
+                target = self.inc(start, month=offset * offsetByUnit)
                 sourceTime = target.timetuple()
             ctx.updateAccuracy(ctx.ACU_MONTH)
 
