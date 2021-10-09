@@ -1,4 +1,4 @@
-include *.rst
+include *.md
 include *.txt
 include Makefile
 include pytest.ini
