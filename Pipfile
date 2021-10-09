@@ -1,0 +1,27 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+tox = "*"
+tox-pipenv = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-runner = "*"
+pyicu-binary = "*"
+flake8 = "*"
+coverage = "*"
+coveralls = "*"
+codecov = "*"
+check-manifest = "*"
+unittest2 = "*"
+black = "*"
+
+[packages]
+
+[requires]
+python_version = "3.9"
+
+[pipenv]
+allow_prereleases = true

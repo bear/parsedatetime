@@ -46,9 +46,9 @@ dp_order = ['d', 'm', 'y']
 # as I understand it we can't distinguish
 # between m for minutes and M for months.
 units = {
-    'seconds': ['secunden', 'sec', 's'],
+    'seconds': ['seconden', 'sec', 's'],
     'minutes': ['minuten', 'min', 'm'],
-    'hours': ['uren', 'uur', 'h'],
+    'hours': ['uren', 'uur', 'h', 'u'],
     'days': ['dagen', 'dag', 'd'],
     'weeks': ['weken', 'w'],
     'months': ['maanden', 'maand'],
@@ -66,23 +66,25 @@ re_values.update({
 })
 
 # Used to adjust the returned date before/after the source
-# still looking for insight on how to translate all of them to german.
+# still looking for insight on how to translate all of them to dutch.
 Modifiers = {
     'vanaf': 1,
     'voor': -1,
     'na': 1,
-    'vorige': -1,
-    'eervorige': -1,
+    'eergisteren': -1,
     'prev': -1,
-    'laastste': -1,
+    'laatste': -1,
     'volgende': 1,
     'deze': 0,
+    'heden': 0,
     'vorige': -1,
+    'vorig': -1,
     'over': 2,
     'eind van': 0,
+    'einde van': 0,
 }
 
-# morgen/abermorgen does not work, see
+# morgen/overmorgen does not work, see
 # http://code.google.com/p/parsedatetime/issues/detail?id=19
 dayOffsets = {
     'morgen': 1,
@@ -102,6 +104,7 @@ re_sources = {
     'lunch': {'hr': 12, 'mn': 0, 'sec': 0},
     'morgen': {'hr': 6, 'mn': 0, 'sec': 0},
     "'s morgens": {'hr': 6, 'mn': 0, 'sec': 0},
+    'vanmorgen': {'hr': 6, 'mn': 0, 'sec': 0},
     'ontbijt': {'hr': 8, 'mn': 0, 'sec': 0},
     'avondeten': {'hr': 19, 'mn': 0, 'sec': 0},
     'avond': {'hr': 18, 'mn': 0, 'sec': 0},

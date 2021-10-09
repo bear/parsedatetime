@@ -3,6 +3,7 @@ foo.py
 
 # IDE
 .idea/
+.vscode
 
 # Packages
 *.egg
@@ -40,6 +41,7 @@ coverage.xml
 
 .cache
 .eggs
+.mypy_cache
 
 violations.flake8.txt
 .python-version

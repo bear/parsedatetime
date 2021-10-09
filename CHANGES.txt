@@ -1,3 +1,52 @@
+9 Oct 2021 - bear
+    PR #261 Bump urllib3 from 1.25.9 to 1.26.5
+    PR #255 support 'next 10 days' query
+    PR #252 Include pytest.ini in source distributions, fixes tests
+    PR #250 Update nl_NL.py
+    PR #248 pyicu 'module' object has no attribute 'Locale'
+
+    Update Pipfile to reference Python 3.9
+    Updated Copyright statement
+
+31 May 2020 - bear
+   v2.6 release
+   bump version to v2.7
+
+   PR #244 Polished README.rst 
+   PR #242 fix pyicu import to suppress warnings 
+   PR #239 Fixed missing comma in seconds strings
+
+   Updated Pipfile and Makefile to:
+     - update and move packages to the "dev" section
+     - use Python 3.7 for pipenv
+     - install tox-pipenv plugin to try and fix Tox (currently doesn't)
+     - simplify tox.ini to try and fix Tox (didn't)
+     - move ci makefile target to the circle config
+
+   Currently Tox is broken (see https://github.com/tox-dev/tox-pipenv/issues/61)
+
+18 Nov 2019 - bear
+   v2.5 release
+
+   PR #222 Fix to sanitize abbreviated months from icu
+   PR #223 typo in RU locale in abbreviation for January
+   PR #224 Fix lint errors for flake8 v3.5.0
+   PR #225 Add a constant for start hour
+   PR #233 Add 'secs' and 'mins' into base units
+   PR #226 Remove unused dependency on future
+
+14 May 2017 - bear
+    v2.4 release
+    v2.5 bump
+
+    Issue #219 - remove 'setup_requires' from setup.py
+
+10 Mar 2017 - bear
+    v2.3 release
+    v2.4 bump
+
+    Issue #215 - tests fail in March
+
 02 Mar 2016 - bear
     v2.1 released
     v2.2 bump

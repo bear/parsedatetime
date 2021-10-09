@@ -86,8 +86,8 @@ decimal_mark = '.'
 
 # this will be added to re_values later
 units = {
-    'seconds': ['second', 'seconds', 'sec', 's'],
-    'minutes': ['minute', 'minutes', 'min', 'm'],
+    'seconds': ['second', 'seconds', 'sec', 'secs', 's'],
+    'minutes': ['minute', 'minutes', 'min', 'mins', 'm'],
     'hours': ['hour', 'hours', 'hr', 'h'],
     'days': ['day', 'days', 'dy', 'd'],
     'weeks': ['week', 'weeks', 'wk', 'w'],
