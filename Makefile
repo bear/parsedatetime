@@ -8,12 +8,12 @@ help:
 	@echo "  build       generate source and wheel dist files"
 	@echo "  upload      generate source and wheel dist files and upload them"
 
-dev:
-	pipenv install --dev --python 3.9
-
 info:
 	@pipenv --version
 	@pipenv run python --version
+
+dev: info
+	pipenv install --dev --python 3.9
 
 clean:
 	rm -fr build
@@ -25,10 +25,10 @@ clean:
 docs:
 	pipenv run epydoc --html --config epydoc.conf
 
-lint:
+lint: clean
 	pipenv run flake8 parsedatetime > violations.flake8.txt
 
-test:
+test: clean
 	pipenv run python setup.py test
 
 tox: clean
