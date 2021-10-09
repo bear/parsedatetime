@@ -42,9 +42,9 @@ from .warns import pdt20DeprecationWarning
 
 __author__ = 'Mike Taylor'
 __email__ = 'bear@bear.im'
-__copyright__ = 'Copyright (c) 2017 Mike Taylor'
+__copyright__ = 'Copyright (c) 2017-2021 Mike Taylor'
 __license__ = 'Apache License 2.0'
-__version__ = '2.6'
+__version__ = '2.7'
 __url__ = 'https://github.com/bear/parsedatetime'
 __download_url__ = 'https://pypi.python.org/pypi/parsedatetime'
 __description__ = 'Parse human-readable date/time text.'

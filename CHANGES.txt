@@ -1,4 +1,17 @@
+9 Oct 2021 - bear
+    PR #261 Bump urllib3 from 1.25.9 to 1.26.5
+    PR #255 support 'next 10 days' query
+    PR #252 Include pytest.ini in source distributions, fixes tests
+    PR #250 Update nl_NL.py
+    PR #248 pyicu 'module' object has no attribute 'Locale'
+
+    Update Pipfile to reference Python 3.9
+    Updated Copyright statement
+
 31 May 2020 - bear
+   v2.6 release
+   bump version to v2.7
+
    PR #244 Polished README.rst 
    PR #242 fix pyicu import to suppress warnings 
    PR #239 Fixed missing comma in seconds strings
