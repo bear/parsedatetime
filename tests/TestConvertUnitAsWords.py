@@ -1,14 +1,9 @@
 """
 Tests the _convertUnitAsWords method.
 """
-
 import sys
+import unittest
 import parsedatetime as pdt
-
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
 
 
 class test(unittest.TestCase):

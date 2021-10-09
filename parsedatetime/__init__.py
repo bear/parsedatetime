@@ -49,21 +49,8 @@ __url__ = 'https://github.com/bear/parsedatetime'
 __download_url__ = 'https://pypi.python.org/pypi/parsedatetime'
 __description__ = 'Parse human-readable date/time text.'
 
-# as a library, do *not* setup logging
-# see docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
-# Set default logging handler to avoid "No handler found" warnings.
-
-try:  # Python 2.7+
-    from logging import NullHandler
-except ImportError:
-    class NullHandler(logging.Handler):
-
-        def emit(self, record):
-            pass
 
 log = logging.getLogger(__name__)
-log.addHandler(NullHandler())
-
 debug = False
 
 pdtLocales = dict([(x, load_locale(x)) for x in _locales])
