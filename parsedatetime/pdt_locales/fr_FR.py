@@ -108,7 +108,7 @@ re_values = {
     'timeseparator': r'(?:\:|h|\s*heures?\s*)',
     'rangeseparator': r'-',
     'daysuffix': r'ième|ieme|ème|eme|ère|ere|nde',
-    'meridian': None,
+    'meridian': r'',
     'qunits': r'h|m|s|j|sem|a',
     'now': [r'maintenant', r'tout de suite', r'immédiatement', r'immediatement', r'à l\'instant', r'a l\'instant'],
 }
