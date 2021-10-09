@@ -2,22 +2,11 @@
 """
 Test time delta
 """
-
 import sys
 import time
 import datetime
+import unittest
 import parsedatetime as pdt
-
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
-
-
-# added to support Python 2.6 which does not have total_seconds() method for timedelta
-def total_seconds(timedelta):
-    return (timedelta.microseconds + 0.0 +
-            (timedelta.seconds + timedelta.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
 
 class test(unittest.TestCase):

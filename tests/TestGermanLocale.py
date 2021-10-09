@@ -2,18 +2,12 @@
 """
 Test parsing of simple date and times using the German locale
 """
-from __future__ import unicode_literals
-
 import sys
 import time
 import datetime
+import unittest
 import parsedatetime as pdt
 from . import utils
-
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
 
 
 class test(unittest.TestCase):

@@ -4,11 +4,10 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-tox = "*"
-tox-pipenv = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-runner = "*"
+pytest-flake8 = "*"
 pyicu-binary = "*"
 flake8 = "*"
 coverage = "*"
@@ -17,8 +16,6 @@ codecov = "*"
 check-manifest = "*"
 unittest2 = "*"
 black = "*"
-
-[packages]
 
 [requires]
 python_version = "3.9"
