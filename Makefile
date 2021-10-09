@@ -12,8 +12,12 @@ info:
 	@pipenv --version
 	@pipenv run python --version
 
-dev: info
+env: info
 	pipenv install --dev --python 3.9
+	pipenv install black --pre --dev
+
+dev: info
+	pipenv install --dev
 
 clean:
 	rm -fr build

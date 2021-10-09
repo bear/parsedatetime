@@ -39,8 +39,7 @@ Development environment
 =============
 Development is done using a ``pipenv`` virtural environment::
 
-  pipenv install
-  pipenv install black --pre --dev
+  make env
 
 **Note**: ``black`` is still listed as a beta library, and as such,
 must be installed with the ``--pre`` flag
