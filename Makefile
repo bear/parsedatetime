@@ -41,9 +41,8 @@ coverage: clean
 
 build: clean
 	pipenv run python setup.py check
-	pipenv run python setup.py sdist
-	pipenv run python setup.py bdist_wheel
+	pipenv run python setup.py sdist bdist_wheel
 
-upload: clean
-	pipenv run python setup.py sdist upload
-	pipenv run python setup.py bdist_wheel upload
+# requires PyPI Twine - brew install pypi-twine
+upload: build
+	twine upload dist/*
