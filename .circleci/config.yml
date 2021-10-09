@@ -12,30 +12,23 @@ commands:
     steps:
       - setup_remote_docker
       - checkout
-  setup-python-environment:
-    description: Setup the Python for linting and testing
-    steps:
       - run: pip3 install pipenv
       - run: make dev
   lint:
     description: Run flake8
     steps:
-      - setup-python-environment
       - run: make lint
   test:
     description: Run pytest and generate report
     steps:
-      - setup-python-environment
       - run: make test
   coverage:
     description: Generate coverage report
     steps:
-      - setup-python-environment
       - run: make coverage
   build:
     description: build package distribution
     steps:
-      - setup-python-environment
       - run: make build
 jobs:
   lint-and-test:
