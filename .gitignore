@@ -41,6 +41,7 @@ coverage.xml
 
 .cache
 .eggs
+.mypy_cache
 
 violations.flake8.txt
 .python-version
