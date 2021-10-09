@@ -65,4 +65,4 @@ workflows:
             branches:
               only: master
           requires:
-            - test
+            - lint-and-test
