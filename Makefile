@@ -39,7 +39,7 @@ coverage: clean
 	@pipenv run coverage html
 	@pipenv run coverage report
 
-check: clean
+check: clean lint
 	pipenv run python setup.py check
 
 build: check
