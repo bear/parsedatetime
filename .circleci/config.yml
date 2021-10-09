@@ -38,14 +38,14 @@ commands:
       - setup-python-environment
       - run: make build
 jobs:
-  check:
+  lint-and-test:
     executor: python
     steps:
       - setup_working_dir
       - lint
       - test
       - coverage
-  build:
+  build-package:
     executor: python
     steps:
       - setup_working_dir
@@ -54,13 +54,13 @@ jobs:
 workflows:
   test:
     jobs:
-      - check:
+      - lint-and-test:
           filters:
             branches:
               ignore: master
   build:
     jobs:
-      - build:
+      - build-package:
           filters:
             branches:
               only: master
