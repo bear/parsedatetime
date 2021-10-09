@@ -52,14 +52,12 @@ jobs:
       - build
 
 workflows:
-  test:
+  test-and-build:
     jobs:
       - lint-and-test:
           filters:
             branches:
               ignore: master
-  build:
-    jobs:
       - build-package:
           filters:
             branches:
