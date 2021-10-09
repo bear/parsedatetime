@@ -39,8 +39,10 @@ coverage: clean
 	@pipenv run coverage html
 	@pipenv run coverage report
 
-build: clean
+check: clean
 	pipenv run python setup.py check
+
+build: check
 	pipenv run python setup.py sdist bdist_wheel
 
 # requires PyPI Twine - brew install pypi-twine
