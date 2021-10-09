@@ -9,6 +9,7 @@ tox-pipenv = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-runner = "*"
+pyicu-binary = "*"
 mccabe = "*"
 flake8 = "*"
 coverage = "*"
@@ -16,9 +17,12 @@ coveralls = "*"
 codecov = "*"
 check-manifest = "*"
 unittest2 = "*"
-pyicu-binary = "*"
+black = "*"
 
 [packages]
 
 [requires]
 python_version = "3.9"
+
+[pipenv]
+allow_prereleases = true
