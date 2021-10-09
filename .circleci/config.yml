@@ -1,18 +1,68 @@
 
-version: 2
-jobs:
-  build:
+version: 2.1
+
+executors:
+  python:
     docker:
-      - image: circleci/python:latest
+      - image: cimg/python:3.9
+
+commands:
+  setup_working_dir:
+    description: get docker initialized and checkout code
     steps:
+      - setup_remote_docker
       - checkout
-      - run:
-          name: setup environment
-          command: |
-            make dev
-            make info
-      - run:
-          name: lint and test
-          command: |
-            make lint
-            make coverage
+  setup-python-environment:
+    description: Setup the Python for linting and testing
+    steps:
+      - run: pip3 install pipenv
+      - run: make dev
+  lint:
+    description: Run flake8
+    steps:
+      - setup-python-environment
+      - run: make lint
+  test:
+    description: Run pytest and generate report
+    steps:
+      - setup-python-environment
+      - run: make test
+  coverage:
+    description: Generate coverage report
+    steps:
+      - setup-python-environment
+      - run: make coverage
+  build:
+    description: build package distribution
+    steps:
+      - setup-python-environment
+      - run: make build
+jobs:
+  check:
+    executor: python
+    steps:
+      - setup_working_dir
+      - lint
+      - test
+      - coverage
+  build:
+    executor: python
+    steps:
+      - setup_working_dir
+      - build
+
+workflows:
+  test:
+    jobs:
+      - check:
+          filters:
+            branches:
+              ignore: master
+  build:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: master
+          requires:
+            - check
