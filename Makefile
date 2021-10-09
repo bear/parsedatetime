@@ -9,7 +9,7 @@ help:
 	@echo "  upload      generate source and wheel dist files and upload them"
 
 dev:
-	pipenv install --dev --python 3.7
+	pipenv install --dev --python 3.9
 
 info:
 	@pipenv --version
