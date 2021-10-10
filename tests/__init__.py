@@ -18,11 +18,3 @@ __contributors__ = ['Darshana Chhajed',
                     'Michael Lim (lim.ck.michael@gmail.com)',
                     'Bernd Zeimetz (bzed@debian.org)',
                     ]
-
-
-log = logging.getLogger('parsedatetime')
-echoHandler = logging.StreamHandler()
-echoFormatter = logging.Formatter('%(levelname)-8s %(message)s')
-log.addHandler(echoHandler)
-
-# log.setLevel(logging.DEBUG)
