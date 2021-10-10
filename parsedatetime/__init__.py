@@ -1684,29 +1684,29 @@ class Calendar(object):
         chunk1 = chunk2 = ''
 
         # HH:MM(:SS) am/pm time strings
-        m = self.ptc.CRE_TIMEHMS2.search(s)
-        if m is not None:
-
-            if m.group('minutes') is not None:
-                if m.group('seconds') is not None:
-                    parseStr = '%s:%s:%s' % (m.group('hours'),
-                                             m.group('minutes'),
-                                             m.group('seconds'))
+        if self.ptc.locale.usesMeridian:
+            m = self.ptc.CRE_TIMEHMS2.search(s)
+            if m is not None:
+                if m.group('minutes') is not None:
+                    if m.group('seconds') is not None:
+                        parseStr = '%s:%s:%s' % (m.group('hours'),
+                                                 m.group('minutes'),
+                                                 m.group('seconds'))
+                    else:
+                        parseStr = '%s:%s' % (m.group('hours'),
+                                              m.group('minutes'))
                 else:
-                    parseStr = '%s:%s' % (m.group('hours'),
-                                          m.group('minutes'))
-            else:
-                parseStr = m.group('hours')
-            parseStr += ' ' + m.group('meridian')
+                    parseStr = m.group('hours')
+                parseStr += ' ' + m.group('meridian')
 
-            chunk1 = s[:m.start()]
-            chunk2 = s[m.end():]
+                chunk1 = s[:m.start()]
+                chunk2 = s[m.end():]
 
-            s = '%s %s' % (chunk1, chunk2)
+                s = '%s %s' % (chunk1, chunk2)
 
-        if parseStr:
-            debug and logging.debug(f'found (meridian) [{parseStr}][{chunk1}][{chunk2}]')
-            sourceTime = self._evalMeridian(parseStr, sourceTime)
+            if parseStr:
+                debug and logging.debug(f'found (meridian) [{parseStr}][{chunk1}][{chunk2}]')
+                sourceTime = self._evalMeridian(parseStr, sourceTime)
 
         return s, sourceTime, bool(parseStr)
 
