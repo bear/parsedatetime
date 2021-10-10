@@ -29,9 +29,9 @@ class test(unittest.TestCase):
             delta += datetime.timedelta(days=365 * years)
         if months:
             delta += datetime.timedelta(days=30 * months)
-        diff = abs((total_seconds(calc_delta) -
-                    total_seconds(delta)) /
-                   total_seconds(delta))
+        diff = abs((calc_delta.total_seconds() -
+                    delta.total_seconds()) /
+                   delta.total_seconds())
         self.assertTrue(diff < 0.05, '%s is not less than 0.05' % diff)
 
     def testInteger(self):
