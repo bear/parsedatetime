@@ -241,7 +241,6 @@ def _parse_date_rfc822(dateString):
 
 VERSION_FLAG_STYLE = 1
 VERSION_CONTEXT_STYLE = 2
-DEFAULT_DAY_START_HOUR = 9
 
 
 class Calendar(object):
@@ -794,9 +793,12 @@ class Calendar(object):
             startMinute = mn
             startSecond = sec
         else:
-            startHour = self.day_start_hour
             startMinute = 0
             startSecond = 0
+            if self.day_start_hour is None:
+                startHour = self.ptc.StartHour
+            else:
+                startHour = self.day_start_hour
 
         # capture the units after the modifier and the remaining
         # string after the unit
