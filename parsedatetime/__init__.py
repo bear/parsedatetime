@@ -236,7 +236,7 @@ class Calendar(object):
     The text can either be 'normal' date values or it can be human readable.
     """
 
-    def __init__(self, constants=None, version=VERSION_FLAG_STYLE):
+    def __init__(self, constants=None, version=VERSION_CONTEXT_STYLE):
         """
         Default constructor for the L{Calendar} class.
 
