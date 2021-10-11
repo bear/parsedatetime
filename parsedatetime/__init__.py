@@ -251,7 +251,7 @@ class Calendar(object):
     """
 
     def __init__(self, constants=None, version=VERSION_FLAG_STYLE,
-                 day_start_hour=DEFAULT_DAY_START_HOUR):
+                 day_start_hour=None):
         """
         Default constructor for the L{Calendar} class.
 
@@ -273,6 +273,8 @@ class Calendar(object):
             self.ptc = Constants()
         else:
             self.ptc = constants
+        if day_start_hour is not None:
+            self.ptc.StartHour = day_start_hour
 
         self.version = version
         if version == VERSION_FLAG_STYLE:
@@ -282,7 +284,6 @@ class Calendar(object):
                 'with argument `version=parsedatetime.VERSION_CONTEXT_STYLE`.',
                 pdt20DeprecationWarning)
         self._ctxStack = pdtContextStack()
-        self.day_start_hour = day_start_hour
 
     @contextlib.contextmanager
     def context(self):
@@ -795,10 +796,7 @@ class Calendar(object):
         else:
             startMinute = 0
             startSecond = 0
-            if self.day_start_hour is None:
-                startHour = self.ptc.StartHour
-            else:
-                startHour = self.day_start_hour
+            startHour = self.ptc.StartHour
 
         # capture the units after the modifier and the remaining
         # string after the unit
@@ -1205,7 +1203,7 @@ class Calendar(object):
             startMinute = mn
             startSecond = sec
         else:
-            startHour = self.day_start_hour
+            startHour = self.ptc.StartHour
             startMinute = 0
             startSecond = 0
 

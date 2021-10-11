@@ -29,8 +29,7 @@ class test(unittest.TestCase):
 
     def testDifferentDayStartHours(self):
         for day_start_hour in (0, 6, 9, 12):
-            cal = pdt.Calendar(
-                day_start_hour=day_start_hour)
+            cal = pdt.Calendar(day_start_hour=day_start_hour)
 
             s = datetime.datetime.now()
             t = datetime.datetime(

@@ -23,9 +23,7 @@ class test(unittest.TestCase):
         return utils.compareResultByTimeTuplesAndFlags(result, check, **kwargs)
 
     def setUp(self):
-        self.day_start_hour = 9
-        self.cal = pdt.Calendar(
-            day_start_hour=self.day_start_hour)
+        self.cal = pdt.Calendar()
         (self.yr, self.mth, self.dy, self.hr,
          self.mn, self.sec, self.wd, self.yd, self.isdst) = time.localtime()
 
@@ -117,7 +115,7 @@ class test(unittest.TestCase):
             yr += 1
 
         t = (datetime.datetime(
-             yr, mth, 1, self.day_start_hour, 0, 0) +
+             yr, mth, 1, self.cal.ptc.StartHour, 0, 0) +
              datetime.timedelta(days=-1))
 
         start = s.timetuple()
@@ -133,7 +131,7 @@ class test(unittest.TestCase):
         (yr, mth, dy, hr, mn, sec, wd, yd, isdst) = s.timetuple()
 
         t = datetime.datetime(
-            yr, 12, 31, self.day_start_hour, 0, 0)
+            yr, 12, 31, self.cal.ptc.StartHour, 0, 0)
 
         start = s.timetuple()
         target = t.timetuple()

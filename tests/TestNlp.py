@@ -57,9 +57,7 @@ class test(unittest.TestCase):
         return True
 
     def setUp(self):
-        self.day_start_hour = 9
-        self.cal = pdt.Calendar(
-            day_start_hour=self.day_start_hour)
+        self.cal = pdt.Calendar()
         (self.yr, self.mth, self.dy, self.hr,
          self.mn, self.sec, self.wd, self.yd, self.isdst) = time.localtime()
 
@@ -77,7 +75,7 @@ class test(unittest.TestCase):
                    3, 72, 90, 'next Friday at 9PM'),
                   (datetime.datetime(2013, 8, 1, 21, 30, 0),
                    2, 120, 132, 'in 5 minutes'),
-                  (datetime.datetime(2013, 8, 8, self.day_start_hour, 0),
+                  (datetime.datetime(2013, 8, 8, self.cal.ptc.StartHour, 0),
                    1, 173, 182, 'next week'))
 
         # positive testing

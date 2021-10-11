@@ -129,13 +129,10 @@ class TestDayOffsets(test):
     def setUp(self):
         super(TestDayOffsets, self).setUp()
         self.ptc = pdt.Constants('fr_FR', usePyICU=False)
-        self.day_start_hour = 9
-        self.cal = pdt.Calendar(
-            self.ptc, day_start_hour=self.day_start_hour)
+        self.cal = pdt.Calendar(self.ptc)
 
     def test_dayoffsets(self):
-        start = datetime.datetime(self.yr, self.mth, self.dy,
-                                  self.day_start_hour)
+        start = datetime.datetime(self.yr, self.mth, self.dy, self.ptc.StartHour)
         for date_string, expected_day_offset in [
                 ("Aujourd'hui", 0),
                 ("aujourd'hui", 0),
