@@ -42,18 +42,20 @@ jobs:
     executor: python
     steps:
       - setup_working_dir
+      - lint
+      - test
       - build
 
 workflows:
-  test-and-build:
+  test:
     jobs:
       - lint-and-test:
           filters:
             branches:
               ignore: master
+  build:
+    jobs:
       - build-package:
           filters:
             branches:
               only: master
-          requires:
-            - lint-and-test
