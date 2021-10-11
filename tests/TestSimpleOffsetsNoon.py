@@ -7,6 +7,7 @@ import time
 import datetime
 import unittest
 import parsedatetime as pdt
+from parsedatetime.context import pdtContext
 from . import utils
 
 
@@ -30,19 +31,26 @@ class test(unittest.TestCase):
         target = t.timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('5 hours after 12pm', start), (target, 2))
+            self.cal.parse('5 hours after 12pm', start),
+            (target, pdtContext(pdtContext.ACU_HOUR)))
         self.assertExpectedResult(
-            self.cal.parse('five hours after 12pm', start), (target, 2))
+            self.cal.parse('five hours after 12pm', start),
+            (target, pdtContext(pdtContext.ACU_HOUR)))
         self.assertExpectedResult(
-            self.cal.parse('5 hours after 12 pm', start), (target, 2))
+            self.cal.parse('5 hours after 12 pm', start),
+            (target, pdtContext(pdtContext.ACU_HOUR)))
         self.assertExpectedResult(
-            self.cal.parse('5 hours after 12:00pm', start), (target, 2))
+            self.cal.parse('5 hours after 12:00pm', start),
+            (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN)))
         self.assertExpectedResult(
-            self.cal.parse('5 hours after 12:00 pm', start), (target, 2))
+            self.cal.parse('5 hours after 12:00 pm', start),
+            (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN)))
         self.assertExpectedResult(
-            self.cal.parse('5 hours after noon', start), (target, 2))
+            self.cal.parse('5 hours after noon', start),
+            (target, pdtContext(pdtContext.ACU_HALFDAY | pdtContext.ACU_HOUR)))
         self.assertExpectedResult(
-            self.cal.parse('5 hours from noon', start), (target, 2))
+            self.cal.parse('5 hours from noon', start),
+            (target, pdtContext(pdtContext.ACU_HALFDAY | pdtContext.ACU_HOUR)))
 
     def testOffsetBeforeNoon(self):
         s = datetime.datetime.now()
@@ -53,17 +61,23 @@ class test(unittest.TestCase):
         target = t.timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('5 hours before noon', start), (target, 2))
+            self.cal.parse('5 hours before noon', start),
+            (target, pdtContext(pdtContext.ACU_HALFDAY | pdtContext.ACU_HOUR)))
         self.assertExpectedResult(
-            self.cal.parse('5 hours before 12pm', start), (target, 2))
+            self.cal.parse('5 hours before 12pm', start),
+            (target, pdtContext(pdtContext.ACU_HOUR)))
         self.assertExpectedResult(
-            self.cal.parse('five hours before 12pm', start), (target, 2))
+            self.cal.parse('five hours before 12pm', start),
+            (target, pdtContext(pdtContext.ACU_HOUR)))
         self.assertExpectedResult(
-            self.cal.parse('5 hours before 12 pm', start), (target, 2))
+            self.cal.parse('5 hours before 12 pm', start),
+            (target, pdtContext(pdtContext.ACU_HOUR)))
         self.assertExpectedResult(
-            self.cal.parse('5 hours before 12:00pm', start), (target, 2))
+            self.cal.parse('5 hours before 12:00pm', start),
+            (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN)))
         self.assertExpectedResult(
-            self.cal.parse('5 hours before 12:00 pm', start), (target, 2))
+            self.cal.parse('5 hours before 12:00 pm', start),
+            (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN)))
 
     def testOffsetBeforeModifiedNoon(self):
         # A contrived test of two modifiers applied to noon - offset by
@@ -76,7 +90,8 @@ class test(unittest.TestCase):
         target = t.timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('5 hours before next noon', start), (target, 2))
+            self.cal.parse('5 hours before next noon', start),
+            (target, pdtContext(pdtContext.ACU_HALFDAY | pdtContext.ACU_HOUR)))
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ import time
 import datetime
 import unittest
 import parsedatetime as pdt
+from parsedatetime.context import pdtContext
 
 
 class test(unittest.TestCase):

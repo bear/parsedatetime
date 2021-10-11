@@ -8,6 +8,7 @@ import time
 import datetime
 import unittest
 import parsedatetime as pdt
+from parsedatetime.context import pdtContext
 from . import utils
 
 
@@ -43,9 +44,12 @@ class test(unittest.TestCase):
         start = s.timetuple()
         target = t.timetuple()
 
-        self.assertExpectedResult(self.cal.parse('eom', start), (target, 1))
         self.assertExpectedResult(
-            self.cal.parse('meeting eom', start), (target, 1))
+            self.cal.parse('eom', start),
+            (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(
+            self.cal.parse('meeting eom', start),
+            (target, pdtContext(pdtContext.ACU_DAY)))
 
         s = datetime.datetime.now()
 
@@ -57,6 +61,9 @@ class test(unittest.TestCase):
         start = s.timetuple()
         target = t.timetuple()
 
-        self.assertExpectedResult(self.cal.parse('eoy', start), (target, 1))
         self.assertExpectedResult(
-            self.cal.parse('meeting eoy', start), (target, 1))
+            self.cal.parse('eoy', start),
+            (target, pdtContext(pdtContext.ACU_MONTH)))
+        self.assertExpectedResult(
+            self.cal.parse('meeting eoy', start),
+            (target, pdtContext(pdtContext.ACU_MONTH)))

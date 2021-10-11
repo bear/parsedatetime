@@ -4,6 +4,7 @@ Tests the _convertUnitAsWords method.
 import sys
 import unittest
 import parsedatetime as pdt
+from parsedatetime.context import pdtContext
 
 
 class test(unittest.TestCase):
