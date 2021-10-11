@@ -7,6 +7,7 @@ import time
 import datetime
 import unittest
 import parsedatetime as pdt
+from parsedatetime.context import pdtContext
 from . import utils
 
 
@@ -34,33 +35,33 @@ class test(unittest.TestCase):
             self.yr, self.mth, self.dy, 23, 0, 0).timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('23:00:00', start), (target, 2))
+            self.cal.parse('23:00:00', start), (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN | pdtContext.ACU_SEC)))
         self.assertExpectedResult(
-            self.cal.parse('23:00', start), (target, 2))
+            self.cal.parse('23:00', start), (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN)))
         self.assertExpectedResult(
-            self.cal.parse('2300', start), (target, 2))
+            self.cal.parse('2300', start), (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN)))
 
         target = datetime.datetime(
             self.yr, self.mth, self.dy, 11, 0, 0).timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('11:00:00', start), (target, 2))
+            self.cal.parse('11:00:00', start), (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN | pdtContext.ACU_SEC)))
         self.assertExpectedResult(
-            self.cal.parse('11:00', start), (target, 2))
+            self.cal.parse('11:00', start), (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN)))
         self.assertExpectedResult(
-            self.cal.parse('1100', start), (target, 2))
+            self.cal.parse('1100', start), (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN)))
 
         target = datetime.datetime(
             self.yr, self.mth, self.dy, 7, 30, 0).timetuple()
 
-        self.assertExpectedResult(self.cal.parse('730', start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('0730', start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('730', start), (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN)))
+        self.assertExpectedResult(self.cal.parse('0730', start), (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN)))
 
         target = datetime.datetime(
             self.yr, self.mth, self.dy, 17, 30, 0).timetuple()
 
-        self.assertExpectedResult(self.cal.parse('1730', start), (target, 2))
-        self.assertExpectedResult(self.cal.parse('173000', start), (target, 2))
+        self.assertExpectedResult(self.cal.parse('1730', start), (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN)))
+        self.assertExpectedResult(self.cal.parse('173000', start), (target, pdtContext(pdtContext.ACU_HOUR | pdtContext.ACU_MIN | pdtContext.ACU_SEC)))
 
     def testDates(self):
         start = datetime.datetime(
@@ -69,9 +70,9 @@ class test(unittest.TestCase):
             2006, 8, 25, self.hr, self.mn, self.sec).timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('25.08.2006', start), (target, 1))
+            self.cal.parse('25.08.2006', start), (target, pdtContext(pdtContext.ACU_YEAR | pdtContext.ACU_MONTH | pdtContext.ACU_DAY)))
         self.assertExpectedResult(
-            self.cal.parse('25.8.06', start), (target, 1))
+            self.cal.parse('25.8.06', start), (target, pdtContext(pdtContext.ACU_YEAR | pdtContext.ACU_MONTH | pdtContext.ACU_DAY)))
 
         if self.mth > 8 or (self.mth == 8 and self.dy > 25):
             target = datetime.datetime(
@@ -81,9 +82,9 @@ class test(unittest.TestCase):
                 self.yr, 8, 25, self.hr, self.mn, self.sec).timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('25.8', start), (target, 1))
+            self.cal.parse('25.8', start), (target, pdtContext(pdtContext.ACU_MONTH | pdtContext.ACU_DAY)))
         self.assertExpectedResult(
-            self.cal.parse('25.08', start), (target, 1))
+            self.cal.parse('25.08', start), (target, pdtContext(pdtContext.ACU_MONTH | pdtContext.ACU_DAY)))
 
 
 if __name__ == "__main__":

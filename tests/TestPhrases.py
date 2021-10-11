@@ -7,6 +7,7 @@ import time
 import datetime
 import unittest
 import parsedatetime as pdt
+from parsedatetime.context import pdtContext
 from . import utils
 
 
@@ -36,26 +37,26 @@ class test(unittest.TestCase):
             self.yr, self.mth, self.dy, 16, 0, 0).timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('flight from SFO at 4pm', start), (target, 2))
+            self.cal.parse('flight from SFO at 4pm', start), (target, pdtContext(pdtContext.ACU_HOUR)))
 
         target = datetime.datetime(
             self.yr, self.mth, self.dy, 17, 0, 0).timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('eod', start), (target, 2))
+            self.cal.parse('eod', start), (target, pdtContext(pdtContext.ACU_HALFDAY)))
         self.assertExpectedResult(
-            self.cal.parse('meeting eod', start), (target, 2))
+            self.cal.parse('meeting eod', start), (target, pdtContext(pdtContext.ACU_HALFDAY)))
         self.assertExpectedResult(
-            self.cal.parse('eod meeting', start), (target, 2))
+            self.cal.parse('eod meeting', start), (target, pdtContext(pdtContext.ACU_HALFDAY)))
 
         target = datetime.datetime(
             self.yr, self.mth, self.dy, 17, 0, 0) + datetime.timedelta(days=1)
         target = target.timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('tomorrow eod', start), (target, 3))
+            self.cal.parse('tomorrow eod', start), (target, pdtContext(pdtContext.ACU_DAY | pdtContext.ACU_HALFDAY)))
         self.assertExpectedResult(
-            self.cal.parse('eod tomorrow', start), (target, 3))
+            self.cal.parse('eod tomorrow', start), (target, pdtContext(pdtContext.ACU_DAY | pdtContext.ACU_HALFDAY)))
 
     def testPhraseWithDays_DOWStyle_1_False(self):
         s = datetime.datetime.now()
@@ -76,7 +77,7 @@ class test(unittest.TestCase):
         day = self.cal.ptc.Weekdays[d]
 
         self.assertExpectedResult(
-            self.cal.parse('eod %s' % day, start), (target, 3))
+            self.cal.parse('eod %s' % day, start), (target, pdtContext(pdtContext.ACU_DAY | pdtContext.ACU_HALFDAY | pdtContext.ACU_HOUR)))
 
         # find out what day we are currently on
         # and determine what the previous day of week is
@@ -93,7 +94,7 @@ class test(unittest.TestCase):
         day = self.cal.ptc.Weekdays[d]
 
         self.assertExpectedResult(
-            self.cal.parse('eod %s' % day, start), (target, 3))
+            self.cal.parse('eod %s' % day, start), (target, pdtContext(pdtContext.ACU_DAY | pdtContext.ACU_HALFDAY | pdtContext.ACU_HOUR)))
 
     def testEndOfPhrases(self):
         s = datetime.datetime.now()
@@ -115,9 +116,9 @@ class test(unittest.TestCase):
         target = t.timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('eom', start), (target, 1))
+            self.cal.parse('eom', start), (target, pdtContext(pdtContext.ACU_DAY)))
         self.assertExpectedResult(
-            self.cal.parse('meeting eom', start), (target, 1))
+            self.cal.parse('meeting eom', start), (target, pdtContext(pdtContext.ACU_DAY)))
 
         s = datetime.datetime.now()
 
@@ -129,9 +130,9 @@ class test(unittest.TestCase):
         target = t.timetuple()
 
         self.assertExpectedResult(
-            self.cal.parse('eoy', start), (target, 1))
+            self.cal.parse('eoy', start), (target, pdtContext(pdtContext.ACU_MONTH)))
         self.assertExpectedResult(
-            self.cal.parse('meeting eoy', start), (target, 1))
+            self.cal.parse('meeting eoy', start), (target, pdtContext(pdtContext.ACU_MONTH)))
 
     def testLastPhrases(self):
         for day in (11, 12, 13, 14, 15, 16, 17):
@@ -147,4 +148,4 @@ class test(unittest.TestCase):
 
             self.assertExpectedResult(
                 self.cal.parse('last friday', start.timetuple()),
-                (target.timetuple(), 1), dateOnly=True)
+                (target.timetuple(), pdtContext(pdtContext.ACU_DAY)), dateOnly=True)

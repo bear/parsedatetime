@@ -7,6 +7,7 @@ import time
 import datetime
 import unittest
 import parsedatetime as pdt
+from parsedatetime.context import pdtContext
 from . import utils
 
 
@@ -64,13 +65,17 @@ class test(unittest.TestCase):
         #       processed.
         start = datetime.datetime(2013, 8, 1, 21, 25, 0).timetuple()
         target = ((datetime.datetime(2013, 8, 5, 20, 0),
-                   3, 17, 37, 'At 8PM on August 5th'),
+                  pdtContext(pdtContext.ACU_MONTH | pdtContext.ACU_DAY | pdtContext.ACU_HOUR), 
+                  17, 37, 'At 8PM on August 5th'),
                   (datetime.datetime(2013, 8, 9, 21, 0),
-                   3, 72, 90, 'next Friday at 9PM'),
+                  pdtContext(pdtContext.ACU_DAY | pdtContext.ACU_HOUR), 
+                  72, 90, 'next Friday at 9PM'),
                   (datetime.datetime(2013, 8, 1, 21, 30, 0),
-                   2, 120, 132, 'in 5 minutes'),
+                  pdtContext(pdtContext.ACU_MIN), 
+                  120, 132, 'in 5 minutes'),
                   (datetime.datetime(2013, 8, 8, 9, 0),
-                   1, 173, 182, 'next week'))
+                  pdtContext(pdtContext.ACU_WEEK), 
+                  173, 182, 'next week'))
 
         # positive testing
         self.assertExpectedResult(self.cal.nlp(
