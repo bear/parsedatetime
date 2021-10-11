@@ -2,18 +2,13 @@
 """
 Test Calendar.Inc() routine
 """
-from __future__ import unicode_literals
-
 import sys
 import time
 import datetime
+import unittest
 import parsedatetime as pdt
+from parsedatetime.context import pdtContext
 from . import utils
-
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
 
 
 class test(unittest.TestCase):

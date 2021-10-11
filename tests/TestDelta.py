@@ -2,22 +2,12 @@
 """
 Test time delta
 """
-
 import sys
 import time
 import datetime
+import unittest
 import parsedatetime as pdt
-
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
-
-
-# added to support Python 2.6 which does not have total_seconds() method for timedelta
-def total_seconds(timedelta):
-    return (timedelta.microseconds + 0.0 +
-            (timedelta.seconds + timedelta.days * 24 * 3600) * 10 ** 6) / 10 ** 6
+from parsedatetime.context import pdtContext
 
 
 class test(unittest.TestCase):
@@ -40,9 +30,9 @@ class test(unittest.TestCase):
             delta += datetime.timedelta(days=365 * years)
         if months:
             delta += datetime.timedelta(days=30 * months)
-        diff = abs((total_seconds(calc_delta) -
-                    total_seconds(delta)) /
-                   total_seconds(delta))
+        diff = abs((calc_delta.total_seconds() -
+                    delta.total_seconds()) /
+                   delta.total_seconds())
         self.assertTrue(diff < 0.05, '%s is not less than 0.05' % diff)
 
     def testInteger(self):

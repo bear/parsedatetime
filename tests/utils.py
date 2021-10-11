@@ -2,7 +2,6 @@
 """
 Internal helper functions for unit tests of parsedatetime
 """
-from __future__ import unicode_literals
 
 
 def assertEqualWithComparator(comparator):

@@ -30,13 +30,11 @@ docs:
 	pipenv run epydoc --html --config epydoc.conf
 
 lint: clean
-	pipenv run flake8 parsedatetime > violations.flake8.txt
+	pipenv run flake8 parsedatetime  > violations.txt
+	pipenv run mypy parsedatetime   >> violations.txt
 
 test: clean
-	pipenv run python setup.py test
-
-tox: clean
-	pipenv run tox
+	pipenv run pytest
 
 coverage: clean
 	@pipenv run coverage run --source=parsedatetime setup.py test

@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import sys
 import time
 import datetime
+import unittest
 import parsedatetime as pdt
 from parsedatetime.pdt_locales import get_icu
+from parsedatetime.context import pdtContext
 from . import utils
-
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
 
 
 pdtLocale_en = get_icu('en_US')
@@ -50,50 +46,50 @@ class test(unittest.TestCase):
 
         target = datetime.datetime(
             2014, 10, 26, self.hr, self.mn, self.sec).timetuple()
-        self.assertExpectedResult(self.cal.parse('sunday', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('sun', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('su', start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('sunday', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('sun', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('su', start), (target, pdtContext(pdtContext.ACU_DAY)))
 
         target = datetime.datetime(
             2014, 10, 27, self.hr, self.mn, self.sec).timetuple()
-        self.assertExpectedResult(self.cal.parse('Monday', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('mon', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('mond', start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('Monday', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('mon', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('mond', start), (target, pdtContext(pdtContext.ACU_DAY)))
 
         target = datetime.datetime(
             2014, 10, 28, self.hr, self.mn, self.sec).timetuple()
         self.assertExpectedResult(
-            self.cal.parse('tuesday', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('tues', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('tue', start), (target, 1))
+            self.cal.parse('tuesday', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('tues', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('tue', start), (target, pdtContext(pdtContext.ACU_DAY)))
 
         target = datetime.datetime(
             2014, 10, 29, self.hr, self.mn, self.sec).timetuple()
         self.assertExpectedResult(
-            self.cal.parse('wednesday', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('wedn', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('wed', start), (target, 1))
+            self.cal.parse('wednesday', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('wedn', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('wed', start), (target, pdtContext(pdtContext.ACU_DAY)))
 
         target = datetime.datetime(
             2014, 10, 30, self.hr, self.mn, self.sec).timetuple()
         self.assertExpectedResult(
-            self.cal.parse('thursday', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('thu', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('thur', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('thurs', start), (target, 1))
+            self.cal.parse('thursday', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('thu', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('thur', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('thurs', start), (target, pdtContext(pdtContext.ACU_DAY)))
 
         target = datetime.datetime(
             2014, 10, 31, self.hr, self.mn, self.sec).timetuple()
-        self.assertExpectedResult(self.cal.parse('friday', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('fri', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('frid', start), (target, 1))
+        self.assertExpectedResult(self.cal.parse('friday', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('fri', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('frid', start), (target, pdtContext(pdtContext.ACU_DAY)))
 
         target = datetime.datetime(
             2014, 11, 1, self.hr, self.mn, self.sec).timetuple()
         self.assertExpectedResult(
-            self.cal.parse('saturday', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('sat', start), (target, 1))
-        self.assertExpectedResult(self.cal.parse('sa', start), (target, 1))
+            self.cal.parse('saturday', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('sat', start), (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(self.cal.parse('sa', start), (target, pdtContext(pdtContext.ACU_DAY)))
 
     def testMonths(self):
         start = datetime.datetime(
@@ -127,4 +123,4 @@ class test(unittest.TestCase):
             for dateText in dates.split("|"):
                 # print dateText
                 self.assertExpectedResult(
-                    self.cal.parse(dateText, start), (expected_date, 1))
+                    self.cal.parse(dateText, start), (expected_date, pdtContext(pdtContext.ACU_MONTH)))

@@ -34,7 +34,7 @@ setup(
     license=extract_metaitem('license'),
     packages=find_packages(exclude=['tests', 'docs']),
     platforms=['Any'],
-    long_description=read('README.rst'),
+    long_description=read('README.md'),
     tests_require=['pytest'],
     test_suite='tests',
     classifiers=[

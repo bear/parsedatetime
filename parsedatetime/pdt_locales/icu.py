@@ -9,12 +9,7 @@ All of the included locale classes shipped with pdt.
 import datetime
 
 try:
-    range = xrange
-except NameError:
-    pass
-
-try:
-    import PyICU as pyicu
+    import pyicu  # type: ignore
 except ImportError:
     pyicu = None
 

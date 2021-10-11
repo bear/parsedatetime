@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from typing import Dict
 
 locale_keys = set([
     'MonthOffsets', 'Months', 'WeekdayOffsets', 'Weekdays',
@@ -8,15 +9,15 @@ locale_keys = set([
     'uses24', 'usesMeridian', 'numbers', 'decimal_mark', 'small',
     'magnitude', 'ignore'])
 
-localeID = None
+localeID = 'en_US'
 
 dateSep = ['/', '.']
 timeSep = [':']
 meridian = ['AM', 'PM']
 usesMeridian = True
 uses24 = True
-WeekdayOffsets = {}
-MonthOffsets = {}
+WeekdayOffsets: Dict = {}
+MonthOffsets: Dict = {}
 
 # always lowercase any lookup values - helper code expects that
 Weekdays = [

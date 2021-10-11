@@ -3,18 +3,13 @@
 Test parsing of strings that are phrases with the
 ptc.StartTimeFromSourceTime flag set to True
 """
-from __future__ import unicode_literals
-
 import sys
 import time
 import datetime
+import unittest
 import parsedatetime as pdt
+from parsedatetime.context import pdtContext
 from . import utils
-
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
 
 
 class test(unittest.TestCase):
@@ -49,9 +44,12 @@ class test(unittest.TestCase):
         start = s.timetuple()
         target = t.timetuple()
 
-        self.assertExpectedResult(self.cal.parse('eom', start), (target, 1))
         self.assertExpectedResult(
-            self.cal.parse('meeting eom', start), (target, 1))
+            self.cal.parse('eom', start),
+            (target, pdtContext(pdtContext.ACU_DAY)))
+        self.assertExpectedResult(
+            self.cal.parse('meeting eom', start),
+            (target, pdtContext(pdtContext.ACU_DAY)))
 
         s = datetime.datetime.now()
 
@@ -63,6 +61,9 @@ class test(unittest.TestCase):
         start = s.timetuple()
         target = t.timetuple()
 
-        self.assertExpectedResult(self.cal.parse('eoy', start), (target, 1))
         self.assertExpectedResult(
-            self.cal.parse('meeting eoy', start), (target, 1))
+            self.cal.parse('eoy', start),
+            (target, pdtContext(pdtContext.ACU_MONTH)))
+        self.assertExpectedResult(
+            self.cal.parse('meeting eoy', start),
+            (target, pdtContext(pdtContext.ACU_MONTH)))
