@@ -919,7 +919,7 @@ class Calendar(object):
             m = self.ptc.CRE_TIME.match(unit)
             debug and logging.debug('CRE_TIME matched')
             (yr, mth, dy, hr, mn, sec, wd, yd, isdst), subctx = \
-                self.parse(unit, None, VERSION_CONTEXT_STYLE)
+                self.parse(unit, sourceTime, VERSION_CONTEXT_STYLE)
 
             start = datetime.datetime(yr, mth, dy, hr, mn, sec)
             target = start + datetime.timedelta(days=offset)
