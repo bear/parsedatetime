@@ -22,7 +22,6 @@ Parse human-readable date/time text.
 
 Requires Python 2.7 or later
 """
-
 from __future__ import with_statement, absolute_import, unicode_literals
 
 import re
@@ -44,7 +43,7 @@ __author__ = 'Mike Taylor'
 __email__ = 'bear@bear.im'
 __copyright__ = 'Copyright (c) 2017-2021 Mike Taylor'
 __license__ = 'Apache License 2.0'
-__version__ = '2.7'
+__version__ = '3.0'
 __url__ = 'https://github.com/bear/parsedatetime'
 __download_url__ = 'https://pypi.python.org/pypi/parsedatetime'
 __description__ = 'Parse human-readable date/time text.'
@@ -236,7 +235,8 @@ class Calendar(object):
     The text can either be 'normal' date values or it can be human readable.
     """
 
-    def __init__(self, constants=None, version=VERSION_CONTEXT_STYLE):
+    def __init__(self, constants=None, version=VERSION_CONTEXT_STYLE,
+                 day_start_hour=None):
         """
         Default constructor for the L{Calendar} class.
 
@@ -246,6 +246,9 @@ class Calendar(object):
         @param version:   Default style version of current Calendar instance.
                           Valid value can be 1 (L{VERSION_FLAG_STYLE}) or
                           2 (L{VERSION_CONTEXT_STYLE}). See L{parse()}.
+        @type  day_start_hour: int
+        @param day_start_hour: Hour to set a datetime when no time has been
+                               specified.
 
         @rtype:  object
         @return: L{Calendar} instance
@@ -255,6 +258,8 @@ class Calendar(object):
             self.ptc = Constants()
         else:
             self.ptc = constants
+        if day_start_hour is not None:
+            self.ptc.StartHour = day_start_hour
 
         self.version = version
         if version == VERSION_FLAG_STYLE:
@@ -767,9 +772,9 @@ class Calendar(object):
             startMinute = mn
             startSecond = sec
         else:
-            startHour = self.ptc.StartHour
             startMinute = 0
             startSecond = 0
+            startHour = self.ptc.StartHour
 
         # capture the units after the modifier and the remaining
         # string after the unit
@@ -1836,10 +1841,6 @@ class Calendar(object):
         """
         debug and logging.debug('parse()')
 
-        datetimeString = re.sub(r'(\w)\.(\s)', r'\1\2', datetimeString)
-        datetimeString = re.sub(r'(\w)[\'"](\s|$)', r'\1 \2', datetimeString)
-        datetimeString = re.sub(r'(\s|^)[\'"](\w)', r'\1 \2', datetimeString)
-
         if sourceTime:
             if isinstance(sourceTime, datetime.datetime):
                 debug and logging.debug('coercing datetime to timetuple')
@@ -1983,15 +1984,11 @@ class Calendar(object):
                  were no matches
         """
 
+        debug and log.debug('nlp()')
+
         orig_inputstring = inputString
 
-        # replace periods at the end of sentences w/ spaces
-        # opposed to removing them altogether in order to
-        # retain relative positions (identified by alpha, period, space).
-        # this is required for some of the regex patterns to match
-        inputString = re.sub(r'(\w)(\.)(\s)', r'\1 \3', inputString).lower()
-        inputString = re.sub(r'(\w)(\'|")(\s|$)', r'\1 \3', inputString)
-        inputString = re.sub(r'(\s|^)(\'|")(\w)', r'\1 \3', inputString)
+        inputString = inputString.lower()
 
         startpos = 0  # the start position in the inputString during the loop
 
@@ -2015,6 +2012,9 @@ class Calendar(object):
                     leftmost_match[3] = 0
                     leftmost_match[4] = 'modifier'
 
+                    debug and log.debug('CRE_MODIFIER matched [%s]',
+                                        leftmost_match[2])
+
             # Quantity + Units
             m = self.ptc.CRE_UNITS.search(inputString[startpos:])
             if m is not None:
@@ -2036,6 +2036,9 @@ class Calendar(object):
                             leftmost_match[0] = leftmost_match[0] - 1
                             leftmost_match[2] = '-' + leftmost_match[2]
 
+                        debug and log.debug('CRE_UNITS matched [%s]',
+                                            leftmost_match[2])
+
             # Quantity + Units
             m = self.ptc.CRE_QUNITS.search(inputString[startpos:])
             if m is not None:
@@ -2055,6 +2058,9 @@ class Calendar(object):
                                 inputString[m.start('qty') - 1] == '-':
                             leftmost_match[0] = leftmost_match[0] - 1
                             leftmost_match[2] = '-' + leftmost_match[2]
+
+                        debug and log.debug('CRE_QUNITS matched [%s]',
+                                            leftmost_match[2])
 
             m = self.ptc.CRE_DATE3.search(inputString[startpos:])
             # NO LONGER NEEDED, THE REGEXP HANDLED MTHNAME NOW
@@ -2077,6 +2083,8 @@ class Calendar(object):
                     leftmost_match[2] = m.group('date')
                     leftmost_match[3] = 1
                     leftmost_match[4] = 'dateStr'
+                    debug and log.debug('CRE_DATE3 matched [%s]',
+                                        leftmost_match[2])
 
             # Standard date format
             m = self.ptc.CRE_DATE.search(inputString[startpos:])
@@ -2088,6 +2096,8 @@ class Calendar(object):
                     leftmost_match[2] = m.group('date')
                     leftmost_match[3] = 1
                     leftmost_match[4] = 'dateStd'
+                    debug and log.debug('CRE_DATE matched [%s]',
+                                        leftmost_match[2])
 
             # Natural language day strings
             m = self.ptc.CRE_DAY.search(inputString[startpos:])
@@ -2099,6 +2109,8 @@ class Calendar(object):
                     leftmost_match[2] = m.group()
                     leftmost_match[3] = 1
                     leftmost_match[4] = 'dayStr'
+                    debug and log.debug('CRE_DAY matched [%s]',
+                                        leftmost_match[2])
 
             # Weekday
             m = self.ptc.CRE_WEEKDAY.search(inputString[startpos:])
@@ -2111,6 +2123,8 @@ class Calendar(object):
                         leftmost_match[2] = m.group()
                         leftmost_match[3] = 1
                         leftmost_match[4] = 'weekdy'
+                        debug and log.debug('CRE_WEEKDAY matched [%s]',
+                                            leftmost_match[2])
 
             # Natural language time strings
             m = self.ptc.CRE_TIME.search(inputString[startpos:])
@@ -2122,6 +2136,8 @@ class Calendar(object):
                     leftmost_match[2] = m.group()
                     leftmost_match[3] = 2
                     leftmost_match[4] = 'timeStr'
+                    debug and log.debug('CRE_TIME matched [%s]',
+                                        leftmost_match[2])
 
             # HH:MM(:SS) am/pm time strings
             m = self.ptc.CRE_TIMEHMS2.search(inputString[startpos:])
@@ -2134,6 +2150,8 @@ class Calendar(object):
                                                     leftmost_match[1]]
                     leftmost_match[3] = 2
                     leftmost_match[4] = 'meridian'
+                    debug and log.debug('CRE_TIMEHMS2 matched [%s]',
+                                        leftmost_match[2])
 
             # HH:MM(:SS) time strings
             m = self.ptc.CRE_TIMEHMS.search(inputString[startpos:])
@@ -2149,6 +2167,8 @@ class Calendar(object):
                                                     leftmost_match[1]]
                     leftmost_match[3] = 2
                     leftmost_match[4] = 'timeStd'
+                    debug and log.debug('CRE_TIMEHMS matched [%s]',
+                                        leftmost_match[2])
 
             # Units only; must be preceded by a modifier
             if len(matches) > 0 and matches[-1][3] == 0:
@@ -2166,6 +2186,8 @@ class Calendar(object):
                         leftmost_match[2] = m.group()
                         leftmost_match[3] = 3
                         leftmost_match[4] = 'unitsOnly'
+                        debug and log.debug('CRE_UNITS_ONLY matched [%s]',
+                                            leftmost_match[2])
 
             # set the start position to the end pos of the leftmost match
             startpos = leftmost_match[1]
@@ -2182,6 +2204,8 @@ class Calendar(object):
                         leftmost_match[0] = m.start('nlp_prefix')
                         leftmost_match[2] = inputString[leftmost_match[0]:
                                                         leftmost_match[1]]
+                        debug and log.debug('CRE_NLP_PREFIX matched [%s]',
+                                            leftmost_match[2])
                 matches.append(leftmost_match)
 
         # find matches in proximity with one another and
@@ -2503,9 +2527,9 @@ class Constants(object):
                                         (,)?
                                         (\s)*
                                     )
-                                    (?P<mthname>
-                                        \b({months}|{shortmonths})\b
-                                    )\s*
+                                    \b(?P<mthname>
+                                        {months}|{shortmonths}
+                                    )\b\.?\s*
                                     (?P<year>\d\d
                                         (\d\d)?
                                     )?
@@ -2521,12 +2545,12 @@ class Constants(object):
         # when the day is absent from the string
         self.RE_DATE3 = r'''(?P<date>
                                 (?:
-                                    (?:^|\s+)
+                                    (?:^|\s+|\b)
                                     (?P<mthname>
                                         {months}|{shortmonths}
-                                    )\b
+                                    )\b\.?
                                     |
-                                    (?:^|\s+)
+                                    (?:^|\s+|\b)
                                     (?P<day>[1-9]|[012]\d|3[01])
                                     (?P<suffix>{daysuffix}|)\b
                                     (?!\s*(?:{timecomponents}))
@@ -2543,9 +2567,9 @@ class Constants(object):
         self.RE_MONTH = r'''(\s+|^)
                             (?P<month>
                                 (
-                                    (?P<mthname>
-                                        \b({months}|{shortmonths})\b
-                                    )
+                                    \b(?P<mthname>
+                                        {months}|{shortmonths}
+                                    )\b\.?
                                     (\s*
                                         (?P<year>(\d{{4}}))
                                     )?
@@ -2609,17 +2633,17 @@ class Constants(object):
         # 1, 2, and 3 here refer to the type of match date, time, or units
         self.RE_NLP_PREFIX = r'''\b(?P<nlp_prefix>
                                   (on)
-                                  (\s)+1
+                                  [\s(\["'-]+1
                                   |
                                   (at|in)
-                                  (\s)+2
+                                  [\s(\["'-]+2
                                   |
                                   (in)
-                                  (\s)+3
+                                  [\s(\["'-]+3
                                  )'''
 
         if 'meridian' in self.locale.re_values:
-            self.RE_TIMEHMS2 += (r'\s*(?P<meridian>{meridian})\b'
+            self.RE_TIMEHMS2 += (r'\s*(?P<meridian>{meridian})'
                                  .format(**self.locale.re_values))
         else:
             self.RE_TIMEHMS2 += r'\b'

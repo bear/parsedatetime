@@ -109,8 +109,9 @@ class test(unittest.TestCase):
             mth = 1
             yr += 1
 
-        t = datetime.datetime(
-            yr, mth, 1, 9, 0, 0) + datetime.timedelta(days=-1)
+        t = (datetime.datetime(
+             yr, mth, 1, self.cal.ptc.StartHour, 0, 0) +
+             datetime.timedelta(days=-1))
 
         start = s.timetuple()
         target = t.timetuple()
@@ -124,7 +125,8 @@ class test(unittest.TestCase):
 
         (yr, mth, dy, hr, mn, sec, wd, yd, isdst) = s.timetuple()
 
-        t = datetime.datetime(yr, 12, 31, 9, 0, 0)
+        t = datetime.datetime(
+            yr, 12, 31, self.cal.ptc.StartHour, 0, 0)
 
         start = s.timetuple()
         target = t.timetuple()

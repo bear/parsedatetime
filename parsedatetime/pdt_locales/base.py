@@ -103,7 +103,7 @@ re_values = {
     'timeseparator': ':',
     'rangeseparator': '-',
     'daysuffix': 'rd|st|nd|th',
-    'meridian': r'am|pm|a\.m\.|p\.m\.|a|p',
+    'meridian': r'a\.m\.|p\.m\.|(?:am|pm|a|p)\b',
     'qunits': 'h|m|s|d|w|y',
     'now': ['now', 'right now'],
 }
