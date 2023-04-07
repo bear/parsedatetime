@@ -16,7 +16,7 @@ pip install parsedatetime
 ```
 
 ## Development environment
-Development is done using a `pipenv` virtural environment
+Development is done using a `pipenv` virtual environment
 ```
 make env
 ```

@@ -309,7 +309,7 @@ class Calendar(object):
     def _buildTime(self, source, quantity, modifier, units):
         """
         Take C{quantity}, C{modifier} and C{unit} strings and convert them
-        into values. After converting, calcuate the time and return the
+        into values. After converting, calculate the time and return the
         adjusted sourceTime.
 
         @type  source:   time
@@ -1321,7 +1321,7 @@ class Calendar(object):
 
         @rtype:  tuple
         @return: tuple of remained date/time text, datetime object and
-                 an boolean value to describ if matched or not
+                 an boolean value to describe if matched or not
 
         """
         parseStr = None
@@ -1356,7 +1356,7 @@ class Calendar(object):
 
         @rtype:  tuple
         @return: tuple of remained date/time text, datetime object and
-                 an boolean value to describ if matched or not
+                 an boolean value to describe if matched or not
 
         """
         parseStr = None
@@ -1401,7 +1401,7 @@ class Calendar(object):
 
         @rtype:  tuple
         @return: tuple of remained date/time text, datetime object and
-                 an boolean value to describ if matched or not
+                 an boolean value to describe if matched or not
 
         """
         parseStr = None
@@ -1446,7 +1446,7 @@ class Calendar(object):
 
         @rtype:  tuple
         @return: tuple of remained date/time text, datetime object and
-                 an boolean value to describ if matched or not
+                 an boolean value to describe if matched or not
 
         """
         parseStr = None
@@ -1520,7 +1520,7 @@ class Calendar(object):
 
         @rtype:  tuple
         @return: tuple of remained date/time text, datetime object and
-                 an boolean value to describ if matched or not
+                 an boolean value to describe if matched or not
 
         """
         parseStr = None
@@ -1558,7 +1558,7 @@ class Calendar(object):
 
         @rtype:  tuple
         @return: tuple of remained date/time text, datetime object and
-                 an boolean value to describ if matched or not
+                 an boolean value to describe if matched or not
 
         """
         parseStr = None
@@ -1596,7 +1596,7 @@ class Calendar(object):
 
         @rtype:  tuple
         @return: tuple of remained date/time text, datetime object and
-                 an boolean value to describ if matched or not
+                 an boolean value to describe if matched or not
 
         """
         parseStr = None
@@ -1639,7 +1639,7 @@ class Calendar(object):
 
         @rtype:  tuple
         @return: tuple of remained date/time text, datetime object and
-                 an boolean value to describ if matched or not
+                 an boolean value to describe if matched or not
 
         """
         parseStr = None
@@ -1677,7 +1677,7 @@ class Calendar(object):
 
         @rtype:  tuple
         @return: tuple of remained date/time text, datetime object and
-                 an boolean value to describ if matched or not
+                 an boolean value to describe if matched or not
 
         """
         parseStr = None
@@ -1721,7 +1721,7 @@ class Calendar(object):
 
         @rtype:  tuple
         @return: tuple of remained date/time text, datetime object and
-                 an boolean value to describ if matched or not
+                 an boolean value to describe if matched or not
 
         """
         parseStr = None
@@ -2153,7 +2153,7 @@ class Calendar(object):
             # Units only; must be preceded by a modifier
             if len(matches) > 0 and matches[-1][3] == 0:
                 m = self.ptc.CRE_UNITS_ONLY.search(inputString[startpos:])
-                # Ensure that any match is immediately proceded by the
+                # Ensure that any match is immediately preceded by the
                 # modifier. "Next is the word 'month'" should not parse as a
                 # date while "next month" should
                 if m is not None and \

@@ -51,7 +51,7 @@ class test(unittest.TestCase):
         self.assertExpectedResult(
             self.cal.inc(s, month=-1).timetuple(), t.timetuple())
 
-        # End of month Jan 31 to Feb - Febuary only has 28 days
+        # End of month Jan 31 to Feb - February only has 28 days
         s = datetime.datetime(2006, 1, 31, 12, 0, 0)
         t = datetime.datetime(2006, 2, 28, 12, 0, 0)
         self.assertExpectedResult(
