@@ -4,7 +4,7 @@ version: 2.1
 executors:
   python:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.12
 
 commands:
   setup_working_dir:
