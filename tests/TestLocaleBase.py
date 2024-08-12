@@ -128,7 +128,7 @@ class TestDayOffsets(test):
         self.cal = pdt.Calendar(self.ptc)
 
     def test_dayoffsets(self):
-        start = datetime.datetime(self.yr, self.mth, self.dy, 9)
+        start = datetime.datetime(self.yr, self.mth, self.dy, self.ptc.StartHour)
         for date_string, expected_day_offset in [
                 ("Aujourd'hui", 0),
                 ("aujourd'hui", 0),

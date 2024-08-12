@@ -73,7 +73,7 @@ class test(unittest.TestCase):
                   (datetime.datetime(2013, 8, 1, 21, 30, 0),
                   pdtContext(pdtContext.ACU_MIN), 
                   120, 132, 'in 5 minutes'),
-                  (datetime.datetime(2013, 8, 8, 9, 0),
+                  (datetime.datetime(2013, 8, 8, self.cal.constants.StartHour, 0),
                   pdtContext(pdtContext.ACU_WEEK), 
                   173, 182, 'next week'))
 
@@ -127,3 +127,144 @@ class test(unittest.TestCase):
         self.assertExpectedResult(self.cal.nlp("$300", start), None)
         self.assertExpectedResult(self.cal.nlp("300ml", start), None)
         self.assertExpectedResult(self.cal.nlp("nice ass", start), None)
+
+    def testTimes(self):
+        start = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
+        targets = {
+            datetime.datetime(self.yr, self.mth, self.dy, 23, 0, 0): (
+                '11:00:00 PM',
+                '11:00 PM',
+                '11 PM',
+                '11PM',
+                '2300',
+                '23:00',
+                '11p',
+                '11pm',
+                '11:00:00 P.M.',
+                '11:00 P.M.',
+                '11 P.M.',
+                '11P.M.',
+                '11p.m.',
+                '11 p.m.',
+            ),
+            datetime.datetime(self.yr, self.mth, self.dy, 11, 0, 0): (
+                '11:00:00 AM',
+                '11:00 AM',
+                '11 AM',
+                '11AM',
+                '1100',
+                '11:00',
+                '11a',
+                '11am',
+                '11:00:00 A.M.',
+                '11:00 A.M.',
+                '11 A.M.',
+                '11A.M.',
+                '11a.m.',
+                '11 a.m.',
+            ),
+            datetime.datetime(self.yr, self.mth, self.dy, 7, 30, 0): (
+                '730',
+                '0730',
+                '0730am',
+            ),
+            datetime.datetime(self.yr, self.mth, self.dy, 17, 30, 0): (
+                '1730',
+                '173000',
+            )
+        }
+
+        for dt, phrases in targets.items():
+            # Time (2) phrase starting at index 0
+            target = (dt, 2, 0)
+            for phrase in phrases:
+                self.assertExpectedResult(
+                    self.cal.nlp(phrase, start),
+                    (target + (len(phrase), phrase),)
+                )
+
+            # Wrap in quotes
+            target = (dt, 2, 1)
+            for phrase in phrases:
+                self.assertExpectedResult(
+                    self.cal.nlp('"%s"' % phrase, start),
+                    (target + (len(phrase) + 1, phrase),)
+                )
+
+    def testFalsePositiveTimes(self):
+        start = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
+        phrases = (
+            '$300',
+            '300ml',
+            '3:2',
+        )
+
+        for phrase in phrases:
+            self.assertExpectedResult(
+                self.cal.nlp(phrase, start), None)
+
+    def testDates(self):
+        # Set month to January to avoid issues with August being interpreted
+        # as next year when tests are run after Aug 25
+        start = datetime.datetime(
+            self.yr, 1, self.dy, self.hr, self.mn, self.sec).timetuple()
+        targets = {
+            datetime.datetime(2006, 8, 25, self.hr, self.mn, self.sec): (
+                '08/25/2006',
+                '08.25.2006',
+                '2006/08/25',
+                '2006/8/25',
+                '2006-08-25',
+                '8/25/06',
+                'August 25, 2006',
+                'Aug 25, 2006',
+                'Aug. 25, 2006',
+                'August 25 2006',
+                'Aug 25 2006',
+                'Aug. 25 2006',
+                '25 August 2006',
+                '25 Aug 2006',
+            ),
+            datetime.datetime(self.yr, 8, 25, self.hr, self.mn, self.sec): (
+                '8/25',
+                '8.25',
+                '08/25',
+                'August 25',
+                'Aug 25',
+                'Aug. 25',
+            ),
+            datetime.datetime(2006, 8, 1, self.hr, self.mn, self.sec): (
+                'Aug. 2006',
+            )
+        }
+
+        for dt, phrases in targets.items():
+            # Date (1) phrase starting at index 0
+            target = (dt, 1, 0)
+            for phrase in phrases:
+                self.assertExpectedResult(
+                    self.cal.nlp(phrase, start),
+                    (target + (len(phrase), phrase),)
+                )
+
+            # Wrap in quotes
+            target = (dt, 1, 1)
+            for phrase in phrases:
+                self.assertExpectedResult(
+                    self.cal.nlp('"%s"' % phrase, start),
+                    (target + (len(phrase) + 1, phrase),)
+                )
+
+    def testFalsePositiveDates(self):
+        start = datetime.datetime(
+            self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
+        phrases = (
+            '$1.23',
+            '$12.34'
+        )
+
+        for phrase in phrases:
+            self.assertExpectedResult(
+                self.cal.nlp(phrase, start), None)

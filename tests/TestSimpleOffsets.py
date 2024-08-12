@@ -291,7 +291,8 @@ class test(unittest.TestCase):
     def testSpecials(self):
         s = datetime.datetime.now()
         t = datetime.datetime(
-            self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=1)
+            self.yr, self.mth, self.dy,
+            self.cal.ptc.StartHour, 0, 0) + datetime.timedelta(days=1)
 
         start = s.timetuple()
         target = t.timetuple()
@@ -304,14 +305,17 @@ class test(unittest.TestCase):
             (target, pdtContext(pdtContext.ACU_DAY)))
 
         t = datetime.datetime(
-            self.yr, self.mth, self.dy, 9, 0, 0) + datetime.timedelta(days=-1)
+            self.yr, self.mth, self.dy,
+            self.cal.ptc.StartHour, 0, 0) + datetime.timedelta(days=-1)
         target = t.timetuple()
 
         self.assertExpectedResult(
             self.cal.parse('yesterday', start),
             (target, pdtContext(pdtContext.ACU_DAY)))
 
-        t = datetime.datetime(self.yr, self.mth, self.dy, 9, 0, 0)
+        t = datetime.datetime(
+            self.yr, self.mth, self.dy,
+            self.cal.ptc.StartHour, 0, 0)
         target = t.timetuple()
 
         self.assertExpectedResult(

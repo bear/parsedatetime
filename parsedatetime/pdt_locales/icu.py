@@ -139,10 +139,10 @@ def get_icu(locale):
 
     result['dateSep'] = [ds]
     s = result['dateFormats']['short']
-    ll = s.lower().split(ds)
+    formats = s.lower().split(ds)
     dp_order = []
 
-    for s in ll:
+    for s in formats:
         if len(s) > 0:
             dp_order.append(s[:1])
 
