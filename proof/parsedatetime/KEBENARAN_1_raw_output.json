@@ -1,0 +1,253 @@
+{
+  "calendar-parse": [
+    {
+      "input": "tomorrow",
+      "output": [
+        [
+          2025,
+          6,
+          15,
+          9,
+          0,
+          0,
+          6,
+          166,
+          -1
+        ],
+        {
+          "__class__": "pdtContext",
+          "accuracy": 8
+        }
+      ]
+    },
+    {
+      "input": "next friday",
+      "output": [
+        [
+          2025,
+          6,
+          20,
+          9,
+          0,
+          0,
+          4,
+          171,
+          -1
+        ],
+        {
+          "__class__": "pdtContext",
+          "accuracy": 8
+        }
+      ]
+    },
+    {
+      "input": "in 2 weeks",
+      "output": [
+        [
+          2025,
+          6,
+          28,
+          12,
+          0,
+          0,
+          5,
+          179,
+          -1
+        ],
+        {
+          "__class__": "pdtContext",
+          "accuracy": 4
+        }
+      ]
+    },
+    {
+      "input": "yesterday",
+      "output": [
+        [
+          2025,
+          6,
+          13,
+          9,
+          0,
+          0,
+          4,
+          164,
+          -1
+        ],
+        {
+          "__class__": "pdtContext",
+          "accuracy": 8
+        }
+      ]
+    },
+    {
+      "input": "3 days from now",
+      "output": [
+        [
+          2025,
+          6,
+          17,
+          12,
+          0,
+          0,
+          1,
+          168,
+          -1
+        ],
+        {
+          "__class__": "pdtContext",
+          "accuracy": 264
+        }
+      ]
+    }
+  ],
+  "calendar-parse-dt": [
+    {
+      "input": "tomorrow at 3pm",
+      "output": [
+        "FrozenDateTime(2025, 6, 15, 15, 0)",
+        {
+          "__class__": "pdtContext",
+          "accuracy": 40
+        }
+      ]
+    },
+    {
+      "input": "next monday",
+      "output": [
+        "FrozenDateTime(2025, 6, 16, 9, 0)",
+        {
+          "__class__": "pdtContext",
+          "accuracy": 8
+        }
+      ]
+    }
+  ],
+  "calendar-nlp": [
+    {
+      "input": "I will meet you next friday at 3pm",
+      "output": [
+        [
+          "FrozenDateTime(2025, 6, 20, 15, 0)",
+          {
+            "__class__": "pdtContext",
+            "accuracy": 40
+          },
+          16,
+          34,
+          "next friday at 3pm"
+        ]
+      ]
+    }
+  ],
+  "calendar-parsedate": [
+    {
+      "input": "06/28/2025",
+      "output": [
+        2025,
+        6,
+        28,
+        12,
+        0,
+        0,
+        5,
+        165,
+        -1
+      ]
+    },
+    {
+      "input": "12/25/2025",
+      "output": [
+        2025,
+        12,
+        25,
+        12,
+        0,
+        0,
+        5,
+        165,
+        -1
+      ]
+    }
+  ],
+  "calendar-parsedatetext": [
+    {
+      "input": "May 31st, 2025",
+      "output": [
+        2025,
+        5,
+        31,
+        12,
+        0,
+        0,
+        5,
+        165,
+        -1
+      ]
+    },
+    {
+      "input": "December 25, 2025",
+      "output": [
+        2025,
+        12,
+        25,
+        12,
+        0,
+        0,
+        5,
+        165,
+        -1
+      ]
+    }
+  ],
+  "calendar-evalranges": [
+    {
+      "input": "Aug 21 - Sep 4",
+      "output": [
+        [
+          2025,
+          6,
+          14,
+          12,
+          0,
+          0,
+          5,
+          165,
+          -1
+        ],
+        [
+          2025,
+          6,
+          14,
+          12,
+          0,
+          0,
+          5,
+          165,
+          -1
+        ],
+        0
+      ]
+    }
+  ],
+  "convert-unit-as-words": [
+    {
+      "input": "twenty five",
+      "output": 25
+    },
+    {
+      "input": "one hundred",
+      "output": 100
+    }
+  ],
+  "quantity-to-real": [
+    {
+      "input": "five",
+      "output": 5.0
+    },
+    {
+      "input": "two and a half",
+      "output": 0.0
+    }
+  ]
+}

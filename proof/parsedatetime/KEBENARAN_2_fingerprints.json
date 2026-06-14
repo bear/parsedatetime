@@ -1,0 +1,36 @@
+{
+  "fingerprints": {
+    "calendar-evalranges": {
+      "fingerprint": "4a3otc5",
+      "hash": "4a3otc5"
+    },
+    "convert-unit-as-words": {
+      "fingerprint": "2uv455w",
+      "hash": "2uv455w"
+    },
+    "calendar-parsedatetext": {
+      "fingerprint": "6cf5pgi",
+      "hash": "6cf5pgi"
+    },
+    "calendar-parsedate": {
+      "fingerprint": "1fps6z4",
+      "hash": "1fps6z4"
+    },
+    "calendar-parse": {
+      "fingerprint": "4q9y4hu",
+      "hash": "4q9y4hu"
+    },
+    "quantity-to-real": {
+      "fingerprint": "3awb3io",
+      "hash": "3awb3io"
+    },
+    "calendar-parse-dt": {
+      "fingerprint": "5kddecf",
+      "hash": "5kddecf"
+    },
+    "calendar-nlp": {
+      "fingerprint": "1mrh22t",
+      "hash": "1mrh22t"
+    }
+  }
+}
