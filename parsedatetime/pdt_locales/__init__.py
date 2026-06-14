@@ -13,7 +13,7 @@ locales = ['de_DE', 'en_AU', 'en_US', 'es', 'nl_NL', 'pt_BR', 'ru_RU', 'fr_FR']
 
 __locale_caches = {}
 
-__all__ = ['get_icu', 'load_locale']
+__all__ = ['get_icu', 'load_locale', 'pdtLocales']
 
 
 def load_locale(locale, icu=False):
@@ -28,3 +28,8 @@ def load_locale(locale, icu=False):
         mod = __import__(__name__, fromlist=[locale], level=0)
         __locale_caches[locale] = getattr(mod, locale)
     return __locale_caches[locale]
+
+
+# Shared locale dictionary used by both Calendar and Constants.
+# Tests may modify this dict directly (e.g. pdtLocales['en_us'] = custom_locale).
+pdtLocales = dict([(x, load_locale(x)) for x in locales])
