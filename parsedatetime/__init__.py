@@ -1014,16 +1014,15 @@ class Calendar(object):
             # likely to be "next 4 hrs" which we will have to combine the
             # units with the rest of the string
             if chunk1:
-                try:
-                    m = list(self.ptc.CRE_NUMBER.finditer(chunk1))[-1]
-                except IndexError:
-                    pass
-                else:
-                    qty = None
-                    debug and logging.debug('CRE_NUMBER matched')
-                    qty = self._quantityToReal(m.group()) * offset
-                    chunk1 = '%s%s%s' % (chunk1[:m.start()],
-                                         qty, chunk1[m.end():])
+                _matches = list(
+                    self.ptc.CRE_NUMBER.finditer(chunk1))
+                if _matches:
+                    for m in reversed(_matches):
+                        qty = self._quantityToReal(
+                            m.group()) * offset
+                        chunk1 = '%s%s%s' % (
+                            chunk1[:m.start()],
+                            qty, chunk1[m.end():])
                 t, subctx = self.parse(chunk1, sourceTime,
                                        VERSION_CONTEXT_STYLE)
 

@@ -43,6 +43,16 @@ class test(unittest.TestCase):
         self.assertDelta(
             self.cal.parse('2 days ago', self.source), days=-2)
 
+    def testMultipleUnitsAgo(self):
+        self.assertDelta(
+            self.cal.parse('11 hours 0 minutes ago', self.source), hours=-11)
+        self.assertDelta(
+            self.cal.parse('2 days 3 hours ago', self.source),
+            days=-2, hours=-3)
+        self.assertDelta(
+            self.cal.parse('1 day 5 hours 30 mins ago', self.source),
+            days=-1, hours=-5, minutes=-30)
+
     def testFloat(self):
         self.assertDelta(
             self.cal.parse('58.4 minutes ago', self.source), minutes=-58.4)
