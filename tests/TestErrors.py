@@ -71,6 +71,17 @@ class test(unittest.TestCase):
         self.assertExpectedResult(
             self.cal.parse('3700000 d', start), (start, pdtContext()))
 
+    def testParseDateInvalidStrings(self):
+        # parseDate degrades to the current time on a string it cannot read as
+        # a short-form date, rather than raising ValueError from int()
+        now = time.localtime()
+        for s in ('', '  ', '/', '.', 'x', 'may/june', '05/ab/2020'):
+            result = self.cal.parseDate(s)
+            self.assertIsInstance(result, time.struct_time)
+            self.assertEqual(result[:3], now[:3])
+        # a genuine short-form date is unaffected
+        self.assertEqual(self.cal.parseDate('05/28/2006')[:3], (2006, 5, 28))
+
 
 if __name__ == "__main__":
     unittest.main()

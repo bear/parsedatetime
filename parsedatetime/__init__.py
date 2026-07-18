@@ -403,19 +403,24 @@ class Calendar(object):
         accuracy = []
 
         s = dateString
-        m = self.ptc.CRE_DATE2.search(s)
-        if m is not None:
-            index = m.start()
-            v1 = int(s[:index])
-            s = s[index + 1:]
+        try:
+            m = self.ptc.CRE_DATE2.search(s)
+            if m is not None:
+                index = m.start()
+                v1 = int(s[:index])
+                s = s[index + 1:]
 
-        m = self.ptc.CRE_DATE2.search(s)
-        if m is not None:
-            index = m.start()
-            v2 = int(s[:index])
-            v3 = int(s[index + 1:])
-        else:
-            v2 = int(s.strip())
+            m = self.ptc.CRE_DATE2.search(s)
+            if m is not None:
+                index = m.start()
+                v2 = int(s[:index])
+                v3 = int(s[index + 1:])
+            else:
+                v2 = int(s.strip())
+        except ValueError:
+            # a non-numeric segment means this is not a short-form date;
+            # degrade to the same result as an out-of-range date below
+            return time.localtime()
 
         v = [v1, v2, v3]
         d = {'m': mth, 'd': dy, 'y': yr}
