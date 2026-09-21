@@ -288,6 +288,47 @@ class test(unittest.TestCase):
         self.assertEqual(_tr(self.cal.parse(phrase, start)),
                          _tr((target, pdtContext(pdtContext.ACU_MONTH | pdtContext.ACU_DAY))))
 
+    def testNextNamedMonthDoesNotAdvanceYearTwice(self):
+        for start, phrase, expected in [
+            (datetime.datetime(2020, 2, 29, 8, 21), 'next February 28',
+             datetime.datetime(2021, 2, 28, 8, 21)),
+            (datetime.datetime(2020, 3, 1, 8, 21), 'next February 28',
+             datetime.datetime(2021, 2, 28, 8, 21)),
+            (datetime.datetime(2021, 3, 2, 8, 21), 'next March 1',
+             datetime.datetime(2022, 3, 1, 8, 21)),
+            (datetime.datetime(2020, 2, 28, 8, 21), 'next February 28',
+             datetime.datetime(2021, 2, 28, 8, 21)),
+            (datetime.datetime(2020, 1, 1, 8, 21), 'next February 28',
+             datetime.datetime(2021, 2, 28, 8, 21)),
+        ]:
+            with self.subTest(start=start, phrase=phrase):
+                self.assertEqual(
+                    self.cal.parse(phrase, start.timetuple()),
+                    (expected.timetuple(), pdtContext(
+                        pdtContext.ACU_MONTH | pdtContext.ACU_DAY)))
+
+    def testNamedMonthModifierYearSelection(self):
+        start = datetime.datetime(2020, 3, 1, 8, 21).timetuple()
+        for phrase, year, accuracy in [
+            ('next Feb 28', 2021, pdtContext.ACU_MONTH | pdtContext.ACU_DAY),
+            ('this February 28', 2020, pdtContext.ACU_MONTH | pdtContext.ACU_DAY),
+            ('last February 28', 2019, pdtContext.ACU_MONTH | pdtContext.ACU_DAY),
+            ('next February 28 2024', 2025,
+             pdtContext.ACU_YEAR | pdtContext.ACU_MONTH | pdtContext.ACU_DAY),
+            ('February 28', 2021, pdtContext.ACU_MONTH | pdtContext.ACU_DAY),
+        ]:
+            with self.subTest(phrase=phrase):
+                expected = datetime.datetime(year, 2, 28, 8, 21).timetuple()
+                result, context = self.cal.parse(phrase, start)
+                self.assertEqual(result[:6], expected[:6])
+                self.assertEqual(context, pdtContext(accuracy))
+
+        self.cal.ptc.YearParseStyle = 0
+        self.assertEqual(
+            self.cal.parse('next February 28', start),
+            (datetime.datetime(2021, 2, 28, 8, 21).timetuple(),
+             pdtContext(pdtContext.ACU_MONTH | pdtContext.ACU_DAY)))
+
     def testSpecials(self):
         s = datetime.datetime.now()
         t = datetime.datetime(

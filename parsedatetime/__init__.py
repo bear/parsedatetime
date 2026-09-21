@@ -997,10 +997,15 @@ class Calendar(object):
                     u = unit.lower()
                     if u in self.ptc.Months or \
                             u in self.ptc.shortMonths:
+                        yearOffset = offset
+                        if not subctx.accuracy & subctx.ACU_YEAR:
+                            # The modifier supplies the year offset; undo any
+                            # implicit rollover while parsing the named date.
+                            yearOffset -= t[0] - yr
                         yr, mth, dy, hr, mn, sec, wd, yd, isdst = t
                         start = datetime.datetime(
                             yr, mth, dy, hr, mn, sec)
-                        t = self.inc(start, year=offset).timetuple()
+                        t = self.inc(start, year=yearOffset).timetuple()
                     elif u in self.ptc.Weekdays:
                         t = t + datetime.timedelta(weeks=offset)
 
