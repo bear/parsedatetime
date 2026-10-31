@@ -454,6 +454,7 @@ class Calendar(object):
         with self.context() as ctx:
             if mth > 0 and mth <= 12 and dy > 0 and \
                     dy <= daysInCurrentMonth:
+                wd, yd = datetime.date(yr, mth, dy).timetuple()[6:8]
                 sourceTime = (yr, mth, dy, hr, mn, sec, wd, yd, isdst)
                 ctx.updateAccuracy(*accuracy)
             else:
@@ -518,6 +519,7 @@ class Calendar(object):
 
         with self.context() as ctx:
             if dy > 0 and dy <= self.ptc.daysInMonth(mth, yr):
+                wd, yd = datetime.date(yr, mth, dy).timetuple()[6:8]
                 sourceTime = (yr, mth, dy, hr, mn, sec, wd, yd, isdst)
                 ctx.updateAccuracy(*accuracy)
             else:
