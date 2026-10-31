@@ -1003,6 +1003,9 @@ class Calendar(object):
                         t = self.inc(start, year=offset).timetuple()
                     elif u in self.ptc.Weekdays:
                         t = t + datetime.timedelta(weeks=offset)
+                elif chunk1 == '' and subctx.hasTime and self.ptc.CRE_TIME.match(unit):
+                    start = datetime.datetime(*t[:6])
+                    t = (start + datetime.timedelta(days=offset)).timetuple()
 
                 if subctx.hasDateOrTime:
                     sourceTime = t

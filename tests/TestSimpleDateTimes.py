@@ -467,6 +467,44 @@ class test(unittest.TestCase):
             self.cal.parse('tonight', start),
             (target, pdtContext(pdtContext.ACU_HALFDAY)))
 
+    def testModifiedSpecialTimesWithTrailingText(self):
+        for source in (datetime.date(2016, 4, 13),
+                       datetime.date(2016, 3, 1),
+                       datetime.date(2017, 1, 1)):
+            for modifier, offset in (('last', -1), ('next', 1), ('this', 0)):
+                for period, hour in (('night', 21), ('morning', 6), ('evening', 18)):
+                    target = datetime.datetime.combine(
+                        source + datetime.timedelta(days=offset),
+                        datetime.time(hour))
+                    for suffix in ('', ' at the concert'):
+                        text = '%s %s%s' % (modifier, period, suffix)
+                        self.assertExpectedResult(
+                            self.cal.parse(text, source.timetuple()),
+                            (target.timetuple(), pdtContext(pdtContext.ACU_HALFDAY)),
+                            errMsg='%s relative to %s' % (text, source))
+
+    def testModifiedSpecialTimesInOtherLocales(self):
+        source = datetime.date(2016, 4, 13)
+        target = datetime.datetime.combine(
+            source - datetime.timedelta(days=1), datetime.time(21))
+        for locale, phrase in (('fr_FR', 'dernière nuit'),
+                               ('de_DE', 'letzter nacht'),
+                               ('nl_NL', 'vorige nacht'),
+                               ('ru_RU', 'предыдущий ночь')):
+            cal = pdt.Calendar(pdt.Constants(localeID=locale, usePyICU=False))
+            for suffix in ('', ' zzzz'):
+                self.assertExpectedResult(
+                    cal.parse(phrase + suffix, source.timetuple()),
+                    (target.timetuple(), pdtContext(pdtContext.ACU_HALFDAY)),
+                    errMsg='%s: %s%s' % (locale, phrase, suffix))
+
+    def testModifiedSpecialTimesPreserveExplicitDate(self):
+        source = datetime.date(2016, 4, 13)
+        for phrase, day in (('last night on April 12, 2016', 12),
+                            ('next night on April 14, 2016', 14)):
+            result, _ = self.cal.parseDT(phrase, sourceTime=source)
+            self.assertEqual(result, datetime.datetime(2016, 4, day, 21))
+
     def testMidnight(self):
         start = datetime.datetime(
             self.yr, self.mth, self.dy, self.hr, self.mn, self.sec).timetuple()
