@@ -995,8 +995,8 @@ class Calendar(object):
 
                 if subctx.hasDate:  # working with dates
                     u = unit.lower()
-                    if u in self.ptc.Months or \
-                            u in self.ptc.shortMonths:
+                    if u in self.ptc.Months or any(
+                            u in names.split('|') for names in self.ptc.shortMonths):
                         yr, mth, dy, hr, mn, sec, wd, yd, isdst = t
                         start = datetime.datetime(
                             yr, mth, dy, hr, mn, sec)
