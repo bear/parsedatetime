@@ -643,15 +643,15 @@ class test(unittest.TestCase):
         keywords = []
         loc = self.cal.ptc.locale
 
-        def flattenWeekdays(wds):
+        def flattenAliases(wds):
             return sum([wd.split('|') for wd in wds], [])
 
         # Test all known keywords for the locale
         keywords.extend(loc.meridian)
-        keywords.extend(flattenWeekdays(loc.Weekdays))
-        keywords.extend(flattenWeekdays(loc.shortWeekdays))
-        keywords.extend(loc.Months)
-        keywords.extend(loc.shortMonths)
+        keywords.extend(flattenAliases(loc.Weekdays))
+        keywords.extend(flattenAliases(loc.shortWeekdays))
+        keywords.extend(flattenAliases(loc.Months))
+        keywords.extend(flattenAliases(loc.shortMonths))
         keywords.extend(loc.numbers.keys())
         keywords.extend(loc.Modifiers.keys())
         keywords.extend(loc.dayOffsets.keys())
