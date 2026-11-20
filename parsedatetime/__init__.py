@@ -2032,7 +2032,7 @@ class Calendar(object):
                         leftmost_match[4] = 'units'
 
                         if m.start('qty') > 0 and \
-                                inputString[m.start('qty') - 1] == '-':
+                                inputString[startpos + m.start('qty') - 1] == '-':
                             leftmost_match[0] = leftmost_match[0] - 1
                             leftmost_match[2] = '-' + leftmost_match[2]
 
@@ -2052,7 +2052,7 @@ class Calendar(object):
                         leftmost_match[4] = 'qunits'
 
                         if m.start('qty') > 0 and \
-                                inputString[m.start('qty') - 1] == '-':
+                                inputString[startpos + m.start('qty') - 1] == '-':
                             leftmost_match[0] = leftmost_match[0] - 1
                             leftmost_match[2] = '-' + leftmost_match[2]
 
@@ -2123,6 +2123,17 @@ class Calendar(object):
                     leftmost_match[3] = 2
                     leftmost_match[4] = 'timeStr'
 
+            # Current-time phrases use a separate locale vocabulary.
+            m = self.ptc.CRE_NLP_NOW.search(inputString[startpos:])
+            if m is not None:
+                if leftmost_match[1] == 0 or \
+                        leftmost_match[0] > m.start() + startpos:
+                    leftmost_match[0] = m.start() + startpos
+                    leftmost_match[1] = m.end() + startpos
+                    leftmost_match[2] = m.group()
+                    leftmost_match[3] = 2
+                    leftmost_match[4] = 'now'
+
             # HH:MM(:SS) am/pm time strings
             m = self.ptc.CRE_TIMEHMS2.search(inputString[startpos:])
             if m is not None:
@@ -2175,7 +2186,7 @@ class Calendar(object):
             if startpos == 0:
                 startpos = len(inputString)
             else:
-                if leftmost_match[3] > 0:
+                if leftmost_match[3] > 0 and leftmost_match[4] != 'now':
                     m = self.ptc.CRE_NLP_PREFIX.search(
                         inputString[:leftmost_match[0]] + ' ' + str(leftmost_match[3]))
                     if m is not None:
@@ -2618,6 +2629,8 @@ class Constants(object):
                                   (\s)+3
                                  )'''
 
+        self.RE_NLP_NOW = r'\b(?:{})\b'.format(re_join(self.locale.re_values['now']))
+
         if 'meridian' in self.locale.re_values:
             self.RE_TIMEHMS2 += (r'\s*(?P<meridian>{meridian})\b'
                                  .format(**self.locale.re_values))
@@ -2747,7 +2760,8 @@ class Constants(object):
                            'CRE_DATERNG1': self.DATERNG1,
                            'CRE_DATERNG2': self.DATERNG2,
                            'CRE_DATERNG3': self.DATERNG3,
-                           'CRE_NLP_PREFIX': self.RE_NLP_PREFIX}
+                           'CRE_NLP_PREFIX': self.RE_NLP_PREFIX,
+                           'CRE_NLP_NOW': self.RE_NLP_NOW}
         self.cre_keys = set(self.cre_source.keys())
 
     def __getattr__(self, name):
